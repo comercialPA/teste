@@ -1,6 +1,6 @@
 # Perla Andina — Captura de Contactos FIT 2026
 
-**Versión:** `1.1.3 perla andina`
+**Versión:** `1.1.4 perla andina`
 
 Landing pública mobile-first + panel administrativo para captura de contactos en FIT 2026.
 
