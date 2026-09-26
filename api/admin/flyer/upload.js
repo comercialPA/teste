@@ -41,7 +41,7 @@ export default async function handler(req, res) {
           throw new Error('INVALID_FILE_SIZE');
         }
         const current = await rename(blob.url, FLYER_PATH, {
-          access: 'public',
+          access: 'private',
           contentType: 'application/pdf',
           allowOverwrite: true,
           addRandomSuffix: false,
@@ -52,11 +52,9 @@ export default async function handler(req, res) {
           filename: clean(info.filename, 180) || 'City_Tour_Perlas_del_Sur.pdf',
           size: Number(blob.size || info.size || 0),
           updatedAt,
-          url: `${current.url}?v=${encodeURIComponent(updatedAt)}`,
-          downloadUrl: `${current.downloadUrl || current.url}?v=${encodeURIComponent(updatedAt)}`,
         };
         await put(FLYER_META_PATH, JSON.stringify(meta), {
-          access: 'public',
+          access: 'private',
           contentType: 'application/json',
           allowOverwrite: true,
           addRandomSuffix: false,
