@@ -8,19 +8,20 @@ Landing pública mobile-first + panel administrativo para captura de contactos e
 
 - Frontend: Vite + JavaScript, sem frameworks visuais pesados.
 - Hosting/API: Vercel.
-- Persistência: Vercel Blob.
+- Persistência: **um Vercel Blob Store privado**.
   - contatos: privados, um JSON por contato;
-  - flyer atual: `materials/city-tour/current.pdf`;
-  - metadata: `materials/city-tour/meta.json`.
+  - flyer atual: `materials/city-tour/current.pdf`, privado no storage;
+  - metadata: `materials/city-tour/meta.json`, privado no storage;
+  - visitantes recebem somente o PDF atual através de `GET /api/flyer/file`.
 - Admin: cookie de sessão `HttpOnly`, `SameSite=Strict`, senha somente em variável de ambiente.
 
 ## Variáveis obrigatórias no Vercel
 
 - `ADMIN_PASSWORD`: a senha administrativa atual.
-- `ADMIN_SESSION_SECRET`: segredo aleatório com pelo menos 24 caracteres.
-- `BLOB_READ_WRITE_TOKEN`: criado pelo Vercel quando o Blob Store é conectado ao projeto.
+- `BLOB_READ_WRITE_TOKEN`: criado automaticamente quando um **Blob Store privado** é conectado ao projeto.
+- `ADMIN_SESSION_SECRET`: opcional. Se não for definido, a sessão administrativa deriva um segredo do token privado do Blob sem expô-lo ao navegador.
 
-Nunca colocar os valores reais no GitHub.
+Nunca colocar valores reais de senha ou token no GitHub.
 
 ## URLs
 
@@ -38,6 +39,7 @@ Nunca colocar os valores reais no GitHub.
 - `GET /api/contacts.csv` (admin autenticado)
 - `GET /api/flyer/status`
 - `GET /api/flyer/url`
+- `GET /api/flyer/file`
 - `POST /api/admin/flyer/upload` (admin autenticado)
 
 ## Regras preservadas
