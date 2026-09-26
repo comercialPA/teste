@@ -1,0 +1,68 @@
+name: Build audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
+
+      - name: Audit HTML and JavaScript contract
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const html = fs.readFileSync('index.html','utf8');
+          const js = fs.readFileSync('src/main.js','utf8');
+
+          const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
+          const duplicates = [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))];
+          if (duplicates.length) throw new Error('IDs duplicados: ' + duplicates.join(', '));
+
+          const jsIds = [...js.matchAll(/\$\('([^']+)'\)/g)].map(m => m[1]);
+          const missing = [...new Set(jsIds.filter(id => !ids.includes(id)))];
+          if (missing.length) throw new Error('IDs usados no JS e ausentes no HTML: ' + missing.join(', '));
+
+          const inlineHandlers = [...html.matchAll(/\son(?:click|change|input|submit|load|keyup|keydown|blur|focus)\s*=/gi)];
+          if (inlineHandlers.length) throw new Error('Handlers inline encontrados');
+
+          const required = [
+            "form.addEventListener('submit'",
+            "countrySelect.addEventListener('change'",
+            "commentInput.addEventListener('input'",
+            "agencyToggle.addEventListener('click'",
+            "adminLoginBtn.addEventListener('click'",
+            "adminSearch.addEventListener('input'",
+            "adminFlyerUploadBtn.addEventListener('click'",
+            "companyInput.value = selected ? 'Soy agencia' : ''",
+            "countrySelect.value = 'Argentina|+54'",
+            "dialCode.textContent = '+54'"
+          ];
+          const absent = required.filter(x => !js.includes(x));
+          if (absent.length) throw new Error('Contrato funcional ausente: ' + absent.join(' | '));
+
+          console.log('Auditoria de contrato: PASSOU');
+          NODE
