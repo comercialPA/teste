@@ -1,0 +1,17 @@
+{
+  "name": "perla-andina-fit-2026-contactos",
+  "private": true,
+  "version": "1.1.3",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vercel/blob": "latest"
+  },
+  "devDependencies": {
+    "vite": "latest"
+  }
+}
