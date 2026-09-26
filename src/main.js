@@ -116,14 +116,36 @@ async function resolveFlyerUrl() {
   return data;
 }
 
+function openResolvedTarget(target, download, popup = null) {
+  if (download) {
+    const anchor = document.createElement('a');
+    anchor.href = target;
+    anchor.target = '_blank';
+    anchor.rel = 'noopener noreferrer';
+    anchor.download = '';
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    return;
+  }
+  if (popup) {
+    popup.opener = null;
+    popup.location.href = target;
+    return;
+  }
+  window.location.href = target;
+}
+
 async function openPublicFlyer(download) {
   const button = download ? publicFlyerDownload : publicFlyerView;
   if (button.disabled) return;
+  const popup = download ? null : window.open('about:blank', '_blank');
   try {
     const data = await resolveFlyerUrl();
     const target = download ? (data.downloadUrl || data.url) : data.url;
-    window.open(target, '_blank', 'noopener,noreferrer');
+    openResolvedTarget(target, download, popup);
   } catch {
+    if (popup) popup.close();
     publicFlyerStatus.textContent = 'No pudimos abrir el flyer. Intentá nuevamente.';
   }
 }
@@ -367,11 +389,13 @@ async function uploadFlyer() {
 }
 
 async function openAdminFlyer(download) {
+  const popup = download ? null : window.open('about:blank', '_blank');
   try {
     const data = flyerSnapshot?.available ? flyerSnapshot : await resolveFlyerUrl();
     const target = download ? (data.downloadUrl || data.url) : data.url;
-    window.open(target, '_blank', 'noopener,noreferrer');
+    openResolvedTarget(target, download, popup);
   } catch {
+    if (popup) popup.close();
     setAdminStatus(adminFlyerStatus, 'No pudimos abrir el flyer actual.', true);
   }
 }
