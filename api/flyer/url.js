@@ -6,17 +6,23 @@ export default async function handler(req, res) {
   if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
   try {
     const meta = await flyerMeta();
-    if (!meta?.url) return res.status(200).json({ ok: true, available: false });
+    if (!meta) return res.status(200).json({ ok: true, available: false });
+
+    const version = encodeURIComponent(meta.updatedAt || '');
+    const url = `/api/flyer/file?v=${version}`;
+    const downloadUrl = `/api/flyer/file?download=1&v=${version}`;
+
     return res.status(200).json({
       ok: true,
       available: true,
       filename: meta.filename,
       size: meta.size,
       updatedAt: meta.updatedAt,
-      url: meta.url,
-      downloadUrl: meta.downloadUrl || meta.url,
+      url,
+      downloadUrl,
     });
-  } catch {
+  } catch (error) {
+    console.error('flyer_url_failed', error);
     return res.status(200).json({ ok: true, available: false });
   }
 }
