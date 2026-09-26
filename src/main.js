@@ -365,7 +365,7 @@ async function uploadFlyer() {
   setAdminStatus(adminFlyerStatus, 'Publicando PDF…');
   try {
     await upload(`materials/city-tour/incoming/${Date.now()}.pdf`, file, {
-      access: 'public',
+      access: 'private',
       handleUploadUrl: '/api/admin/flyer/upload',
       contentType: 'application/pdf',
       multipart: true,
