@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Escolher idioma e abrir o mapa principal",
+    "sanity": true,
+    "viewport": "mobile",
+    "covers": [
+      "seletor inicial de idioma",
+      "mapa como capa do app",
+      "navegação traduzida"
+    ],
+    "description": "Verifica que o app exige escolha de idioma e entra diretamente na experiência de mapa.",
+    "steps": [
+      "Abrir o app",
+      "Escolher Português",
+      "Confirmar que a tela principal é o mapa de El Calafate"
+    ],
+    "expected": "O seletor de idioma fecha, os rótulos mudam para português e o mapa principal fica visível."
+  },
+  {
+    "name": "Abrir marcador sem popup sobre o mapa",
+    "viewport": "mobile",
+    "covers": [
+      "card de mapa fora do mapa",
+      "marcador Perla Andina",
+      "acesso à ficha"
+    ],
+    "description": "Verifica que tocar em um marcador mostra o card do lugar abaixo do mapa, sem popup cobrindo o mapa.",
+    "steps": [
+      "Escolher Español",
+      "Selecionar Agencia de turismo",
+      "Tocar o marcador PERLA",
+      "Tocar Ver lugar no card exibido abaixo do mapa"
+    ],
+    "expected": "O mapa permanece visível sem popup Leaflet sobreposto, um card separado aparece abaixo dele e a ficha da Perla Andina pode ser aberta."
+  },
+  {
+    "name": "Menu mostra fotos ilustrativas dos produtos",
+    "viewport": "mobile",
+    "covers": [
+      "fotos de produtos",
+      "menu digital",
+      "seleção de produto"
+    ],
+    "description": "Verifica que itens gastronômicos possuem miniaturas de produto identificadas como ilustrativas.",
+    "steps": [
+      "Abrir El Gaita Pizza Bar",
+      "Ir ao menu digital",
+      "Confirmar miniatura na Mozzarella",
+      "Adicionar Mozzarella"
+    ],
+    "expected": "A Mozzarella aparece com foto ilustrativa e continua podendo ser adicionada à seleção."
+  },
+  {
+    "name": "Benefício é marcado como não habilitado",
+    "viewport": "desktop",
+    "covers": [
+      "benefício não habilitado",
+      "cupons demo",
+      "guardrail de informação comercial"
+    ],
+    "description": "Verifica que nenhum benefício de demonstração é apresentado como ativo.",
+    "steps": [
+      "Escolher Português",
+      "Abrir Benefícios",
+      "Verificar o status de um cupom",
+      "Abrir um estabelecimento pelo mapa e verificar o benefício no card"
+    ],
+    "expected": "Os benefícios exibem explicitamente o status NÃO HABILITADO e continuam identificados como demonstração."
+  },
+  {
+    "name": "WhatsApp direto continua funcionando após a alteração visual",
+    "viewport": "mobile",
+    "covers": [
+      "WhatsApp direto do estabelecimento",
+      "mensagem de contato",
+      "preservação do fluxo existente"
+    ],
+    "description": "Verifica que as mudanças de mapa e fotos não quebraram o contato direto.",
+    "steps": [
+      "Escolher Español",
+      "Abrir Parrilla Don Pichón",
+      "Tocar WhatsApp"
+    ],
+    "expected": "O app tenta abrir o WhatsApp de Don Pichón com a mensagem preparada."
+  }
+]
