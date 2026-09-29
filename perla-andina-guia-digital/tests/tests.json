@@ -1,78 +1,85 @@
 [
   {
-    "name": "Mostrar Google Reviews na ficha",
+    "name": "Filtrar farmácias com múltiplas opções",
     "sanity": true,
     "viewport": "mobile",
     "covers": [
-      "nota Google",
-      "quantidade de avaliações",
-      "ficha do negócio"
+      "múltiplas empresas por categoria",
+      "farmácias",
+      "Google Reviews"
     ],
-    "description": "Verifica que a ficha mostra nota e quantidade de avaliações do Google.",
+    "description": "Verifica que a categoria Farmacia deixou de ser limitada a um único estabelecimento e mostra várias farmácias confirmadas.",
     "steps": [
       "Abrir o app",
-      "Escolher Português",
-      "Abrir Perla Andina Travel"
+      "Escolher Español",
+      "Selecionar Farmacia",
+      "Confirmar Farmacia Central, Farmacia El Calafate e outras opções"
     ],
-    "expected": "A ficha mostra Google 5.0 e 52 avaliações."
+    "expected": "A lista mostra múltiplas farmácias reais com endereço, avaliação Google quando disponível e acesso à ficha."
   },
   {
-    "name": "Abrir Google Maps no estabelecimento correto",
+    "name": "Mostrar pontos turísticos incluindo Walichu",
     "viewport": "mobile",
     "covers": [
-      "Google Place ID",
-      "ver avaliações",
-      "link externo Google Maps"
+      "pontos turísticos",
+      "Cuevas de Walichu",
+      "mapa e ficha"
     ],
-    "description": "Verifica que o botão de avaliações usa o Place ID do negócio.",
+    "description": "Verifica a nova categoria de pontos turísticos e a presença da reserva arqueológica de Walichu.",
     "steps": [
-      "Abrir Parrilla Don Pichón",
-      "Tocar Ver avaliações no Google"
+      "Selecionar Puntos turísticos",
+      "Localizar Cuevas de Walichu / Punta Walichu",
+      "Abrir a ficha"
     ],
-    "expected": "O Google Maps abre diretamente no perfil de Parrilla Don Pichón."
+    "expected": "A ficha de Walichu mostra endereço, Google Reviews, como chegar e benefício não habilitado."
   },
   {
-    "name": "Escrever avaliação diretamente",
-    "viewport": "mobile",
-    "covers": [
-      "Google review composer",
-      "Place ID",
-      "avaliação direta"
-    ],
-    "description": "Verifica que o usuário pode iniciar uma avaliação do Google diretamente pelo app.",
-    "steps": [
-      "Abrir BOkADO Trattoria",
-      "Tocar Escrever avaliação"
-    ],
-    "expected": "O fluxo de escrita de avaliação do Google abre para BOkADO Trattoria."
-  },
-  {
-    "name": "Google Reviews também aparece no card do mapa",
+    "name": "Listar várias agências de remis sem criar concorrente de turismo",
     "viewport": "desktop",
     "covers": [
-      "card do mapa",
-      "Google rating",
-      "ação de avaliar"
+      "remis e taxi",
+      "múltiplas empresas do mesmo ramo",
+      "agência de turismo exclusiva"
     ],
-    "description": "Verifica que o card externo do mapa mostra avaliação Google e botão para avaliar.",
+    "description": "Verifica que Remis/Taxi possui várias opções enquanto Agencia de turismo continua exclusiva.",
     "steps": [
-      "Tocar um marcador do mapa",
-      "Revisar o card abaixo do mapa"
+      "Selecionar Taxi",
+      "Confirmar várias empresas de remis/taxi",
+      "Selecionar Agencia de turismo"
     ],
-    "expected": "O card mostra Google, nota, quantidade de avaliações e botão de avaliação."
+    "expected": "Taxi mostra várias empresas; Agencia de turismo mostra somente Perla Andina Travel."
   },
   {
-    "name": "WhatsApp continua preservado",
+    "name": "Abrir passeios da Perla Andina no catálogo",
     "viewport": "mobile",
     "covers": [
-      "WhatsApp direto",
-      "preservação do fluxo existente"
+      "passeios Perla Andina",
+      "link direto para catálogo",
+      "preservação de agência exclusiva"
     ],
-    "description": "Verifica que os novos botões do Google não quebram o contato.",
+    "description": "Verifica que os serviços/passeios dentro da ficha da Perla Andina não entram no carrinho e abrem o catálogo oficial.",
     "steps": [
-      "Abrir Don Pichón",
-      "Tocar WhatsApp"
+      "Abrir Perla Andina Travel",
+      "Tocar City Tour Perlas del Sur",
+      "Voltar e tocar Todo Glaciares"
     ],
-    "expected": "O WhatsApp abre como antes."
+    "expected": "Cada passeio abre https://catalogoperlaandina.vercel.app/ em uma nova aba."
+  },
+  {
+    "name": "Mostrar Enclave como bar, não agência",
+    "viewport": "desktop",
+    "covers": [
+      "Enclave",
+      "categoria Bar",
+      "Google Reviews",
+      "guardrail de categoria"
+    ],
+    "description": "Verifica que Enclave aparece na categoria correta sem ser classificado como agência de turismo.",
+    "steps": [
+      "Selecionar Bar",
+      "Abrir ENCLAVE",
+      "Revisar a ficha e Google Reviews"
+    ],
+    "expected": "ENCLAVE aparece como Bar e a categoria Agencia de turismo continua contendo somente Perla Andina."
   }
 ]
