@@ -24,7 +24,7 @@ type Place = {
   benefitValue?: string;
 };
 
-const VERSION = '1.0.7 perla andina';
+const VERSION = '1.0.8 perla andina';
 const DEFAULT_WHATSAPP = '5492901498474';
 const CATALOG_URL = 'https://catalogoperlaandina.vercel.app/';
 
@@ -90,6 +90,10 @@ const GOOGLE_PLACE_IDS: Record<string, string> = {
   'glaciar-spegazzini': 'ChIJ_24H2kCvpL0Rt1K8ojIRBSg',
   'canadon-arroyo-calafate': 'ChIJp7cZr48Mu70RawTCDajp9gI',
   'mountain-park': 'ChIJDw49J_ENu70Ri6V80MwyJYY',
+  'yeti-ice-bar': 'ChIJUceKgr8Mu70RNFYzr4fDeh4',
+  'letras-calafate': 'ChIJC-VMldQNu70RVS0s7-XCvvs',
+  'casa-verde': 'ChIJ_VYFTbkNu70RYfLpaahof4k',
+  'nativo-experience': 'ChIJVUwQ5ix1u70R3QyQMrAMwJY',
   enclave: 'ChIJSYTKSgBzu70RsiDg-67h3cQ',
 };
 
@@ -1994,7 +1998,3 @@ const places: Place[] = [
     benefitKind: 'none',
   },
   {
-    id: 'puerto-bajo-sombras',
-    name: 'Puerto Bajo las Sombras',
-    typeKey: 'type_attraction',
-    rating: 4.7,
