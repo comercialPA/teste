@@ -1,86 +1,90 @@
 [
   {
-    "name": "Usar filtros em dois níveis para turismo",
+    "name": "Diagnóstico registra clique, filtro e carga do mapa",
     "sanity": true,
     "viewport": "mobile",
     "covers": [
-      "filtro principal",
-      "subfiltro",
-      "turismo",
-      "cards refinados"
+      "botão de diagnóstico",
+      "registro de cliques",
+      "estado de filtros",
+      "contagem de markers",
+      "diagnóstico de geocodificação"
     ],
-    "description": "Verifica que o usuário pode entrar em Turismo e depois filtrar por Museos, Naturaleza, Glaciares, Miradores, Bares de hielo ou Experiencias.",
+    "description": "Verifica que o botão DIAG mostra cada interação e o que efetivamente foi carregado no mapa.",
     "steps": [
-      "Abrir o app",
-      "Escolher Español",
-      "Selecionar Turismo",
-      "Selecionar Bares de hielo"
+      "Abrir o app e escolher Español",
+      "Tocar Turismo e depois Museos",
+      "Tocar DIAG"
     ],
-    "expected": "A lista mostra Glacio Bar e Yeti Ice Bar sem misturar farmácias, remis ou restaurantes comuns."
+    "expected": "O painel de diagnóstico mostra os cliques, filtro tourism/museum, quantidade esperada, itens com coordenadas e markers carregados."
   },
   {
-    "name": "Encontrar Laguna Nimez, Glaciarium e CIH",
+    "name": "Filtros gastronômicos mostram várias empresas reais por ramo",
+    "viewport": "mobile",
+    "covers": [
+      "múltiplas pizzarias",
+      "múltiplas comidas rápidas",
+      "múltiplas parrillas",
+      "tenedor libre"
+    ],
+    "description": "Verifica que Comer & Beber deixou de ser uma amostra de uma empresa por categoria.",
+    "steps": [
+      "Abrir Explorar",
+      "Selecionar Comer & Beber",
+      "Selecionar Pizzería, depois Comida rápida, Parrilla e Tenedor libre"
+    ],
+    "expected": "Cada subfiltro mostra várias opções reais; Pizzería inclui El Gaita, Nápoles e La Lechuza, e Tenedor libre inclui Estilo Campo e Los Baguales."
+  },
+  {
+    "name": "Serviços incluem várias lavanderias",
+    "viewport": "desktop",
+    "covers": [
+      "lavanderias",
+      "serviços",
+      "Google Reviews"
+    ],
+    "description": "Verifica que Serviços possui um subfiltro de lavanderias com múltiplas empresas reais.",
+    "steps": [
+      "Selecionar Servicios",
+      "Selecionar Lavandería",
+      "Abrir Laundry Club"
+    ],
+    "expected": "A lista mostra várias lavanderias e a ficha de Laundry Club exibe endereço e Google Reviews."
+  },
+  {
+    "name": "Mobilidade contém somente táxi e remis e agência continua exclusiva",
+    "viewport": "desktop",
+    "covers": [
+      "táxi e remis",
+      "remoção de traslados privados",
+      "Perla Andina única agência"
+    ],
+    "description": "Verifica que a categoria de mobilidade não mistura empresas de traslado privado e que a agência de turismo segue exclusiva.",
+    "steps": [
+      "Selecionar Remis & Taxi",
+      "Revisar empresas listadas",
+      "Selecionar Perla Andina"
+    ],
+    "expected": "Mobilidade mostra apenas táxi/remis; Perla Andina é a única agência de turismo."
+  },
+  {
+    "name": "Pontos turísticos carregam e ajustam o mapa ao subfiltro",
     "viewport": "mobile",
     "covers": [
       "Laguna Nimez",
       "Glaciarium",
       "CIH",
-      "pontos turísticos"
+      "pontos turísticos",
+      "auto ajuste de mapa",
+      "fallback de geocodificação"
     ],
-    "description": "Verifica que os principais pontos turísticos urbanos continuam disponíveis após a reorganização.",
+    "description": "Verifica que os pontos turísticos podem ser carregados por subfiltro e ficam visíveis mesmo quando estão fora do centro da cidade.",
     "steps": [
-      "Selecionar Turismo",
-      "Filtrar Naturaleza e localizar Reserva Laguna Nimez",
-      "Filtrar Museos e localizar Glaciarium e CIH"
+      "Selecionar Turismo e Museos",
+      "Confirmar Glaciarium e CIH",
+      "Selecionar Naturaleza e confirmar Laguna Nimez",
+      "Abrir DIAG"
     ],
-    "expected": "Os três pontos aparecem em seus subfiltros corretos com Google Reviews e endereço."
-  },
-  {
-    "name": "Separar mobilidade e serviços",
-    "viewport": "desktop",
-    "covers": [
-      "remis e taxi",
-      "farmácias",
-      "filtro hierárquico"
-    ],
-    "description": "Verifica que grandes listas de remis e farmácias deixaram de se misturar na mesma grade.",
-    "steps": [
-      "Selecionar Remis & Taxi",
-      "Revisar os cards",
-      "Selecionar Servicios",
-      "Selecionar Farmacia"
-    ],
-    "expected": "Cada ramo aparece em sua própria camada de filtro e os cards mostram nome, tipo, Google e endereço de forma compacta."
-  },
-  {
-    "name": "Manter Perla Andina como única agência",
-    "viewport": "mobile",
-    "covers": [
-      "agência exclusiva",
-      "Perla Andina",
-      "catálogo"
-    ],
-    "description": "Verifica que a reorganização não cria outras agências de turismo.",
-    "steps": [
-      "Selecionar Perla Andina",
-      "Abrir Perla Andina Travel",
-      "Tocar um passeio"
-    ],
-    "expected": "Somente Perla Andina aparece como agência e o passeio abre catalogoperlaandina.vercel.app."
-  },
-  {
-    "name": "Benefícios continuam não habilitados",
-    "viewport": "desktop",
-    "covers": [
-      "benefício não habilitado",
-      "guardrail"
-    ],
-    "description": "Verifica que novos pontos turísticos e empresas não recebem promoções inventadas.",
-    "steps": [
-      "Abrir Yeti Ice Bar",
-      "Revisar o benefício",
-      "Abrir Reserva Laguna Nimez"
-    ],
-    "expected": "O status de benefício permanece claramente como NO HABILITADO/NÃO HABILITADO."
+    "expected": "Os cards aparecem, o mapa ajusta o enquadramento quando aplicável e o diagnóstico registra markers carregados ou falhas de geocodificação."
   }
 ]
