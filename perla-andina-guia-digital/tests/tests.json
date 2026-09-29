@@ -1,85 +1,86 @@
 [
   {
-    "name": "Filtrar farmácias com múltiplas opções",
+    "name": "Usar filtros em dois níveis para turismo",
     "sanity": true,
     "viewport": "mobile",
     "covers": [
-      "múltiplas empresas por categoria",
-      "farmácias",
-      "Google Reviews"
+      "filtro principal",
+      "subfiltro",
+      "turismo",
+      "cards refinados"
     ],
-    "description": "Verifica que a categoria Farmacia deixou de ser limitada a um único estabelecimento e mostra várias farmácias confirmadas.",
+    "description": "Verifica que o usuário pode entrar em Turismo e depois filtrar por Museos, Naturaleza, Glaciares, Miradores, Bares de hielo ou Experiencias.",
     "steps": [
       "Abrir o app",
       "Escolher Español",
-      "Selecionar Farmacia",
-      "Confirmar Farmacia Central, Farmacia El Calafate e outras opções"
+      "Selecionar Turismo",
+      "Selecionar Bares de hielo"
     ],
-    "expected": "A lista mostra múltiplas farmácias reais com endereço, avaliação Google quando disponível e acesso à ficha."
+    "expected": "A lista mostra Glacio Bar e Yeti Ice Bar sem misturar farmácias, remis ou restaurantes comuns."
   },
   {
-    "name": "Mostrar pontos turísticos incluindo Walichu",
+    "name": "Encontrar Laguna Nimez, Glaciarium e CIH",
     "viewport": "mobile",
     "covers": [
-      "pontos turísticos",
-      "Cuevas de Walichu",
-      "mapa e ficha"
+      "Laguna Nimez",
+      "Glaciarium",
+      "CIH",
+      "pontos turísticos"
     ],
-    "description": "Verifica a nova categoria de pontos turísticos e a presença da reserva arqueológica de Walichu.",
+    "description": "Verifica que os principais pontos turísticos urbanos continuam disponíveis após a reorganização.",
     "steps": [
-      "Selecionar Puntos turísticos",
-      "Localizar Cuevas de Walichu / Punta Walichu",
-      "Abrir a ficha"
+      "Selecionar Turismo",
+      "Filtrar Naturaleza e localizar Reserva Laguna Nimez",
+      "Filtrar Museos e localizar Glaciarium e CIH"
     ],
-    "expected": "A ficha de Walichu mostra endereço, Google Reviews, como chegar e benefício não habilitado."
+    "expected": "Os três pontos aparecem em seus subfiltros corretos com Google Reviews e endereço."
   },
   {
-    "name": "Listar várias agências de remis sem criar concorrente de turismo",
+    "name": "Separar mobilidade e serviços",
     "viewport": "desktop",
     "covers": [
       "remis e taxi",
-      "múltiplas empresas do mesmo ramo",
-      "agência de turismo exclusiva"
+      "farmácias",
+      "filtro hierárquico"
     ],
-    "description": "Verifica que Remis/Taxi possui várias opções enquanto Agencia de turismo continua exclusiva.",
+    "description": "Verifica que grandes listas de remis e farmácias deixaram de se misturar na mesma grade.",
     "steps": [
-      "Selecionar Taxi",
-      "Confirmar várias empresas de remis/taxi",
-      "Selecionar Agencia de turismo"
+      "Selecionar Remis & Taxi",
+      "Revisar os cards",
+      "Selecionar Servicios",
+      "Selecionar Farmacia"
     ],
-    "expected": "Taxi mostra várias empresas; Agencia de turismo mostra somente Perla Andina Travel."
+    "expected": "Cada ramo aparece em sua própria camada de filtro e os cards mostram nome, tipo, Google e endereço de forma compacta."
   },
   {
-    "name": "Abrir passeios da Perla Andina no catálogo",
+    "name": "Manter Perla Andina como única agência",
     "viewport": "mobile",
     "covers": [
-      "passeios Perla Andina",
-      "link direto para catálogo",
-      "preservação de agência exclusiva"
+      "agência exclusiva",
+      "Perla Andina",
+      "catálogo"
     ],
-    "description": "Verifica que os serviços/passeios dentro da ficha da Perla Andina não entram no carrinho e abrem o catálogo oficial.",
+    "description": "Verifica que a reorganização não cria outras agências de turismo.",
     "steps": [
+      "Selecionar Perla Andina",
       "Abrir Perla Andina Travel",
-      "Tocar City Tour Perlas del Sur",
-      "Voltar e tocar Todo Glaciares"
+      "Tocar um passeio"
     ],
-    "expected": "Cada passeio abre https://catalogoperlaandina.vercel.app/ em uma nova aba."
+    "expected": "Somente Perla Andina aparece como agência e o passeio abre catalogoperlaandina.vercel.app."
   },
   {
-    "name": "Mostrar Enclave como bar, não agência",
+    "name": "Benefícios continuam não habilitados",
     "viewport": "desktop",
     "covers": [
-      "Enclave",
-      "categoria Bar",
-      "Google Reviews",
-      "guardrail de categoria"
+      "benefício não habilitado",
+      "guardrail"
     ],
-    "description": "Verifica que Enclave aparece na categoria correta sem ser classificado como agência de turismo.",
+    "description": "Verifica que novos pontos turísticos e empresas não recebem promoções inventadas.",
     "steps": [
-      "Selecionar Bar",
-      "Abrir ENCLAVE",
-      "Revisar a ficha e Google Reviews"
+      "Abrir Yeti Ice Bar",
+      "Revisar o benefício",
+      "Abrir Reserva Laguna Nimez"
     ],
-    "expected": "ENCLAVE aparece como Bar e a categoria Agencia de turismo continua contendo somente Perla Andina."
+    "expected": "O status de benefício permanece claramente como NO HABILITADO/NÃO HABILITADO."
   }
 ]
