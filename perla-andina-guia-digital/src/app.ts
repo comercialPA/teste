@@ -24,8 +24,25 @@ type Place = {
   benefitValue?: string;
 };
 
-const VERSION = '1.0.5 perla andina';
+const VERSION = '1.0.6 perla andina';
 const DEFAULT_WHATSAPP = '5492901498474';
+
+const GOOGLE_PLACE_IDS: Record<string, string> = {
+  'perla-andina': 'ChIJlSCtOgANu70RBnKHRvnI54c',
+  'dona-mecha': 'ChIJy2KPE8AMu70Rs86xzyOmizM',
+  'don-pichon': 'ChIJXQubnKQMu70RjdXEBMq0K1g',
+  bokado: 'ChIJue9YfAANu70RFmDHCPCA2ak',
+  acuarela: 'ChIJ0zC-Vb4Mu70RIpMyAl7IWbI',
+  'el-gaita': 'ChIJQ0BrCIINu70REnwvhv2lCBU',
+  'panaderia-libertador': 'ChIJsTcf2sMMu70Ry11DJoSODgI',
+  'coffee-roasters': 'ChIJIfdQUR0Nu70Rd9nXokUR6-g',
+  'taxi-kehek': 'ChIJcXbG1ZgNu70RzoH5sM6oNcA',
+  isabel: 'ChIJAZUCHbwMu70R-tIP5tPERew',
+  'la-zorra': 'ChIJKxM8x70Mu70RfoOhMrxcERM',
+  'las-huellas': 'ChIJVV8Le74Mu70R8OWnSjg1mfs',
+  'farmacia-central': 'ChIJYZ_jTZYNu70RdMcGIgi_aZg',
+  'posada-alamos': 'ChIJy2KPE8AMu70RdKJ662iTI-s',
+};
 
 const languages: Array<{ code: LangCode; flag: string; name: string }> = [
   { code: 'es', flag: '🇦🇷', name: 'Español' },
@@ -1170,8 +1187,33 @@ function productImage(place: Place, item: string): string | null {
   return 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=420&q=78';
 }
 
+function googlePlaceId(place: Place): string | undefined {
+  return GOOGLE_PLACE_IDS[place.id];
+}
+
 function mapsUrl(place: Place): string {
-  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(place.name + ', ' + place.address);
+  const base = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(place.name + ', ' + place.address);
+  const placeId = googlePlaceId(place);
+  return placeId ? base + '&query_place_id=' + encodeURIComponent(placeId) : base;
+}
+
+function googleWriteReviewUrl(place: Place): string {
+  const placeId = googlePlaceId(place);
+  return placeId ? 'https://search.google.com/local/writereview?placeid=' + encodeURIComponent(placeId) : mapsUrl(place);
+}
+
+function googleReviewsLabel(): string {
+  const labels: Record<LangCode, string> = { es:'Ver reseñas en Google', en:'View Google reviews', pt:'Ver avaliações no Google', fr:'Voir les avis Google', de:'Google-Bewertungen ansehen', it:'Vedi recensioni Google', zh:'查看 Google 评价', ar:'عرض مراجعات Google', ru:'Отзывы Google', hi:'Google समीक्षाएँ देखें' };
+  return labels[currentLang];
+}
+
+function writeGoogleReviewLabel(): string {
+  const labels: Record<LangCode, string> = { es:'Escribir reseña', en:'Write a review', pt:'Escrever avaliação', fr:'Écrire un avis', de:'Bewertung schreiben', it:'Scrivi una recensione', zh:'撰写评价', ar:'اكتب مراجعة', ru:'Оставить отзыв', hi:'समीक्षा लिखें' };
+  return labels[currentLang];
+}
+
+function googleRatingHtml(place: Place): string {
+  return '<span class="google-rating"><b>Google</b><strong>★ ' + place.rating.toFixed(1) + '</strong><small>' + place.reviews.toLocaleString('es-AR') + ' reviews</small></span>';
 }
 
 function callUrl(place: Place): string {
@@ -1280,7 +1322,7 @@ function miniPlace(place: Place): string {
   return (
     '<article class="mini-place" data-place="' + place.id + '">' +
       '<div class="mini-icon" style="--accent:' + place.accent + '">' + place.icon + '</div>' +
-      '<div><strong>' + place.name + '</strong><span>' + typeLabel(place) + ' · ★ ' + place.rating + '</span><small>🎁 ' + benefitLabel(place) + ' <b class="benefit-status-inline">' + benefitStatusLabel() + '</b></small></div>' +
+      '<div><strong>' + place.name + '</strong><span>' + typeLabel(place) + '</span>' + googleRatingHtml(place) + '<small>🎁 ' + benefitLabel(place) + ' <b class="benefit-status-inline">' + benefitStatusLabel() + '</b></small></div>' +
       '<button>›</button>' +
     '</article>'
   );
@@ -1298,7 +1340,7 @@ function renderExplore(): string {
           ? list.map(place =>
             '<article class="list-card" data-place="' + place.id + '">' +
               '<div class="list-art" style="--accent:' + place.accent + '">' + place.icon + '</div>' +
-              '<div><h3>' + place.name + '</h3><div class="meta"><span class="star">★ ' + place.rating + '</span><span>' + place.reviews.toLocaleString('es-AR') + '</span><span>' + typeLabel(place) + '</span></div><p>' + place.address + '</p><small class="benefit-line">🎁 ' + benefitLabel(place) + ' <b class="benefit-status-inline">' + benefitStatusLabel() + '</b></small></div>' +
+              '<div><h3>' + place.name + '</h3><div class="meta"><span>' + typeLabel(place) + '</span></div>' + googleRatingHtml(place) + '<p>' + place.address + '</p><small class="benefit-line">🎁 ' + benefitLabel(place) + ' <b class="benefit-status-inline">' + benefitStatusLabel() + '</b></small></div>' +
               '<button class="arrow">›</button>' +
             '</article>'
           ).join('')
@@ -1457,7 +1499,8 @@ function openPlace(id: string): void {
   openSheet(
     '<div class="place-hero" style="--accent:' + place.accent + '"><span>' + place.icon + '</span><small>' + typeLabel(place) + '</small></div>' +
     '<div class="place-info">' +
-      '<div class="meta"><span class="star">★ ' + place.rating + '</span><span>' + place.reviews.toLocaleString('es-AR') + ' reviews</span><span>' + typeLabel(place) + '</span></div>' +
+      '<div class="meta"><span>' + typeLabel(place) + '</span></div>' +
+      googleRatingHtml(place) +
       '<h2>' + place.name + '</h2><p>' + place.description + '</p>' +
       '<div class="actions">' +
         '<a href="' + mapsUrl(place) + '" target="_blank" rel="noopener"><span>📍</span>' + t('route') + '</a>' +
@@ -1465,6 +1508,7 @@ function openPlace(id: string): void {
         '<a href="' + callUrl(place) + '"><span>☎️</span>' + t('phone') + '</a>' +
         '<button data-fav="' + place.id + '"><span>' + (favorites.includes(place.id) ? '♥' : '♡') + '</span>' + (favorites.includes(place.id) ? t('saved') : t('save')) + '</button>' +
       '</div>' +
+      '<div class="google-review-actions"><a href="' + mapsUrl(place) + '" target="_blank" rel="noopener">🔎 ' + googleReviewsLabel() + '</a><a href="' + googleWriteReviewUrl(place) + '" target="_blank" rel="noopener">⭐ ' + writeGoogleReviewLabel() + '</a></div>' +
       '<div class="info"><strong>' + t('address') + '</strong><br>' + place.address + '<br><strong>' + t('phone') + ':</strong> ' + place.phone + '<br><strong>' + t('hours') + ':</strong> ' + place.hours + '</div>' +
       '<div class="menu"><h3>' + sectionLabel + '</h3>' + rows + '</div>' +
       '<div class="demo-box"><span class="benefit-status">' + benefitStatusLabel() + '</span><small>' + t('demo') + '</small><h3>' + benefitLabel(place) + '</h3><p>' + t('benefit_detail') + '</p><button class="primary" data-coupon="' + place.id + '">' + t('consult') + ' · WhatsApp</button></div>' +
@@ -1593,9 +1637,9 @@ function markerHtml(place: Place): string {
 function placePopup(place: Place): string {
   return (
     '<div class="map-popup">' +
-      '<div class="map-popup-title"><span>' + place.icon + '</span><div><strong>' + place.name + '</strong><small>' + typeLabel(place) + ' · ★ ' + place.rating + '</small><em>' + place.address + '</em></div></div>' +
+      '<div class="map-popup-title"><span>' + place.icon + '</span><div><strong>' + place.name + '</strong><small>' + typeLabel(place) + '</small>' + googleRatingHtml(place) + '<em>' + place.address + '</em></div></div>' +
       '<div class="map-popup-benefit">🎁 <b>' + benefitLabel(place) + '</b><small class="benefit-status-inline">' + benefitStatusLabel() + '</small></div>' +
-      '<div class="map-card-actions"><button class="map-open" data-map-open="' + place.id + '">' + t('see_place') + '</button><a class="map-route" href="' + mapsUrl(place) + '" target="_blank" rel="noopener">📍 ' + t('route') + '</a><button class="map-whats" data-map-whats="' + place.id + '">💬 ' + t('whatsapp') + '</button></div>' +
+      '<div class="map-card-actions"><button class="map-open" data-map-open="' + place.id + '">' + t('see_place') + '</button><a class="map-route" href="' + mapsUrl(place) + '" target="_blank" rel="noopener">📍 ' + t('route') + '</a><button class="map-whats" data-map-whats="' + place.id + '">💬 ' + t('whatsapp') + '</button><a class="map-review" href="' + googleWriteReviewUrl(place) + '" target="_blank" rel="noopener">⭐ ' + writeGoogleReviewLabel() + '</a></div>' +
     '</div>'
   );
 }
