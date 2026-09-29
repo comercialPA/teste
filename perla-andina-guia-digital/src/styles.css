@@ -476,7 +476,7 @@ a { color: inherit; }
 .place-info h2 { margin: 5px 0; font-size: 28px; }
 .place-info > p { color: #536d7b; font-size: 13px; line-height: 1.5; }
 
-.actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; }
+.actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 8px; margin: 15px 0; }
 .actions button, .actions a {
   border: 0;
   border-radius: 14px;
@@ -512,6 +512,7 @@ a { color: inherit; }
 .menu-row p { margin: 4px 0; color: var(--muted); font-size: 10px; }
 .menu-side { text-align: right; }
 .add { width: 35px; height: 35px; border: 0; border-radius: 11px; background: var(--blue); color: #fff; font-size: 20px; }
+.tour-link { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 11px; background: #0a6f95; color: #fff; text-decoration: none; font-size: 18px; font-weight: 950; }
 
 .demo-box { margin-top: 18px; padding: 17px; border-radius: 18px; background: linear-gradient(135deg, #a83d34, #d77736); color: #fff; }
 .demo-box small { font-size: 9px; font-weight: 900; letter-spacing: .8px; }
