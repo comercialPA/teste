@@ -24,7 +24,7 @@ type Place = {
   benefitValue?: string;
 };
 
-const VERSION = '1.0.8 perla andina';
+const VERSION = '1.0.9 perla andina';
 const DEFAULT_WHATSAPP = '5492901498474';
 const CATALOG_URL = 'https://catalogoperlaandina.vercel.app/';
 
@@ -94,6 +94,28 @@ const GOOGLE_PLACE_IDS: Record<string, string> = {
   'letras-calafate': 'ChIJC-VMldQNu70RVS0s7-XCvvs',
   'casa-verde': 'ChIJ_VYFTbkNu70RYfLpaahof4k',
   'nativo-experience': 'ChIJVUwQ5ix1u70R3QyQMrAMwJY',
+  napoles: 'ChIJG5XpAEcNu70RMBiIga1PKvc',
+  'la-lechuza': 'ChIJ2_oWoL8Mu70R34Jij3h9nJs',
+  'don-pancho': 'ChIJiaL62sMMu70RDTKLRc1U5iE',
+  'wolly-burgers': 'ChIJX8kf0r0Mu70RdeEdXbEnz98',
+  'reich-burgers': 'ChIJR4_SLQANu70RkWJ6HoQK1vY',
+  'rotiseria-bokado': 'ChIJcRiCipUMu70RwGBFYoQBe6w',
+  'casimiro-bigua': 'ChIJaRNi1r0Mu70RKdnABhtBjag',
+  'la-candelaria': 'ChIJ07FeZgANu70RNc6TdEdLpKA',
+  'el-quincho-asador': 'ChIJnxbRiZAMu70R4Gp-G6TYpp8',
+  'estilo-campo': 'ChIJSeJvdk0Nu70RP-SR7atBAXI',
+  'los-baguales': 'ChIJH3VAUAANu70R0CmlBaov_aQ',
+  'lavanderia-patagonia': 'ChIJQZSB3I8Nu70RR6WkNFiI7Oc',
+  'laundry-club': 'ChIJiYPfHh8Nu70R9MkjxR4u-rU',
+  'lava-andina': 'ChIJc-G1gb4Mu70RKk_SjUDw64M',
+  'lavanderia-mancha': 'ChIJ0yUwHr8Mu70R92m6IVqdW8g',
+  'lavanderia-delsur': 'ChIJEStXQBINu70RjiUhJpHGgZg',
+  'lavanderia-burbujas': 'ChIJbycPkm8Nu70RB-I2Ib-zRQc',
+  'taxi-remis-alem': 'ChIJZVnSoS8Nu70RxB0hM9FAlr8',
+  'parque-manuel-belgrano': 'ChIJ3x4UT5UMu70RtkLW_BygIl4',
+  'centro-cultural': 'ChIJu66dzL8Mu70RfTSB5KX3dPg',
+  'mural-mosaico': 'ChIJ4WKDlCcNu70RqDXF8Ogqy2U',
+  'intendencia-parque': 'ChIJ9QV5c78Mu70RMD6pPwdLiB4',
   enclave: 'ChIJSYTKSgBzu70RsiDg-67h3cQ',
 };
 
@@ -187,6 +209,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_agency: 'Agencia de turismo',
     type_attraction: 'Puntos turísticos',
     type_bar: 'Bar',
+    type_buffet: 'Tenedor libre',
+    type_laundry: 'Lavandería',
   },
   en: {
     brand_sub: 'Your guide in El Calafate',
@@ -264,6 +288,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_agency: 'Travel agency',
     type_attraction: 'Tourist attractions',
     type_bar: 'Bar',
+    type_buffet: 'All-you-can-eat',
+    type_laundry: 'Laundry',
   },
   pt: {
     brand_sub: 'Seu guia em El Calafate',
@@ -341,6 +367,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_agency: 'Agência de turismo',
     type_attraction: 'Pontos turísticos',
     type_bar: 'Bar',
+    type_buffet: 'Tenedor livre',
+    type_laundry: 'Lavanderia',
   },
   fr: {
     brand_sub: 'Votre guide à El Calafate',
@@ -418,6 +446,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_agency: 'Agence de voyages',
     type_attraction: 'Sites touristiques',
     type_bar: 'Bar',
+    type_buffet: 'Buffet à volonté',
+    type_laundry: 'Blanchisserie',
   },
   de: {
     brand_sub: 'Ihr Guide in El Calafate',
@@ -495,6 +525,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_agency: 'Reisebüro',
     type_attraction: 'Sehenswürdigkeiten',
     type_bar: 'Bar',
+    type_buffet: 'All-you-can-eat',
+    type_laundry: 'Wäscherei',
   },
   it: {
     brand_sub: 'La tua guida a El Calafate',
@@ -572,6 +604,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_agency: 'Agenzia di viaggi',
     type_attraction: 'Attrazioni turistiche',
     type_bar: 'Bar',
+    type_buffet: 'Buffet libero',
+    type_laundry: 'Lavanderia',
   },
   zh: {
     brand_sub: '埃尔卡拉法特旅行指南',
@@ -649,6 +683,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_agency: '旅行社',
     type_attraction: '旅游景点',
     type_bar: '酒吧',
+    type_buffet: '自助餐',
+    type_laundry: '洗衣店',
   },
   ar: {
     brand_sub: 'دليلك في إل كالافاتي',
@@ -726,6 +762,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_agency: 'وكالة سفر',
     type_attraction: 'معالم سياحية',
     type_bar: 'بار',
+    type_buffet: 'بوفيه مفتوح',
+    type_laundry: 'مغسلة',
   },
   ru: {
     brand_sub: 'Ваш гид по Эль-Калафате',
@@ -803,6 +841,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_agency: 'Туристическое агентство',
     type_attraction: 'Достопримечательности',
     type_bar: 'Бар',
+    type_buffet: 'Шведский стол',
+    type_laundry: 'Прачечная',
   },
   hi: {
     brand_sub: 'एल कालाफाते में आपकी गाइड',
@@ -880,6 +920,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_agency: 'यात्रा एजेंसी',
     type_attraction: 'पर्यटन स्थल',
     type_bar: 'बार',
+    type_buffet: 'बुफे',
+    type_laundry: 'लॉन्ड्री',
   },
 };
 
@@ -1313,25 +1355,6 @@ const places: Place[] = [
     benefitKind: 'none',
   },
   {
-    id: 'ofc-traslados',
-    name: 'OFC Traslados',
-    typeKey: 'type_taxi',
-    rating: 4.9,
-    reviews: 50,
-    address: '9 de Julio 93, El Calafate',
-    phone: '+54 2966 40-1270',
-    hours: 'Consultar disponibilidad',
-    accent: '#f6c945',
-    initials: 'OFC',
-    icon: '🚕',
-    lat: null,
-    lng: null,
-    description: 'Servicio de traslados y taxi en El Calafate.',
-    items: ['Solicitar traslado', 'Consultar viaje'],
-    food: false,
-    benefitKind: 'none',
-  },
-  {
     id: 'calafate-central',
     name: 'Calafate Central',
     typeKey: 'type_taxi',
@@ -1465,25 +1488,6 @@ const places: Place[] = [
     benefitKind: 'none',
   },
   {
-    id: 'traslados-privados-calafate',
-    name: 'Traslados Privados Calafate',
-    typeKey: 'type_taxi',
-    rating: 5.0,
-    reviews: 16,
-    address: 'Avenida Los Olivos 850, El Calafate',
-    phone: '+54 9 2966 34-3661',
-    hours: 'Consultar disponibilidad',
-    accent: '#f6c945',
-    initials: 'TP',
-    icon: '🚕',
-    lat: null,
-    lng: null,
-    description: 'Servicio de traslados privados en El Calafate.',
-    items: ['Solicitar traslado', 'Consultar viaje'],
-    food: false,
-    benefitKind: 'none',
-  },
-  {
     id: 'remis-nueva-libertador',
     name: 'Remis La Nueva Libertador',
     typeKey: 'type_taxi',
@@ -1499,25 +1503,6 @@ const places: Place[] = [
     lng: null,
     description: 'Servicio de remis y traslados.',
     items: ['Solicitar remis', 'Consultar traslado'],
-    food: false,
-    benefitKind: 'none',
-  },
-  {
-    id: 'traslados-en-calafate',
-    name: 'Traslados en Calafate',
-    typeKey: 'type_taxi',
-    rating: 4.9,
-    reviews: 102,
-    address: 'Luis Haedo 35, El Calafate',
-    phone: '+54 2966 23-4069',
-    hours: 'Consultar disponibilidad',
-    accent: '#f6c945',
-    initials: 'TC',
-    icon: '🚕',
-    lat: null,
-    lng: null,
-    description: 'Servicio de taxi y traslados en El Calafate.',
-    items: ['Solicitar traslado', 'Consultar viaje'],
     food: false,
     benefitKind: 'none',
   },
@@ -1997,4 +1982,1691 @@ const places: Place[] = [
     food: false,
     benefitKind: 'none',
   },
+  {    id: 'puerto-bajo-sombras',
+    name: 'Puerto Bajo las Sombras',
+    typeKey: 'type_attraction',
+    rating: 4.7,
+    reviews: 4978,
+    address: 'Parque Nacional Los Glaciares, El Calafate',
+    phone: '+54 2902 49-9105',
+    hours: 'Todos los días · 09:00–18:00',
+    accent: '#3b87a5',
+    initials: 'PBS',
+    icon: '⛴️',
+    lat: null,
+    lng: null,
+    description: 'Puerto sobre el Lago Rico utilizado para navegaciones y actividades próximas al glaciar.',
+    items: [],
+    food: false,    benefitKind: 'none',
+  },
   {
+    id: 'puerto-bandera',
+    name: 'Puerto Bandera',
+    typeKey: 'type_attraction',
+    rating: 0,
+    reviews: 0,
+    address: 'Santa Cruz, Argentina',
+    phone: '',
+    hours: 'Consultar operaciones',
+    accent: '#3b87a5',
+    initials: 'PB',
+    icon: '⛴️',
+    lat: null,
+    lng: null,
+    description: 'Puerto de salida de navegaciones por el Brazo Norte del Lago Argentino.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'glaciar-upsala',
+    name: 'Glaciar Upsala',
+    typeKey: 'type_attraction',
+    rating: 0,
+    reviews: 0,
+    address: 'Parque Nacional Los Glaciares, Santa Cruz',
+    phone: '',
+    hours: 'Acceso mediante navegaciones habilitadas',
+    accent: '#3e9ed0',
+    initials: 'GU',
+    icon: '🧊',
+    lat: null,
+    lng: null,
+    description: 'Glaciar del Parque Nacional Los Glaciares visible en circuitos de navegación.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'glaciar-spegazzini',
+    name: 'Glaciar Spegazzini',
+    typeKey: 'type_attraction',
+    rating: 5.0,
+    reviews: 161,
+    address: 'Parque Nacional Los Glaciares, Santa Cruz',
+    phone: '',
+    hours: 'Acceso mediante navegaciones habilitadas',
+    accent: '#3e9ed0',
+    initials: 'GS',
+    icon: '🧊',
+    lat: null,
+    lng: null,
+    description: 'Glaciar del Brazo Spegazzini del Lago Argentino.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'enclave',
+    name: 'ENCLAVE',
+    typeKey: 'type_bar',
+    rating: 4.6,
+    reviews: 27,
+    address: 'Punta Soberana, Casimiro Biguá, El Calafate',
+    phone: '+54 9 2966 52-7235',
+    hours: 'Jue y Vie 14:00–22:00 · Sáb 14:00–22:00 · Dom 12:00–20:00',
+    accent: '#7c4f38',
+    initials: 'EN',
+    icon: '🍷',
+    lat: null,
+    lng: null,
+    description: 'Bar ubicado en la zona de Punta Soberana.',
+    items: ['Consultar propuesta', 'Consultar disponibilidad'],
+    food: true,
+    benefitKind: 'none',
+  },
+
+  {
+    id: 'glacio-bar',
+    name: 'Glacio Bar - Glaciarium',
+    typeKey: 'type_bar',
+    rating: 0,
+    reviews: 0,
+    address: 'Mza. 1543, Calle sin nombre 1111, El Calafate',
+    phone: '+54 2902 49-7912',
+    hours: 'Abierto todo el año · consultar turnos',
+    accent: '#70b9d5',
+    initials: 'GB',
+    icon: '🧊',
+    lat: null,
+    lng: null,
+    description: 'Bar de hielo ubicado en el subsuelo del Glaciarium, con ambiente a aproximadamente -10 °C.',
+    items: ['Ingreso a Glacio Bar', 'Consultar turnos'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'yeti-ice-bar',
+    name: 'Yeti Ice Bar',
+    typeKey: 'type_bar',
+    rating: 4.3,
+    reviews: 3390,
+    address: 'Av. del Libertador 1359, El Calafate',
+    phone: '+54 2902 49-2993',
+    whatsapp: '5492966649667',
+    hours: 'Todos los días · 16:00–00:00',
+    accent: '#79c4df',
+    initials: 'YI',
+    icon: '❄️',
+    lat: null,
+    lng: null,
+    description: 'Bar de hielo en el centro de El Calafate, con experiencia bajo cero y equipamiento térmico.',
+    items: ['Ingreso Yeti Ice Bar', 'Consultar disponibilidad'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'letras-calafate',
+    name: 'Letras de El Calafate',
+    typeKey: 'type_attraction',
+    rating: 4.6,
+    reviews: 140,
+    address: 'Av. del Libertador, El Calafate',
+    phone: '',
+    hours: 'Abierto 24 horas',
+    accent: '#4384a4',
+    initials: 'EC',
+    icon: '📸',
+    lat: null,
+    lng: null,
+    description: 'El clásico cartel de El Calafate para fotografías y paseo urbano.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'casa-verde',
+    name: 'Casa Verde',
+    typeKey: 'type_attraction',
+    rating: 5.0,
+    reviews: 3,
+    address: 'Paseo Kirchner, El Calafate',
+    phone: '',
+    hours: 'Consultar acceso',
+    accent: '#4d9b62',
+    initials: 'CV',
+    icon: '🌿',
+    lat: null,
+    lng: null,
+    description: 'Punto de interés natural en el entorno de El Calafate.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'nativo-experience',
+    name: 'Nativo Experience',
+    typeKey: 'type_attraction',
+    rating: 4.8,
+    reviews: 851,
+    address: 'Reserva Natural Estancia 25 de Mayo, El Calafate',
+    phone: '+54 9 2966 66-0054',
+    whatsapp: '5492966660054',
+    hours: 'Consultar salidas',
+    accent: '#8a5c3f',
+    initials: 'NE',
+    icon: '🪨',
+    lat: null,
+    lng: null,
+    description: 'Experiencia turística en el entorno natural de la Estancia 25 de Mayo.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+
+  {
+    id: 'napoles',
+    name: 'Nápoles',
+    typeKey: 'type_pizza',
+    rating: 4.2,
+    reviews: 945,
+    address: 'Av. del Libertador, El Calafate',
+    phone: '+54 2902 48-8333',
+    hours: 'Todos los días · 12:00–00:00',
+    accent: '#d85835',
+    initials: 'NP',
+    icon: '🍕',
+    lat: null,
+    lng: null,
+    description: 'Pizzería sobre la avenida principal de El Calafate.',
+    items: ['Pizza', 'Consultar carta'],
+    food: true,
+    benefitKind: 'none',
+  },
+  {
+    id: 'la-lechuza',
+    name: 'La Lechuza Pizza y Pastas',
+    typeKey: 'type_pizza',
+    rating: 4.2,
+    reviews: 6768,
+    address: 'Av. del Libertador 1301, El Calafate',
+    phone: '+54 2902 49-1610',
+    hours: 'Todos los días · 12:00–23:30',
+    accent: '#d85835',
+    initials: 'LL',
+    icon: '🍕',
+    lat: null,
+    lng: null,
+    description: 'Restaurante de pizza y pastas en el centro de El Calafate.',
+    items: ['Pizza', 'Pastas', 'Consultar carta'],
+    food: true,
+    benefitKind: 'none',
+  },
+  {
+    id: 'don-pancho',
+    name: 'Don Pancho',
+    typeKey: 'type_quick',
+    rating: 4.3,
+    reviews: 585,
+    address: 'Av. del Libertador 1873, El Calafate',
+    phone: '+54 2902 49-4900',
+    hours: 'Abierto 24 horas',
+    accent: '#e27731',
+    initials: 'DP',
+    icon: '🍔',
+    lat: null,
+    lng: null,
+    description: 'Opción de comida rápida sobre Av. del Libertador.',
+    items: ['Comida rápida', 'Consultar carta'],
+    food: true,
+    benefitKind: 'none',
+  },
+  {
+    id: 'wolly-burgers',
+    name: 'Wolly Burgers',
+    typeKey: 'type_quick',
+    rating: 4.4,
+    reviews: 990,
+    address: 'Av. del Libertador 932, El Calafate',
+    phone: '+54 2902 49-4660',
+    hours: 'Todos los días · 12:00–00:30 aprox.',
+    accent: '#e27731',
+    initials: 'WB',
+    icon: '🍔',
+    lat: null,
+    lng: null,
+    description: 'Hamburguesería en el centro de El Calafate.',
+    items: ['Hamburguesas', 'Papas', 'Consultar carta'],
+    food: true,
+    benefitKind: 'none',
+  },
+  {
+    id: 'reich-burgers',
+    name: 'Hamburguesería REICH',
+    typeKey: 'type_quick',
+    rating: 4.9,
+    reviews: 423,
+    address: 'Gdor. Gregores 997, El Calafate',
+    phone: '',
+    hours: 'Todos los días · 13:00–00:00',
+    accent: '#e27731',
+    initials: 'RH',
+    icon: '🍔',
+    lat: null,
+    lng: null,
+    description: 'Hamburguesería y gastropub en El Calafate.',
+    items: ['Hamburguesas', 'Consultar carta'],
+    food: true,
+    benefitKind: 'none',
+  },
+  {
+    id: 'rotiseria-bokado',
+    name: 'Bokado Cocina Artesanal',
+    typeKey: 'type_quick',
+    rating: 4.2,
+    reviews: 379,
+    address: '9 de Julio 145, El Calafate',
+    phone: '+54 2902 49-0323',
+    hours: '11:30–15:00 / 19:30–23:30',
+    accent: '#e27731',
+    initials: 'BA',
+    icon: '🥡',
+    lat: null,
+    lng: null,
+    description: 'Rotisería y cocina artesanal para llevar.',
+    items: ['Comida para llevar', 'Consultar menú'],
+    food: true,
+    benefitKind: 'none',
+  },
+  {
+    id: 'casimiro-bigua',
+    name: 'Casimiro Biguá',
+    typeKey: 'type_grill',
+    rating: 4.3,
+    reviews: 5984,
+    address: 'Av. del Libertador 963, El Calafate',
+    phone: '+54 9 2966 71-0284',
+    whatsapp: '5492966710284',
+    hours: 'Todos los días · 12:00–00:00',
+    accent: '#9a633b',
+    initials: 'CB',
+    icon: '🥩',
+    lat: null,
+    lng: null,
+    description: 'Parrilla y restaurante patagónico en el centro.',
+    items: ['Parrilla', 'Carnes', 'Consultar carta'],
+    food: true,
+    benefitKind: 'none',
+  },
+  {
+    id: 'la-candelaria',
+    name: 'La Candelaria Steak House',
+    typeKey: 'type_grill',
+    rating: 4.6,
+    reviews: 1037,
+    address: 'Av. del Libertador 1610, El Calafate',
+    phone: '+54 2966 26-6416',
+    hours: 'Todos los días · tarde/noche',
+    accent: '#9a633b',
+    initials: 'LC',
+    icon: '🥩',
+    lat: null,
+    lng: null,
+    description: 'Steak house y parrilla en Av. del Libertador.',
+    items: ['Carnes', 'Parrilla', 'Consultar carta'],
+    food: true,
+    benefitKind: 'none',
+  },
+  {
+    id: 'el-quincho-asador',
+    name: 'El Quincho Asador Parrilla',
+    typeKey: 'type_grill',
+    rating: 4.6,
+    reviews: 199,
+    address: 'Ushuaia 200, El Calafate',
+    phone: '+54 2902 49-1450',
+    hours: 'Consultar horario',
+    accent: '#9a633b',
+    initials: 'EQ',
+    icon: '🥩',
+    lat: null,
+    lng: null,
+    description: 'Asador y parrilla con cordero patagónico.',
+    items: ['Cordero patagónico', 'Parrilla', 'Consultar carta'],
+    food: true,
+    benefitKind: 'none',
+  },
+  {
+    id: 'estilo-campo',
+    name: 'Estilo Campo Parrilla y Tenedor Libre',
+    typeKey: 'type_buffet',
+    rating: 4.7,
+    reviews: 2106,
+    address: 'Gdor. Gregores 1102, El Calafate',
+    phone: '+54 11 5160-8022',
+    hours: 'Almuerzo y cena · consultar horario del día',
+    accent: '#a86c3d',
+    initials: 'EC',
+    icon: '🍽️',
+    lat: null,
+    lng: null,
+    description: 'Parrilla y tenedor libre con cordero patagónico y buffet.',
+    items: ['Tenedor libre', 'Parrilla', 'Cordero patagónico'],
+    food: true,
+    benefitKind: 'none',
+  },
+  {
+    id: 'los-baguales',
+    name: 'Los Baguales Parrilla y Tenedor Libre',
+    typeKey: 'type_buffet',
+    rating: 4.7,
+    reviews: 946,
+    address: 'Perito Moreno 95, El Calafate',
+    phone: '+54 2966 41-5389',
+    hours: 'Todos los días · 11:30–23:30',
+    accent: '#a86c3d',
+    initials: 'LB',
+    icon: '🍽️',
+    lat: null,
+    lng: null,
+    description: 'Parrilla y tenedor libre en El Calafate.',
+    items: ['Tenedor libre', 'Parrilla', 'Consultar carta'],
+    food: true,
+    benefitKind: 'none',
+  },
+  {
+    id: 'lavanderia-patagonia',
+    name: 'Lavandería Patagonia',
+    typeKey: 'type_laundry',
+    rating: 4.9,
+    reviews: 34,
+    address: 'Gdor. Gregores 1114, El Calafate',
+    phone: '+54 2966 78-7960',
+    hours: 'Lun a Vie · 08:00–21:00 · fin de semana horario reducido',
+    accent: '#3d8aa8',
+    initials: 'LP',
+    icon: '🧺',
+    lat: null,
+    lng: null,
+    description: 'Servicio de lavandería y guarda de equipaje.',
+    items: ['Lavado de ropa', 'Consultar servicio'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'laundry-club',
+    name: 'Laundry Club - Lavadero de Ropa',
+    typeKey: 'type_laundry',
+    rating: 4.9,
+    reviews: 530,
+    address: 'Haro 482 esq. Mermoz, El Calafate',
+    phone: '+54 9 2902 41-6034',
+    whatsapp: '5492902416034',
+    hours: 'Lun a Sáb · 10:00–13:00 / 15:00–19:00',
+    accent: '#3d8aa8',
+    initials: 'LC',
+    icon: '🧺',
+    lat: null,
+    lng: null,
+    description: 'Lavadero de ropa y servicio de lavandería.',
+    items: ['Lavado de ropa', 'Consultar servicio'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'lava-andina',
+    name: 'LAVA Andina - Laundry',
+    typeKey: 'type_laundry',
+    rating: 4.3,
+    reviews: 86,
+    address: 'Cmte. Tomás Espora 88, El Calafate',
+    phone: '+54 2902 49-3980',
+    hours: 'Lun a Sáb · 09:00–13:30 / 14:00–19:00',
+    accent: '#3d8aa8',
+    initials: 'LA',
+    icon: '🧺',
+    lat: null,
+    lng: null,
+    description: 'Lavandería en el centro de El Calafate.',
+    items: ['Lavado de ropa', 'Consultar servicio'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'lavanderia-mancha',
+    name: 'Lavandería y Tintorería De la Mancha',
+    typeKey: 'type_laundry',
+    rating: 3.7,
+    reviews: 146,
+    address: 'Gdor. Gregores 1224, El Calafate',
+    phone: '+54 2902 41-6476',
+    hours: 'Lun a Vie · 09:00–21:00 · Sáb 10:00–20:00',
+    accent: '#3d8aa8',
+    initials: 'DM',
+    icon: '🧺',
+    lat: null,
+    lng: null,
+    description: 'Lavandería y tintorería.',
+    items: ['Lavado', 'Tintorería', 'Consultar servicio'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'lavanderia-delsur',
+    name: 'Lavandería DELSUR',
+    typeKey: 'type_laundry',
+    rating: 4.8,
+    reviews: 105,
+    address: 'Av. Juan Domingo Perón 1881, El Calafate',
+    phone: '+54 2902 41-7260',
+    hours: 'Todos los días · consultar horario',
+    accent: '#3d8aa8',
+    initials: 'DS',
+    icon: '🧺',
+    lat: null,
+    lng: null,
+    description: 'Lavandería de ropa en El Calafate.',
+    items: ['Lavado de ropa', 'Consultar servicio'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'lavanderia-burbujas',
+    name: 'Lavandería Las Burbujas',
+    typeKey: 'type_laundry',
+    rating: 4.9,
+    reviews: 434,
+    address: '25 de Mayo 168, El Calafate',
+    phone: '+54 2966 76-2511',
+    hours: 'Todos los días · 08:00–21:00 aprox.',
+    accent: '#3d8aa8',
+    initials: 'LB',
+    icon: '🧺',
+    lat: null,
+    lng: null,
+    description: 'Servicio de lavandería en El Calafate.',
+    items: ['Lavado de ropa', 'Consultar servicio'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'taxi-remis-alem',
+    name: 'Taxi Remis Alem',
+    typeKey: 'type_taxi',
+    rating: 4.2,
+    reviews: 23,
+    address: 'Cabo Merillanca 150, El Calafate',
+    phone: '+54 2966 40-8172',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'TA',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de taxi y remis en El Calafate.',
+    items: ['Solicitar taxi', 'Solicitar remis'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'parque-manuel-belgrano',
+    name: 'Parque Manuel Belgrano',
+    typeKey: 'type_attraction',
+    rating: 4.4,
+    reviews: 538,
+    address: 'Av. Juan Domingo Perón 1509, El Calafate',
+    phone: '',
+    hours: 'Acceso libre',
+    accent: '#4d9b62',
+    initials: 'MB',
+    icon: '🌳',
+    lat: null,
+    lng: null,
+    description: 'Parque municipal y espacio verde de El Calafate.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'centro-cultural',
+    name: 'Centro Cultural Municipal',
+    typeKey: 'type_attraction',
+    rating: 4.6,
+    reviews: 330,
+    address: 'Julio Argentino Roca 1100, El Calafate',
+    phone: '+54 9 2966 69-2307',
+    whatsapp: '5492966692307',
+    hours: 'Lun a Vie · 08:00–22:00 · fin de semana 10:00–22:00',
+    accent: '#5276a4',
+    initials: 'CC',
+    icon: '🎭',
+    lat: null,
+    lng: null,
+    description: 'Centro cultural municipal con actividades y propuestas culturales.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'mural-mosaico',
+    name: 'Mural de Mosaico 4E',
+    typeKey: 'type_attraction',
+    rating: 4.6,
+    reviews: 14,
+    address: '7 de Diciembre y Av. del Libertador, El Calafate',
+    phone: '',
+    hours: 'Abierto 24 horas',
+    accent: '#8a5fd3',
+    initials: 'MM',
+    icon: '🎨',
+    lat: null,
+    lng: null,
+    description: 'Mural urbano de mosaico en el centro de El Calafate.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'intendencia-parque',
+    name: 'Intendencia Parque Nacional Los Glaciares',
+    typeKey: 'type_attraction',
+    rating: 4.6,
+    reviews: 3529,
+    address: 'Av. del Libertador 1302, El Calafate',
+    phone: '+54 2902 49-1005',
+    hours: 'Lun a Vie · 08:00–16:00',
+    accent: '#3e9ed0',
+    initials: 'APN',
+    icon: 'ℹ️',
+    lat: null,
+    lng: null,
+    description: 'Centro de información del Parque Nacional Los Glaciares.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+];
+
+
+const groupKeys = ['all', 'food', 'tourism', 'mobility', 'services', 'agency'];
+
+const ATTRACTION_SUBTYPES: Record<string, string> = {
+  'laguna-nimez': 'nature',
+  'punta-soberana': 'nature',
+  'playita-punta-soberana': 'nature',
+  'lago-roca': 'lakes',
+  'lago-argentino': 'lakes',
+  'casa-verde': 'nature',
+  'glaciarium': 'museum',
+  'centro-interpretacion': 'museum',
+  'museo-regional': 'museum',
+  'museo-juguete': 'museum',
+  'walichu': 'culture',
+  'plaza-perito-moreno': 'culture',
+  'heroes-malvinas': 'culture',
+  'plaza-pioneros': 'culture',
+  'paseo-costanera': 'lakes',
+  'anfiteatro-bosque': 'culture',
+  'letras-calafate': 'culture',
+  'mirador-lago-argentino': 'viewpoint',
+  'mirador-ciudad': 'viewpoint',
+  'punto-panoramico': 'viewpoint',
+  'glaciar-perito-moreno': 'glacier',
+  'parque-los-glaciares': 'glacier',
+  'pasarelas-perito-moreno': 'glacier',
+  'puerto-bajo-sombras': 'lakes',
+  'puerto-bandera': 'lakes',
+  'glaciar-upsala': 'glacier',
+  'glaciar-spegazzini': 'glacier',
+  'estancia-25-mayo': 'experience',
+  'canadon-arroyo-calafate': 'experience',
+  'mountain-park': 'experience',
+  'nativo-experience': 'experience',
+  'parque-manuel-belgrano': 'nature',
+  'centro-cultural': 'culture',
+  'mural-mosaico': 'culture',
+  'intendencia-parque': 'info',
+  'glacio-bar': 'icebar',
+  'yeti-ice-bar': 'icebar',
+};
+
+function groupLabel(key: string): string {
+  const labels: Record<LangCode, Record<string, string>> = {
+    es: { all: 'Todo', food: 'Comer & Beber', tourism: 'Turismo', mobility: 'Remis & Taxi', services: 'Servicios', agency: 'Perla Andina' },
+    en: { all: 'All', food: 'Food & Drink', tourism: 'Tourism', mobility: 'Taxi & Remis', services: 'Services', agency: 'Perla Andina' },
+    pt: { all: 'Tudo', food: 'Comer & Beber', tourism: 'Turismo', mobility: 'Remis & Táxi', services: 'Serviços', agency: 'Perla Andina' },
+    fr: { all: 'Tout', food: 'Manger & Boire', tourism: 'Tourisme', mobility: 'Taxi & Remis', services: 'Services', agency: 'Perla Andina' },
+    de: { all: 'Alle', food: 'Essen & Trinken', tourism: 'Tourismus', mobility: 'Taxi & Remis', services: 'Services', agency: 'Perla Andina' },
+    it: { all: 'Tutto', food: 'Mangiare & Bere', tourism: 'Turismo', mobility: 'Taxi & Remis', services: 'Servizi', agency: 'Perla Andina' },
+    zh: { all: '全部', food: '餐饮', tourism: '旅游', mobility: '出租车', services: '服务', agency: 'Perla Andina' },
+    ar: { all: 'الكل', food: 'طعام وشراب', tourism: 'السياحة', mobility: 'تاكسي', services: 'الخدمات', agency: 'Perla Andina' },
+    ru: { all: 'Все', food: 'Еда и напитки', tourism: 'Туризм', mobility: 'Такси', services: 'Сервисы', agency: 'Perla Andina' },
+    hi: { all: 'सभी', food: 'खाना और पेय', tourism: 'पर्यटन', mobility: 'टैक्सी', services: 'सेवाएँ', agency: 'Perla Andina' },
+  };
+  return labels[currentLang][key] || key;
+}
+
+function subcategoryLabel(key: string): string {
+  if (key === 'all') return t('all');
+  if (key.startsWith('type_')) return t(key);
+  const labels: Record<LangCode, Record<string, string>> = {
+    es: { museum: 'Museos', nature: 'Naturaleza', lakes: 'Lagos & Puertos', glacier: 'Glaciares', viewpoint: 'Miradores', culture: 'Ciudad & Cultura', icebar: 'Bares de hielo', experience: 'Experiencias', info: 'Información turística' },
+    en: { museum: 'Museums', nature: 'Nature', lakes: 'Lakes & Ports', glacier: 'Glaciers', viewpoint: 'Viewpoints', culture: 'City & Culture', icebar: 'Ice bars', experience: 'Experiences', info: 'Tourist information' },
+    pt: { museum: 'Museus', nature: 'Natureza', lakes: 'Lagos & Portos', glacier: 'Glaciares', viewpoint: 'Mirantes', culture: 'Cidade & Cultura', icebar: 'Bares de gelo', experience: 'Experiências', info: 'Informação turística' },
+    fr: { museum: 'Musées', nature: 'Nature', lakes: 'Lacs & Ports', glacier: 'Glaciers', viewpoint: 'Miradors', culture: 'Ville & Culture', icebar: 'Bars de glace', experience: 'Expériences', info: 'Information touristique' },
+    de: { museum: 'Museen', nature: 'Natur', lakes: 'Seen & Häfen', glacier: 'Gletscher', viewpoint: 'Aussichtspunkte', culture: 'Stadt & Kultur', icebar: 'Eisbars', experience: 'Erlebnisse', info: 'Touristeninformation' },
+    it: { museum: 'Musei', nature: 'Natura', lakes: 'Laghi & Porti', glacier: 'Ghiacciai', viewpoint: 'Belvedere', culture: 'Città & Cultura', icebar: 'Ice bar', experience: 'Esperienze', info: 'Informazioni turistiche' },
+    zh: { museum: '博物馆', nature: '自然', lakes: '湖泊与港口', glacier: '冰川', viewpoint: '观景点', culture: '城市与文化', icebar: '冰吧', experience: '体验', info: '旅游信息' },
+    ar: { museum: 'متاحف', nature: 'طبيعة', lakes: 'بحيرات وموانئ', glacier: 'أنهار جليدية', viewpoint: 'إطلالات', culture: 'مدينة وثقافة', icebar: 'بارات جليدية', experience: 'تجارب', info: 'معلومات سياحية' },
+    ru: { museum: 'Музеи', nature: 'Природа', lakes: 'Озёра и порты', glacier: 'Ледники', viewpoint: 'Смотровые', culture: 'Город и культура', icebar: 'Ледяные бары', experience: 'Впечатления', info: 'Туристическая информация' },
+    hi: { museum: 'संग्रहालय', nature: 'प्रकृति', lakes: 'झील और बंदरगाह', glacier: 'ग्लेशियर', viewpoint: 'व्यू पॉइंट', culture: 'शहर और संस्कृति', icebar: 'आइस बार', experience: 'अनुभव', info: 'पर्यटक जानकारी' },
+  };
+  return labels[currentLang][key] || key;
+}
+
+function placeGroups(place: Place): string[] {
+  if (place.id === 'perla-andina') return ['agency'];
+  if (place.typeKey === 'type_attraction') return ['tourism'];
+  if (place.id === 'glacio-bar' || place.id === 'yeti-ice-bar') return ['tourism', 'food'];
+  if (place.typeKey === 'type_taxi') return ['mobility'];
+  if (['type_pharmacy', 'type_souvenir', 'type_hotel', 'type_laundry'].includes(place.typeKey)) return ['services'];
+  return ['food'];
+}
+
+function placeSubcategory(place: Place): string {
+  if (place.typeKey === 'type_attraction' || place.id === 'glacio-bar' || place.id === 'yeti-ice-bar') {
+    return ATTRACTION_SUBTYPES[place.id] || 'experience';
+  }
+  return place.typeKey;
+}
+
+function groupCount(key: string): number {
+  if (key === 'all') return places.length;
+  return places.filter(place => placeGroups(place).includes(key)).length;
+}
+
+function groupChips(): string {
+  return groupKeys.map(key =>
+    '<button data-group="' + key + '" class="' + (currentGroup === key ? 'active' : '') + '">' +
+      groupLabel(key) + '<b>' + groupCount(key) + '</b>' +
+    '</button>'
+  ).join('');
+}
+
+function subcategoryChips(): string {
+  if (currentGroup === 'all') return '';
+  const groupPlaces = places.filter(place => placeGroups(place).includes(currentGroup));
+  const keys = Array.from(new Set(groupPlaces.map(place => placeSubcategory(place))));
+  if (keys.length <= 1) return '';
+  return ['all', ...keys].map(key => {
+    const count = key === 'all' ? groupPlaces.length : groupPlaces.filter(place => placeSubcategory(place) === key).length;
+    return '<button data-subcategory="' + key + '" class="' + (currentSubcategory === key ? 'active' : '') + '">' + subcategoryLabel(key) + '<b>' + count + '</b></button>';
+  }).join('');
+}
+
+function filterControls(context = ''): string {
+  const secondary = subcategoryChips();
+  return '<div class="filter-stack ' + context + '">' +
+    '<div class="filter-level group-chips">' + groupChips() + '</div>' +
+    (secondary ? '<div class="filter-level sub-chips">' + secondary + '</div>' : '') +
+  '</div>';
+}
+
+let currentLang: LangCode = (localStorage.getItem('pa-language') as LangCode) || 'es';
+let currentTab = 'home';
+let currentGroup = 'all';
+let currentSubcategory = 'all';
+let searchTerm = '';
+let favorites: string[] = JSON.parse(localStorage.getItem('pa-favorites') || '[]') as string[];
+let selection: Array<{ placeId: string; item: string; qty: number }> = JSON.parse(localStorage.getItem('pa-selection') || '[]') as Array<{ placeId: string; item: string; qty: number }>;
+let mapInstance: any = null;
+let userMarker: any = null;
+const markers = new Map<string, any>();
+
+const view = document.querySelector<HTMLElement>('#view')!;
+const sheet = document.querySelector<HTMLElement>('#sheet')!;
+const sheetContent = document.querySelector<HTMLElement>('#sheetContent')!;
+const toast = document.querySelector<HTMLElement>('#toast')!;
+
+
+let mapRunId = 0;
+let diagnosticsInstalled = false;
+let diagnosticsOpen = false;
+let diagEntries: Array<{ time: string; type: string; detail: string }> = (() => {
+  try {
+    return JSON.parse(localStorage.getItem('pa-diag-log') || '[]') as Array<{ time: string; type: string; detail: string }>;
+  } catch {
+    return [];
+  }
+})();
+
+function recordDiag(type: string, detail: string): void {
+  const entry = { time: new Date().toLocaleTimeString(), type, detail };
+  diagEntries.push(entry);
+  if (diagEntries.length > 220) diagEntries = diagEntries.slice(-220);
+  try { localStorage.setItem('pa-diag-log', JSON.stringify(diagEntries)); } catch {}
+  refreshDiagnosticPanel();
+}
+
+function diagnosticSummaryHtml(): string {
+  const filtered = filteredPlaces();
+  const withCoords = filtered.filter(place => place.lat !== null && place.lng !== null).length;
+  return '<div class="diag-summary">' +
+    '<div><span>Versión</span><b>' + VERSION + '</b></div>' +
+    '<div><span>Pestaña</span><b>' + currentTab + '</b></div>' +
+    '<div><span>Filtro</span><b>' + currentGroup + ' / ' + currentSubcategory + '</b></div>' +
+    '<div><span>Esperados</span><b>' + filtered.length + '</b></div>' +
+    '<div><span>Con coordenadas</span><b>' + withCoords + '</b></div>' +
+    '<div><span>Markers cargados</span><b>' + markers.size + '</b></div>' +
+  '</div>';
+}
+
+function refreshDiagnosticPanel(): void {
+  if (!diagnosticsOpen) return;
+  const panel = document.querySelector<HTMLElement>('#diagnosticPanel');
+  if (!panel) return;
+  const body = panel.querySelector<HTMLElement>('.diag-body');
+  const summary = panel.querySelector<HTMLElement>('.diag-summary-wrap');
+  if (summary) summary.innerHTML = diagnosticSummaryHtml();
+  if (body) {
+    body.innerHTML = diagEntries.slice(-90).reverse().map(entry =>
+      '<div class="diag-line"><time>' + entry.time + '</time><b>' + entry.type + '</b><span>' + entry.detail.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span></div>'
+    ).join('');
+  }
+}
+
+function openDiagnostics(): void {
+  let panel = document.querySelector<HTMLElement>('#diagnosticPanel');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = 'diagnosticPanel';
+    panel.className = 'diagnostic-panel';
+    panel.innerHTML =
+      '<div class="diag-card">' +
+        '<div class="diag-head"><div><strong>Diagnóstico Perla Andina</strong><small>Clicks, filtros y carga del mapa</small></div><button id="diagClose">×</button></div>' +
+        '<div class="diag-summary-wrap"></div>' +
+        '<div class="diag-actions"><button id="diagCopy">Copiar diagnóstico</button><button id="diagClear">Limpiar</button></div>' +
+        '<div class="diag-body"></div>' +
+      '</div>';
+    document.body.appendChild(panel);
+    panel.querySelector<HTMLButtonElement>('#diagClose')?.addEventListener('click', () => {
+      diagnosticsOpen = false;
+      panel?.classList.remove('open');
+    });
+    panel.querySelector<HTMLButtonElement>('#diagClear')?.addEventListener('click', () => {
+      diagEntries = [];
+      try { localStorage.removeItem('pa-diag-log'); } catch {}
+      recordDiag('DIAG', 'Registro limpiado');
+    });
+    panel.querySelector<HTMLButtonElement>('#diagCopy')?.addEventListener('click', async () => {
+      const text = [
+        'PERLA ANDINA DIAGNÓSTICO',
+        VERSION,
+        'tab=' + currentTab,
+        'group=' + currentGroup,
+        'subcategory=' + currentSubcategory,
+        'filtered=' + filteredPlaces().length,
+        'markers=' + markers.size,
+        '',
+        ...diagEntries.map(entry => entry.time + ' | ' + entry.type + ' | ' + entry.detail)
+      ].join('\n');
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Diagnóstico copiado');
+      } catch {
+        showToast('No se pudo copiar');
+      }
+    });
+  }
+  diagnosticsOpen = true;
+  panel.classList.add('open');
+  refreshDiagnosticPanel();
+}
+
+function installDiagnostics(): void {
+  if (diagnosticsInstalled) return;
+  diagnosticsInstalled = true;
+  const topbar = document.querySelector<HTMLElement>('.topbar');
+  const langButton = document.querySelector<HTMLButtonElement>('#favShortcut');
+  if (topbar && langButton) {
+    let actions = topbar.querySelector<HTMLElement>('.top-actions');
+    if (!actions) {
+      actions = document.createElement('div');
+      actions.className = 'top-actions';
+      topbar.insertBefore(actions, langButton);
+      actions.appendChild(langButton);
+    }
+    const button = document.createElement('button');
+    button.id = 'diagShortcut';
+    button.className = 'round diag-shortcut';
+    button.textContent = 'DIAG';
+    button.title = 'Diagnóstico';
+    button.addEventListener('click', openDiagnostics);
+    actions.appendChild(button);
+  }
+  document.addEventListener('click', event => {
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+    const interactive = target.closest('button, a, [data-place], [data-group], [data-subcategory], input');
+    if (!interactive) return;
+    const label = (interactive.textContent || interactive.getAttribute('aria-label') || interactive.tagName).trim().replace(/\s+/g, ' ').slice(0, 90);
+    const data = interactive instanceof HTMLElement ? JSON.stringify(interactive.dataset || {}) : '{}';
+    recordDiag('CLICK', label + ' ' + data);
+  }, true);
+  recordDiag('BOOT', 'Diagnóstico instalado');
+}
+
+function t(key: string): string {
+  return copy[currentLang][key] || copy.es[key] || key;
+}
+
+function flag(): string {
+  return languages.find(item => item.code === currentLang)?.flag || '🌐';
+}
+
+function typeLabel(place: Place): string {
+  return t(place.typeKey);
+}
+
+function benefitPendingLabel(): string {
+  const labels: Record<LangCode, string> = {
+    es: 'Beneficio a definir',
+    en: 'Benefit to be defined',
+    pt: 'Benefício a definir',
+    fr: 'Avantage à définir',
+    de: 'Vorteil noch festzulegen',
+    it: 'Vantaggio da definire',
+    zh: '优惠待确定',
+    ar: 'الميزة قيد التحديد',
+    ru: 'Бонус будет определён',
+    hi: 'लाभ तय होना बाकी है',
+  };
+  return labels[currentLang];
+}
+
+function benefitLabel(place: Place): string {
+  if (place.benefitKind === 'none') return benefitPendingLabel();
+  if (place.benefitKind === 'wine') return t('benefit_wine');
+  if (place.benefitKind === 'starter') return t('benefit_starter');
+  if (place.benefitKind === 'dessert') return t('benefit_dessert');
+  if (place.benefitKind === 'coffee') return t('benefit_coffee');
+  if (place.benefitKind === 'gift') return t('benefit_gift');
+  if (place.benefitKind === 'twoforone') return '2x1 · ' + t('benefit_selected');
+  return (place.benefitValue || '10%') + ' ' + t('benefit_off');
+}
+
+function benefitStatusLabel(): string {
+  const labels: Record<LangCode, string> = {
+    es: 'NO HABILITADO',
+    en: 'NOT ENABLED',
+    pt: 'NÃO HABILITADO',
+    fr: 'NON ACTIVÉ',
+    de: 'NICHT AKTIVIERT',
+    it: 'NON ABILITATO',
+    zh: '未启用',
+    ar: 'غير مفعّل',
+    ru: 'НЕ АКТИВИРОВАНО',
+    hi: 'सक्रिय नहीं',
+  };
+  return labels[currentLang];
+}
+
+function illustrativePhotoLabel(): string {
+  const labels: Record<LangCode, string> = {
+    es: 'Foto ilustrativa',
+    en: 'Illustrative photo',
+    pt: 'Foto ilustrativa',
+    fr: 'Photo illustrative',
+    de: 'Beispielfoto',
+    it: 'Foto illustrativa',
+    zh: '示意图片',
+    ar: 'صورة توضيحية',
+    ru: 'Иллюстративное фото',
+    hi: 'उदाहरण फोटो',
+  };
+  return labels[currentLang];
+}
+
+function productImage(place: Place, item: string): string | null {
+  if (!place.food) return null;
+  const value = (place.typeKey + ' ' + item).toLowerCase();
+  if (value.includes('pizza')) return 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=420&q=78';
+  if (value.includes('pasta') || value.includes('raviol') || value.includes('tagliatelle') || value.includes('lasa')) return 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=420&q=78';
+  if (value.includes('café') || value.includes('cafe') || value.includes('coffee')) return 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=420&q=78';
+  if (value.includes('helado') || value.includes('icecream')) return 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=420&q=78';
+  if (value.includes('pan') || value.includes('scone') || value.includes('bizco') || value.includes('pastelito')) return 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=420&q=78';
+  if (value.includes('cordero') || value.includes('bife') || value.includes('parrill') || value.includes('lomo')) return 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=420&q=78';
+  return 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=420&q=78';
+}
+
+function googlePlaceId(place: Place): string | undefined {
+  return GOOGLE_PLACE_IDS[place.id];
+}
+
+function mapsUrl(place: Place): string {
+  const base = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(place.name + ', ' + place.address);
+  const placeId = googlePlaceId(place);
+  return placeId ? base + '&query_place_id=' + encodeURIComponent(placeId) : base;
+}
+
+function googleWriteReviewUrl(place: Place): string {
+  const placeId = googlePlaceId(place);
+  return placeId ? 'https://search.google.com/local/writereview?placeid=' + encodeURIComponent(placeId) : mapsUrl(place);
+}
+
+function googleReviewsLabel(): string {
+  const labels: Record<LangCode, string> = { es:'Ver reseñas en Google', en:'View Google reviews', pt:'Ver avaliações no Google', fr:'Voir les avis Google', de:'Google-Bewertungen ansehen', it:'Vedi recensioni Google', zh:'查看 Google 评价', ar:'عرض مراجعات Google', ru:'Отзывы Google', hi:'Google समीक्षाएँ देखें' };
+  return labels[currentLang];
+}
+
+function writeGoogleReviewLabel(): string {
+  const labels: Record<LangCode, string> = { es:'Escribir reseña', en:'Write a review', pt:'Escrever avaliação', fr:'Écrire un avis', de:'Bewertung schreiben', it:'Scrivi una recensione', zh:'撰写评价', ar:'اكتب مراجعة', ru:'Оставить отзыв', hi:'समीक्षा लिखें' };
+  return labels[currentLang];
+}
+
+function googleRatingHtml(place: Place): string {
+  if (place.rating <= 0 || place.reviews <= 0) return '<span class="google-rating"><b>Google Maps</b><small>Ver ubicación</small></span>';
+  return '<span class="google-rating"><b>Google</b><strong>★ ' + place.rating.toFixed(1) + '</strong><small>' + place.reviews.toLocaleString('es-AR') + ' reviews</small></span>';
+}
+
+function catalogLabel(): string {
+  const labels: Record<LangCode, string> = {
+    es: 'Ver en el catálogo',
+    en: 'Open catalog',
+    pt: 'Ver no catálogo',
+    fr: 'Voir le catalogue',
+    de: 'Katalog öffnen',
+    it: 'Apri catalogo',
+    zh: '打开目录',
+    ar: 'فتح الكتالوج',
+    ru: 'Открыть каталог',
+    hi: 'कैटलॉग खोलें',
+  };
+  return labels[currentLang];
+}
+
+function callUrl(place: Place): string {
+  return 'tel:' + place.phone.replace(/[^\d+]/g, '');
+}
+
+function openWhats(message: string, number: string = DEFAULT_WHATSAPP): void {
+  window.open('https://wa.me/' + number + '?text=' + encodeURIComponent(message), '_blank', 'noopener');
+}
+
+function openPlaceWhats(place: Place, context: 'info' | 'benefit' = 'info'): void {
+  const direct = Boolean(place.whatsapp);
+  const message = direct
+    ? 'Hola 👋 Vi *' + place.name + '* en la guía digital de Perla Andina. ' + (context === 'benefit' ? 'Quiero consultar por el beneficio publicado en la guía.' : 'Quiero hacer una consulta.')
+    : 'Hola Perla Andina 👋 Estoy viendo *' + place.name + '* en la guía digital y quiero hacer una consulta.';
+  openWhats(message, place.whatsapp || DEFAULT_WHATSAPP);
+}
+
+function showToast(message: string): void {
+  toast.textContent = message;
+  toast.classList.add('show');
+  window.setTimeout(() => toast.classList.remove('show'), 1700);
+}
+
+function updateChrome(): void {
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+  const brandSub = document.querySelector<HTMLElement>('.brand small');
+  if (brandSub) brandSub.textContent = t('brand_sub');
+  const langButton = document.querySelector<HTMLButtonElement>('#favShortcut');
+  if (langButton) {
+    langButton.textContent = flag();
+    langButton.title = t('language');
+  }
+  const navLabels: Record<string, { icon: string; label: string }> = {
+    home: { icon: '⌖', label: t('home') },
+    explore: { icon: '⌕', label: t('explore') },
+    map: { icon: '◎', label: t('map') },
+    benefits: { icon: '◇', label: t('benefits') },
+    profile: { icon: '◯', label: t('profile') },
+  };
+  document.querySelectorAll<HTMLButtonElement>('.bottom-nav button').forEach(button => {
+    const key = button.dataset.tab || 'home';
+    const item = navLabels[key];
+    if (item) button.innerHTML = '<span>' + item.icon + '</span>' + item.label;
+    button.classList.toggle('active', key === currentTab);
+  });
+}
+
+function filteredPlaces(): Place[] {
+  const q = searchTerm.trim().toLowerCase();
+  return places.filter(place => {
+    const groupOk = currentGroup === 'all' || placeGroups(place).includes(currentGroup);
+    const subOk = currentSubcategory === 'all' || placeSubcategory(place) === currentSubcategory;
+    const text = [place.name, place.address, place.description, typeLabel(place), subcategoryLabel(placeSubcategory(place)), ...place.items].join(' ').toLowerCase();
+    return groupOk && subOk && (!q || text.includes(q));
+  });
+}
+
+function renderHome(): string {
+  return (
+    '<section class="map-home">' +
+      '<div class="map-shell">' +
+        '<div id="map"></div>' +
+        '<div class="map-top">' +
+          '<div class="map-title"><span>PERLA ANDINA</span><strong>' + t('map_title') + '</strong><small>' + t('map_sub') + '</small></div>' +
+          '<label class="map-search"><span>⌕</span><input id="homeSearch" value="' + searchTerm.replace(/"/g, '&quot;') + '" placeholder="' + t('search') + '"></label>' +
+          filterControls('map-overlay') +
+        '</div>' +
+        '<button class="locate-btn" id="locateButton" title="' + t('locate') + '">◎</button>' +
+        '<div class="map-legend"><span>🎁</span><div><strong>' + t('map_benefit') + '</strong><small>' + benefitStatusLabel() + '</small></div></div>' +
+      '</div>' +
+      '<div id="mapSelectionCard" class="map-selection-card" hidden></div>' +
+      '<div class="map-after">' +
+        '<div><span>' + t('places') + '</span><strong>' + filteredPlaces().length + '</strong></div>' +
+        '<div><span>' + t('categories') + '</span><strong>' + (groupKeys.length - 1) + '</strong></div>' +
+        '<button data-action="go-benefits">🎁 ' + t('benefits') + '</button>' +
+      '</div>' +
+    '</section>'
+  );
+}
+
+function renderMapPage(): string {
+  return (
+    '<section>' +
+      '<div class="page-head compact"><span>PERLA ANDINA</span><h1>' + t('map_title') + '</h1><p>' + t('map_sub') + '</p></div>' +
+      '<div class="map-page-wrap"><div id="map"></div><button class="locate-btn page" id="locateButton" title="' + t('locate') + '">◎</button></div>' +
+      '<div id="mapSelectionCard" class="map-selection-card page" hidden></div>' +
+      filterControls('page') +
+      '<div class="map-list">' +
+        filteredPlaces().map(place => miniPlace(place)).join('') +
+      '</div>' +
+    '</section>'
+  );
+}
+
+function miniPlace(place: Place): string {
+  return (
+    '<article class="mini-place refined" data-place="' + place.id + '">' +
+      '<div class="mini-icon" style="--accent:' + place.accent + '">' + place.icon + '</div>' +
+      '<div class="place-card-copy">' +
+        '<div class="place-card-head"><span class="type-pill">' + subcategoryLabel(placeSubcategory(place)) + '</span>' + googleRatingHtml(place) + '</div>' +
+        '<strong>' + place.name + '</strong>' +
+        '<em class="place-address">📍 ' + place.address + '</em>' +
+        '<small class="place-benefit">🎁 ' + benefitStatusLabel() + '</small>' +
+      '</div>' +
+      '<button aria-label="' + t('see_place') + '">›</button>' +
+    '</article>'
+  );
+}
+
+function renderExplore(): string {
+  const list = filteredPlaces();
+  return (
+    '<section>' +
+      '<div class="page-head"><span>PERLA ANDINA</span><h1>' + t('explore') + '</h1><p>' + t('map_sub') + '</p></div>' +
+      '<label class="search"><span>⌕</span><input id="searchInput" value="' + searchTerm.replace(/"/g, '&quot;') + '" placeholder="' + t('search') + '"></label>' +
+      filterControls('explore') +
+      '<div class="list refined-list">' +
+        (list.length ? list.map(place => miniPlace(place)).join('') : '<div class="empty">' + t('no_results') + '</div>') +
+      '</div>' +
+    '</section>'
+  );
+}
+
+function renderBenefits(): string {
+  return (
+    '<section>' +
+      '<div class="page-head"><span>PERLA ANDINA</span><h1>' + t('coupons_title') + '</h1><p>' + t('coupons_sub') + '</p></div>' +
+      '<div class="notice"><strong>' + t('demo') + '</strong><br>' + t('demo_notice') + '</div>' +
+      '<div class="coupons">' +
+        places.map(place =>
+          '<article class="coupon" style="background:linear-gradient(135deg,' + place.accent + ',#09263d)">' +
+            '<div class="coupon-top"><span>' + place.icon + '</span><small>' + place.name + '</small></div>' +
+            '<span class="benefit-status">' + benefitStatusLabel() + '</span>' +
+            '<h3>' + benefitLabel(place) + '</h3>' +
+            '<p>' + t('benefit_detail') + '</p>' +
+            '<div class="coupon-foot"><span class="coupon-code">' + t('demo') + '</span><button data-coupon="' + place.id + '">' + t('consult') + '</button></div>' +
+          '</article>'
+        ).join('') +
+      '</div>' +
+    '</section>'
+  );
+}
+
+function renderProfile(): string {
+  const totalQty = selection.reduce((sum, row) => sum + row.qty, 0);
+  return (
+    '<section>' +
+      '<div class="page-head"><span>PERLA ANDINA</span><h1>' + t('my_account') + '</h1></div>' +
+      '<div class="profile">' +
+        '<div class="profile-mark">▲</div><h2>' + t('visitor') + '</h2><p>' + t('brand_sub') + '</p>' +
+        '<div class="profile-stats">' +
+          '<div><strong>' + favorites.length + '</strong><span>' + t('favorites') + '</span></div>' +
+          '<div><strong>' + totalQty + '</strong><span>' + t('selected') + '</span></div>' +
+          '<div><strong>' + places.length + '</strong><span>' + t('allies') + '</span></div>' +
+        '</div>' +
+      '</div>' +
+      '<button class="wide" data-action="cart">🛍️ ' + t('cart') + '</button>' +
+      '<button class="wide secondary" data-action="language">🌐 ' + t('language') + '</button>' +
+      '<button class="wide whatsapp-wide" data-action="contact">💬 ' + t('contact') + '</button>' +
+      '<div class="notice"><strong>' + t('version') + ':</strong> ' + VERSION + '</div>' +
+    '</section>'
+  );
+}
+
+function render(): void {
+  mapRunId += 1;
+  if (mapInstance) {
+    mapInstance.remove();
+    mapInstance = null;
+    markers.clear();
+  }
+  if (currentTab === 'home') view.innerHTML = renderHome();
+  if (currentTab === 'explore') view.innerHTML = renderExplore();
+  if (currentTab === 'map') view.innerHTML = renderMapPage();
+  if (currentTab === 'benefits') view.innerHTML = renderBenefits();
+  if (currentTab === 'profile') view.innerHTML = renderProfile();
+  recordDiag('RENDER', currentTab + ' · ' + currentGroup + '/' + currentSubcategory + ' · resultados=' + filteredPlaces().length);
+  updateChrome();
+  bindViewEvents();
+  if (currentTab === 'home' || currentTab === 'map') window.setTimeout(() => void initMap(), 80);
+}
+
+function switchTab(tab: string): void {
+  recordDiag('TAB', currentTab + ' → ' + tab);
+  currentTab = tab;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function bindViewEvents(): void {
+  view.querySelectorAll<HTMLElement>('[data-place]').forEach(element => {
+    element.addEventListener('click', () => openPlace(element.dataset.place || ''));
+  });
+
+  view.querySelectorAll<HTMLButtonElement>('[data-action]').forEach(button => {
+    button.addEventListener('click', () => handleAction(button.dataset.action || ''));
+  });
+
+  view.querySelectorAll<HTMLButtonElement>('[data-group]').forEach(button => {
+    button.addEventListener('click', () => {
+      currentGroup = button.dataset.group || 'all';
+      currentSubcategory = 'all';
+      recordDiag('FILTER_GROUP', currentGroup + ' · resultados=' + filteredPlaces().length);
+      render();
+    });
+  });
+
+  view.querySelectorAll<HTMLButtonElement>('[data-subcategory]').forEach(button => {
+    button.addEventListener('click', () => {
+      currentSubcategory = button.dataset.subcategory || 'all';
+      recordDiag('FILTER_SUB', currentSubcategory + ' · resultados=' + filteredPlaces().length);
+      render();
+    });
+  });
+
+  view.querySelectorAll<HTMLButtonElement>('[data-coupon]').forEach(button => {
+    button.addEventListener('click', () => useCoupon(button.dataset.coupon || ''));
+  });
+
+  const search = document.querySelector<HTMLInputElement>('#searchInput');
+  if (search) {
+    search.addEventListener('input', () => {
+      searchTerm = search.value;
+      render();
+    });
+  }
+
+  const homeSearch = document.querySelector<HTMLInputElement>('#homeSearch');
+  if (homeSearch) {
+    homeSearch.addEventListener('change', () => {
+      searchTerm = homeSearch.value;
+      render();
+    });
+    homeSearch.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        searchTerm = homeSearch.value;
+        currentTab = 'explore';
+        render();
+      }
+    });
+  }
+
+  document.querySelector<HTMLButtonElement>('#locateButton')?.addEventListener('click', locateUser);
+}
+
+function handleAction(action: string): void {
+  if (action === 'go-benefits') switchTab('benefits');
+  if (action === 'cart') openSelection();
+  if (action === 'language') showLanguagePicker();
+  if (action === 'contact') openWhats('Hola Perla Andina 👋 Quiero información sobre El Calafate.');
+}
+
+function openSheet(html: string): void {
+  sheetContent.innerHTML = html;
+  sheet.classList.add('open');
+  sheet.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSheet(): void {
+  sheet.classList.remove('open');
+  sheet.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+function openPlace(id: string): void {
+  const place = places.find(item => item.id === id);
+  if (!place) {
+    recordDiag('OPEN_FAIL', id);
+    return;
+  }
+  recordDiag('OPEN_PLACE', place.name + ' · ' + placeSubcategory(place));
+  const sectionLabel = place.food ? t('menu') : t('services');
+  const rows = place.items
+    .map(item => {
+      const image = productImage(place, item);
+      const isPerlaTour = place.id === 'perla-andina';
+      return (
+        '<div class="menu-row">' +
+          (image ? '<div class="product-photo"><img src="' + image + '" alt="' + item.replace(/"/g, '&quot;') + '" loading="lazy"><small>' + illustrativePhotoLabel() + '</small></div>' : '<div class="product-photo fallback"><span>' + place.icon + '</span></div>') +
+          '<div class="menu-copy"><strong>' + item + '</strong><p>' + (isPerlaTour ? catalogLabel() : t('ask')) + '</p></div>' +
+          '<div class="menu-side">' + (isPerlaTour ? '<a class="tour-link" href="' + CATALOG_URL + '" target="_blank" rel="noopener">↗</a>' : '<button class="add" data-add="' + place.id + '::' + item.replace(/"/g, '&quot;') + '">+</button>') + '</div>' +
+        '</div>'
+      );
+    })
+    .join('');
+
+  openSheet(
+    '<div class="place-hero" style="--accent:' + place.accent + '"><span>' + place.icon + '</span><small>' + typeLabel(place) + '</small></div>' +
+    '<div class="place-info">' +
+      '<div class="meta"><span>' + typeLabel(place) + '</span></div>' +
+      googleRatingHtml(place) +
+      '<h2>' + place.name + '</h2><p>' + place.description + '</p>' +
+      '<div class="actions">' +
+        '<a href="' + mapsUrl(place) + '" target="_blank" rel="noopener"><span>📍</span>' + t('route') + '</a>' +
+        '<button data-place-whats="' + place.id + '"><span>💬</span>' + t('whatsapp') + '</button>' +
+        (place.phone ? '<a href="' + callUrl(place) + '"><span>☎️</span>' + t('phone') + '</a>' : '') +
+        '<button data-fav="' + place.id + '"><span>' + (favorites.includes(place.id) ? '♥' : '♡') + '</span>' + (favorites.includes(place.id) ? t('saved') : t('save')) + '</button>' +
+      '</div>' +
+      '<div class="google-review-actions"><a href="' + mapsUrl(place) + '" target="_blank" rel="noopener">🔎 ' + googleReviewsLabel() + '</a><a href="' + googleWriteReviewUrl(place) + '" target="_blank" rel="noopener">⭐ ' + writeGoogleReviewLabel() + '</a></div>' +
+      '<div class="info"><strong>' + t('address') + '</strong><br>' + place.address + (place.phone ? '<br><strong>' + t('phone') + ':</strong> ' + place.phone : '') + '<br><strong>' + t('hours') + ':</strong> ' + place.hours + '</div>' +
+      (place.items.length ? '<div class="menu"><h3>' + sectionLabel + '</h3>' + rows + '</div>' : '') +
+      '<div class="demo-box"><span class="benefit-status">' + benefitStatusLabel() + '</span><small>' + t('demo') + '</small><h3>' + benefitLabel(place) + '</h3><p>' + t('benefit_detail') + '</p><button class="primary" data-coupon="' + place.id + '">' + t('consult') + ' · WhatsApp</button></div>' +
+      '<div class="info"><strong>' + t('public_data') + '</strong><br>' + place.name + ' · ' + place.address + '</div>' +
+    '</div>'
+  );
+
+  sheetContent.querySelectorAll<HTMLButtonElement>('[data-add]').forEach(button => {
+    button.addEventListener('click', () => addToSelection(button.dataset.add || ''));
+  });
+  sheetContent.querySelectorAll<HTMLButtonElement>('[data-place-whats]').forEach(button => {
+    button.addEventListener('click', () => {
+      const selectedPlace = places.find(item => item.id === button.dataset.placeWhats);
+      if (selectedPlace) openPlaceWhats(selectedPlace);
+    });
+  });
+  sheetContent.querySelectorAll<HTMLButtonElement>('[data-fav]').forEach(button => {
+    button.addEventListener('click', () => toggleFavorite(button.dataset.fav || ''));
+  });
+  sheetContent.querySelectorAll<HTMLButtonElement>('[data-coupon]').forEach(button => {
+    button.addEventListener('click', () => useCoupon(button.dataset.coupon || ''));
+  });
+}
+
+function toggleFavorite(id: string): void {
+  favorites = favorites.includes(id) ? favorites.filter(item => item !== id) : [...favorites, id];
+  localStorage.setItem('pa-favorites', JSON.stringify(favorites));
+  showToast(favorites.includes(id) ? t('favorite_added') : t('favorite_removed'));
+  openPlace(id);
+}
+
+function addToSelection(key: string): void {
+  const splitIndex = key.indexOf('::');
+  if (splitIndex < 0) return;
+  const placeId = key.slice(0, splitIndex);
+  const item = key.slice(splitIndex + 2);
+  const row = selection.find(entry => entry.placeId === placeId && entry.item === item);
+  if (row) row.qty += 1;
+  else selection.push({ placeId, item, qty: 1 });
+  localStorage.setItem('pa-selection', JSON.stringify(selection));
+  showToast(t('added'));
+}
+
+function openSelection(): void {
+  if (!selection.length) {
+    openSheet('<span class="modal-kicker">' + t('cart') + '</span><h2>' + t('selected') + '</h2><div class="empty">' + t('empty_cart') + '</div>');
+    return;
+  }
+
+  const rows = selection
+    .map(row => {
+      const place = places.find(item => item.id === row.placeId);
+      if (!place) return '';
+      return (
+        '<div class="cart-row"><div><strong>' + row.item + '</strong><small>' + place.name + '</small></div>' +
+        '<div class="qty"><button data-minus="' + place.id + '::' + row.item.replace(/"/g, '&quot;') + '">−</button><b>' + row.qty + '</b><button data-plus="' + place.id + '::' + row.item.replace(/"/g, '&quot;') + '">+</button></div>' +
+        '<button data-remove="' + place.id + '::' + row.item.replace(/"/g, '&quot;') + '">×</button></div>'
+      );
+    })
+    .join('');
+
+  openSheet('<span class="modal-kicker">' + t('cart') + '</span><h2>' + t('selected') + '</h2>' + rows + '<button class="whatsapp" id="sendSelection">' + t('send_whatsapp') + '</button>');
+
+  sheetContent.querySelectorAll<HTMLButtonElement>('[data-minus]').forEach(button => {
+    button.addEventListener('click', () => changeSelection(button.dataset.minus || '', -1));
+  });
+  sheetContent.querySelectorAll<HTMLButtonElement>('[data-plus]').forEach(button => {
+    button.addEventListener('click', () => changeSelection(button.dataset.plus || '', 1));
+  });
+  sheetContent.querySelectorAll<HTMLButtonElement>('[data-remove]').forEach(button => {
+    button.addEventListener('click', () => removeSelection(button.dataset.remove || ''));
+  });
+  document.querySelector<HTMLButtonElement>('#sendSelection')?.addEventListener('click', sendSelection);
+}
+
+function splitSelectionKey(key: string): { placeId: string; item: string } | null {
+  const splitIndex = key.indexOf('::');
+  if (splitIndex < 0) return null;
+  return { placeId: key.slice(0, splitIndex), item: key.slice(splitIndex + 2) };
+}
+
+function changeSelection(key: string, delta: number): void {
+  const parsed = splitSelectionKey(key);
+  if (!parsed) return;
+  const row = selection.find(entry => entry.placeId === parsed.placeId && entry.item === parsed.item);
+  if (!row) return;
+  row.qty += delta;
+  if (row.qty <= 0) selection = selection.filter(entry => entry !== row);
+  localStorage.setItem('pa-selection', JSON.stringify(selection));
+  openSelection();
+}
+
+function removeSelection(key: string): void {
+  const parsed = splitSelectionKey(key);
+  if (!parsed) return;
+  selection = selection.filter(entry => !(entry.placeId === parsed.placeId && entry.item === parsed.item));
+  localStorage.setItem('pa-selection', JSON.stringify(selection));
+  openSelection();
+}
+
+function sendSelection(): void {
+  const uniquePlaceIds = [...new Set(selection.map(row => row.placeId))];
+  const singlePlace = uniquePlaceIds.length === 1 ? places.find(place => place.id === uniquePlaceIds[0]) : undefined;
+  const direct = Boolean(singlePlace?.whatsapp);
+  const lines = [direct ? 'Hola 👋 Vi su negocio en la guía digital de Perla Andina.' : 'Hola Perla Andina 👋', 'Quiero consultar esta selección:', ''];
+  selection.forEach(row => {
+    const place = places.find(item => item.id === row.placeId);
+    if (place) lines.push('• ' + row.qty + 'x ' + row.item + ' — ' + place.name);
+  });
+  lines.push('', '¿Me confirman disponibilidad y valores?');
+  openWhats(lines.join('\n'), singlePlace?.whatsapp || DEFAULT_WHATSAPP);
+}
+
+function useCoupon(id: string): void {
+  const place = places.find(item => item.id === id);
+  if (!place) return;
+  openPlaceWhats(place, 'benefit');
+}
+
+function markerHtml(place: Place): string {
+  const featuredClass = place.id === 'perla-andina' ? ' perla-marker' : '';
+  const badge = place.id === 'perla-andina' ? '★' : '🎁';
+  return '<div class="pa-marker' + featuredClass + '" style="--accent:' + place.accent + '"><span>' + place.icon + '</span><b>' + badge + '</b>' + (place.id === 'perla-andina' ? '<em>PERLA</em>' : '') + '</div>';
+}
+
+function placePopup(place: Place): string {
+  return (
+    '<div class="map-popup">' +
+      '<div class="map-popup-title"><span>' + place.icon + '</span><div><strong>' + place.name + '</strong><small>' + typeLabel(place) + '</small>' + googleRatingHtml(place) + '<em>' + place.address + '</em></div></div>' +
+      '<div class="map-popup-benefit">🎁 <b>' + benefitLabel(place) + '</b><small class="benefit-status-inline">' + benefitStatusLabel() + '</small></div>' +
+      '<div class="map-card-actions"><button class="map-open" data-map-open="' + place.id + '">' + t('see_place') + '</button><a class="map-route" href="' + mapsUrl(place) + '" target="_blank" rel="noopener">📍 ' + t('route') + '</a><button class="map-whats" data-map-whats="' + place.id + '">💬 ' + t('whatsapp') + '</button><a class="map-review" href="' + googleWriteReviewUrl(place) + '" target="_blank" rel="noopener">⭐ ' + writeGoogleReviewLabel() + '</a></div>' +
+    '</div>'
+  );
+}
+
+function showMapPlaceCard(place: Place): void {
+  const card = document.querySelector<HTMLElement>('#mapSelectionCard');
+  if (!card) return;
+  card.innerHTML = placePopup(place);
+  card.hidden = false;
+  card.querySelector<HTMLButtonElement>('[data-map-open="' + place.id + '"]')?.addEventListener('click', () => openPlace(place.id));
+  card.querySelector<HTMLButtonElement>('[data-map-whats="' + place.id + '"]')?.addEventListener('click', () => openPlaceWhats(place));
+  window.setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 40);
+}
+
+function addMarker(place: Place): void {
+  if (!mapInstance || place.lat === null || place.lng === null || markers.has(place.id)) return;
+  const featured = place.id === 'perla-andina';
+  const icon = L.divIcon({
+    className: 'pa-marker-wrap',
+    html: markerHtml(place),
+    iconSize: featured ? [68, 72] : [46, 52],
+    iconAnchor: featured ? [34, 66] : [23, 48],
+    popupAnchor: [0, featured ? -61 : -45],
+  });
+  const marker = L.marker([place.lat, place.lng], { icon }).addTo(mapInstance);
+  marker.on('click', () => {
+    showMapPlaceCard(place);
+    mapInstance.panTo([place.lat, place.lng]);
+  });
+  markers.set(place.id, marker);
+  recordDiag('MARKER', place.name + ' · total=' + markers.size);
+  refreshDiagnosticPanel();
+}
+
+
+function fitMapToCurrentMarkers(): void {
+  if (!mapInstance) return;
+  if (currentGroup === 'all') return;
+  if (currentGroup === 'tourism' && currentSubcategory === 'all') return;
+  const points = filteredPlaces()
+    .filter(place => place.lat !== null && place.lng !== null)
+    .map(place => [place.lat as number, place.lng as number]);
+  if (!points.length) return;
+  if (points.length === 1) {
+    mapInstance.setView(points[0], 15);
+    recordDiag('MAP_FIT', '1 punto');
+    return;
+  }
+  mapInstance.fitBounds(points, { padding: [46, 46], maxZoom: 14 });
+  recordDiag('MAP_FIT', points.length + ' puntos');
+}
+
+async function ensureCoordinates(place: Place): Promise<boolean> {
+  if (place.lat !== null && place.lng !== null) return true;
+  const cacheKey = 'pa-geo-' + place.id;
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) {
+    try {
+      const parsed = JSON.parse(cached) as { lat: number; lng: number };
+      place.lat = parsed.lat;
+      place.lng = parsed.lng;
+      recordDiag('GEO_CACHE', place.name);
+      return true;
+    } catch {
+      localStorage.removeItem(cacheKey);
+    }
+  }
+
+  const queries = [
+    place.name + ', ' + place.address + ', Argentina',
+    place.address + ', Argentina',
+  ];
+
+  for (const rawQuery of queries) {
+    try {
+      const query = encodeURIComponent(rawQuery);
+      const response = await fetch('https://photon.komoot.io/api/?limit=1&q=' + query);
+      if (response.ok) {
+        const data = await response.json() as { features?: Array<{ geometry?: { coordinates?: [number, number] } }> };
+        const coords = data.features?.[0]?.geometry?.coordinates;
+        if (coords && Number.isFinite(coords[0]) && Number.isFinite(coords[1])) {
+          place.lng = Number(coords[0]);
+          place.lat = Number(coords[1]);
+          localStorage.setItem(cacheKey, JSON.stringify({ lat: place.lat, lng: place.lng }));
+          recordDiag('GEO_OK', place.name + ' · Photon');
+          return true;
+        }
+      } else {
+        recordDiag('GEO_HTTP', place.name + ' · Photon ' + response.status);
+      }
+    } catch (error) {
+      recordDiag('GEO_ERR', place.name + ' · Photon · ' + String(error));
+    }
+  }
+
+  try {
+    const query = encodeURIComponent(place.name + ', ' + place.address + ', Argentina');
+    const response = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=ar&q=' + query, {
+      headers: { 'Accept-Language': 'es' },
+    });
+    if (!response.ok) {
+      recordDiag('GEO_HTTP', place.name + ' · Nominatim ' + response.status);
+      return false;
+    }
+    const data = (await response.json()) as Array<{ lat: string; lon: string }>;
+    if (data[0]) {
+      place.lat = Number(data[0].lat);
+      place.lng = Number(data[0].lon);
+      localStorage.setItem(cacheKey, JSON.stringify({ lat: place.lat, lng: place.lng }));
+      recordDiag('GEO_OK', place.name + ' · Nominatim');
+      return true;
+    }
+  } catch (error) {
+    recordDiag('GEO_ERR', place.name + ' · Nominatim · ' + String(error));
+  }
+
+  recordDiag('GEO_FAIL', place.name);
+  return false;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => window.setTimeout(resolve, ms));
+}
+
+async function geocodeMissing(runId: number, targets: Place[]): Promise<void> {
+  const pending = targets.filter(place => place.lat === null || place.lng === null);
+  recordDiag('MAP_QUEUE', pending.length + ' pendientes de ' + targets.length);
+  if (!pending.length) {
+    fitMapToCurrentMarkers();
+    refreshDiagnosticPanel();
+    return;
+  }
+
+  const queue = [...pending];
+  const worker = async (): Promise<void> => {
+    while (queue.length && runId === mapRunId) {
+      const place = queue.shift();
+      if (!place) return;
+      const ok = await ensureCoordinates(place);
+      if (runId !== mapRunId) return;
+      if (ok) addMarker(place);
+      refreshDiagnosticPanel();
+      await sleep(180);
+    }
+  };
+
+  const workers = Math.min(3, pending.length);
+  await Promise.all(Array.from({ length: workers }, () => worker()));
+  if (runId !== mapRunId) {
+    recordDiag('MAP_CANCEL', 'Carga anterior cancelada');
+    return;
+  }
+  recordDiag('MAP_DONE', markers.size + '/' + targets.length + ' markers cargados');
+  fitMapToCurrentMarkers();
+  refreshDiagnosticPanel();
+}
+
+async function initMap(): Promise<void> {
+  const runId = ++mapRunId;
+  if (typeof L === 'undefined') {
+    showToast(t('map_error'));
+    recordDiag('MAP_ERROR', 'Leaflet no disponible');
+    return;
+  }
+  const mapNode = document.querySelector('#map');
+  if (!mapNode) {
+    recordDiag('MAP_ERROR', '#map no existe');
+    return;
+  }
+
+  const targets = filteredPlaces();
+  recordDiag('MAP_INIT', 'run=' + runId + ' · esperados=' + targets.length + ' · ' + currentGroup + '/' + currentSubcategory);
+  mapInstance = L.map('map', { zoomControl: false, attributionControl: true }).setView([-50.3372, -72.2638], 15);
+  L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap',
+  }).addTo(mapInstance);
+
+  targets.forEach(addMarker);
+  recordDiag('MAP_IMMEDIATE', markers.size + '/' + targets.length + ' markers con coordenadas');
+  window.setTimeout(fitMapToCurrentMarkers, 120);
+  void geocodeMissing(runId, targets);
+}
+
+function locateUser(): void {
+  if (!navigator.geolocation || !mapInstance) return;
+  navigator.geolocation.getCurrentPosition(position => {
+    const coords: [number, number] = [position.coords.latitude, position.coords.longitude];
+    if (userMarker) userMarker.remove();
+    userMarker = L.circleMarker(coords, {
+      radius: 8,
+      color: '#ffffff',
+      weight: 3,
+      fillColor: '#079ac3',
+      fillOpacity: 1,
+    }).addTo(mapInstance);
+    mapInstance.setView(coords, 16);
+  });
+}
+
+function showLanguagePicker(): void {
+  let modal = document.querySelector<HTMLElement>('#languagePicker');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'languagePicker';
+    modal.className = 'language-picker';
+    document.body.appendChild(modal);
+  }
+  modal.innerHTML =
+    '<div class="language-panel">' +
+      '<div class="language-brand"><div class="language-logo">▲</div><div><b>PERLA ANDINA</b><span>EL CALAFATE</span></div></div>' +
+      '<h2>' + t('choose_language') + '</h2><p>' + t('choose_language_sub') + '</p>' +
+      '<div class="language-grid">' +
+        languages.map(language =>
+          '<button data-lang="' + language.code + '" class="' + (language.code === currentLang ? 'selected' : '') + '"><span>' + language.flag + '</span><b>' + language.name + '</b></button>'
+        ).join('') +
+      '</div>' +
+    '</div>';
+  modal.classList.add('open');
+  modal.querySelectorAll<HTMLButtonElement>('[data-lang]').forEach(button => {
+    button.addEventListener('click', () => {
+      currentLang = button.dataset.lang as LangCode;
+      localStorage.setItem('pa-language', currentLang);
+      modal?.classList.remove('open');
+      updateChrome();
+      render();
+    });
+  });
+}
+
+document.querySelectorAll<HTMLButtonElement>('.bottom-nav button').forEach(button => {
+  button.addEventListener('click', () => switchTab(button.dataset.tab || 'home'));
+});
+
+document.querySelector<HTMLButtonElement>('#brandHome')?.addEventListener('click', () => switchTab('home'));
+document.querySelector<HTMLButtonElement>('#favShortcut')?.addEventListener('click', showLanguagePicker);
+document.querySelector<HTMLElement>('.sheet-backdrop')?.addEventListener('click', closeSheet);
+document.querySelector<HTMLButtonElement>('.sheet-close')?.addEventListener('click', closeSheet);
+
+installDiagnostics();
+updateChrome();
+render();
+showLanguagePicker();
