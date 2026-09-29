@@ -1,7 +1,7 @@
 declare const L: any;
 
 type LangCode = 'es' | 'en' | 'pt' | 'fr' | 'de' | 'it' | 'zh' | 'ar' | 'ru' | 'hi';
-type BenefitKind = 'wine' | 'starter' | 'dessert' | 'discount' | 'twoforone' | 'coffee' | 'gift';
+type BenefitKind = 'wine' | 'starter' | 'dessert' | 'discount' | 'twoforone' | 'coffee' | 'gift' | 'none';
 type Place = {
   id: string;
   name: string;
@@ -24,8 +24,9 @@ type Place = {
   benefitValue?: string;
 };
 
-const VERSION = '1.0.6 perla andina';
+const VERSION = '1.0.7 perla andina';
 const DEFAULT_WHATSAPP = '5492901498474';
+const CATALOG_URL = 'https://catalogoperlaandina.vercel.app/';
 
 const GOOGLE_PLACE_IDS: Record<string, string> = {
   'perla-andina': 'ChIJlSCtOgANu70RBnKHRvnI54c',
@@ -42,6 +43,54 @@ const GOOGLE_PLACE_IDS: Record<string, string> = {
   'las-huellas': 'ChIJVV8Le74Mu70R8OWnSjg1mfs',
   'farmacia-central': 'ChIJYZ_jTZYNu70RdMcGIgi_aZg',
   'posada-alamos': 'ChIJy2KPE8AMu70RdKJ662iTI-s',
+  'farmacia-el-calafate': 'ChIJi4_PVL4Mu70RJzBlbnHJylQ',
+  'farmacia-franco-sur': 'ChIJgUi7lMAMu70RKnUTkiTKCGw',
+  'farmacia-santa-lucia': 'ChIJ5w5vf8YNu70ROaM6sUbZDWw',
+  'farmacia-del-rosario': 'ChIJYSSXTR4Nu70R3VoFw6jcD9A',
+  'farmacia-libertador': 'ChIJm_jWdwANu70R0LYQnutuWqg',
+  'farmacia-don-bosco': 'ChIJPyhs878Mu70RzpBt-W7W0_s',
+  'farmacia-the-pharmacy': 'ChIJGR2xPM0Nu70R0i2dFWaFdvA',
+  'remis-calafate-viajes': 'ChIJ6fYyOr4Mu70RfJHkWUtbjHg',
+  'ofc-traslados': 'ChIJvZ-4L9cNu70Rq5zHb0lBy0c',
+  'calafate-central': 'ChIJqziR5BYNu70R5ozEnP4erpg',
+  'remis-lago-argentino': 'ChIJfQKVxL0Mu70RtihbOFREN78',
+  'calafate-taxi': 'ChIJ-fqkvKwNu70RSgR8ABkl2FE',
+  'remises-otilnau': 'ChIJGyWNDMMMu70Rj8vtKZ5deds',
+  'blue-calafate': 'ChIJvUQiqn4Nu70RWU-tQ1Xn-Ys',
+  'taxi-remises-terminal': 'ChIJKSOCW-UNu70RaPWxVEOdVe8',
+  'taxiremis-region': 'ChIJxVFDlL4Mu70R4dqVXhDd8MI',
+  'traslados-privados-calafate': 'ChIJTYFqWVMM6a0RiECGOdraBsY',
+  'remis-nueva-libertador': 'ChIJ-xBX-pcMu70R9hVA_1p8HsY',
+  'traslados-en-calafate': 'ChIJzyT0rLANu70RKulJJ0HGOyU',
+  'remis-rolando': 'ChIJEQS3SAANu70RfX0hsPuU-_s',
+  'laguna-nimez': 'ChIJzwXU0bAMu70R-QBzN82Q9xw',
+  'centro-interpretacion': 'ChIJc0JJHLoMu70R4hoFI8EXX5o',
+  'walichu': 'ChIJuSaSPSd1u70RAPUXo4C5HKw',
+  'plaza-perito-moreno': 'ChIJIRZ1dNcNu70Rpvsh7Lmp0j4',
+  'heroes-malvinas': 'ChIJl_5hbsEMu70R1zEaowSARK8',
+  glaciarium: 'ChIJw2emLNkMu70RsSBZVLW7fVQ',
+  'museo-regional': 'ChIJ56Ja4ZcMu70RwnmpUkIjloA',
+  'mirador-lago-argentino': 'ChIJ_48zt6wMu70RkJTPhZBKdVA',
+  'mirador-ciudad': 'ChIJv1q7Rb0Mu70RlGOl8UdM3aQ',
+  'plaza-pioneros': 'ChIJPwMQPZEMu70RqihzR_Uqec0',
+  'paseo-costanera': 'ChIJXUNgnFgNu70R6McyK5xwaKM',
+  'anfiteatro-bosque': 'ChIJ4Zk8h8AMu70RYDDBoyJKBZY',
+  'punta-soberana': 'ChIJ3yUQW1Rzu70R_SzbZ8TJyfQ',
+  'playita-punta-soberana': 'ChIJxZuDoA9zu70RBGiucIz7Lcw',
+  'estancia-25-mayo': 'ChIJWQsuS3UNu70R-_lKwI17LXc',
+  'punto-panoramico': 'ChIJpcOLa3cNu70RThWkFzEMAAs',
+  'glaciar-perito-moreno': 'ChIJHWK7u4gNu70RDarZKsIOulQ',
+  'parque-los-glaciares': 'ChIJVZJRWSiypL0R3dHwpGmtXeY',
+  'pasarelas-perito-moreno': 'ChIJ5Q5bDs3KpL0Rp3C9P3Lq5Ik',
+  'lago-roca': 'ChIJU-l9av4wu70RCrYhPp83pD0',
+  'lago-argentino': 'ChIJPbd8bugMu70RJi6kz2HWhY4',
+  'puerto-bajo-sombras': 'ChIJDQl78d80u70Ryg4SL2d48Nc',
+  'puerto-bandera': 'ChIJ1d4GABFEu70RB65ZzsJizRY',
+  'glaciar-upsala': 'ChIJm8arDp8Mu70RGFggC5MLecY',
+  'glaciar-spegazzini': 'ChIJ_24H2kCvpL0Rt1K8ojIRBSg',
+  'canadon-arroyo-calafate': 'ChIJp7cZr48Mu70RawTCDajp9gI',
+  'mountain-park': 'ChIJDw49J_ENu70Ri6V80MwyJYY',
+  enclave: 'ChIJSYTKSgBzu70RsiDg-67h3cQ',
 };
 
 const languages: Array<{ code: LangCode; flag: string; name: string }> = [
@@ -132,6 +181,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_pharmacy: 'Farmacia',
     type_hotel: 'Hotel',
     type_agency: 'Agencia de turismo',
+    type_attraction: 'Puntos turísticos',
+    type_bar: 'Bar',
   },
   en: {
     brand_sub: 'Your guide in El Calafate',
@@ -207,6 +258,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_pharmacy: 'Pharmacy',
     type_hotel: 'Hotel',
     type_agency: 'Travel agency',
+    type_attraction: 'Tourist attractions',
+    type_bar: 'Bar',
   },
   pt: {
     brand_sub: 'Seu guia em El Calafate',
@@ -282,6 +335,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_pharmacy: 'Farmácia',
     type_hotel: 'Hotel',
     type_agency: 'Agência de turismo',
+    type_attraction: 'Pontos turísticos',
+    type_bar: 'Bar',
   },
   fr: {
     brand_sub: 'Votre guide à El Calafate',
@@ -357,6 +412,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_pharmacy: 'Pharmacie',
     type_hotel: 'Hôtel',
     type_agency: 'Agence de voyages',
+    type_attraction: 'Sites touristiques',
+    type_bar: 'Bar',
   },
   de: {
     brand_sub: 'Ihr Guide in El Calafate',
@@ -432,6 +489,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_pharmacy: 'Apotheke',
     type_hotel: 'Hotel',
     type_agency: 'Reisebüro',
+    type_attraction: 'Sehenswürdigkeiten',
+    type_bar: 'Bar',
   },
   it: {
     brand_sub: 'La tua guida a El Calafate',
@@ -507,6 +566,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_pharmacy: 'Farmacia',
     type_hotel: 'Hotel',
     type_agency: 'Agenzia di viaggi',
+    type_attraction: 'Attrazioni turistiche',
+    type_bar: 'Bar',
   },
   zh: {
     brand_sub: '埃尔卡拉法特旅行指南',
@@ -582,6 +643,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_pharmacy: '药店',
     type_hotel: '酒店',
     type_agency: '旅行社',
+    type_attraction: '旅游景点',
+    type_bar: '酒吧',
   },
   ar: {
     brand_sub: 'دليلك في إل كالافاتي',
@@ -657,6 +720,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_pharmacy: 'صيدلية',
     type_hotel: 'فندق',
     type_agency: 'وكالة سفر',
+    type_attraction: 'معالم سياحية',
+    type_bar: 'بار',
   },
   ru: {
     brand_sub: 'Ваш гид по Эль-Калафате',
@@ -732,6 +797,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_pharmacy: 'Аптека',
     type_hotel: 'Отель',
     type_agency: 'Туристическое агентство',
+    type_attraction: 'Достопримечательности',
+    type_bar: 'Бар',
   },
   hi: {
     brand_sub: 'एल कालाफाते में आपकी गाइड',
@@ -807,6 +874,8 @@ const copy: Record<LangCode, Record<string, string>> = {
     type_pharmacy: 'फार्मेसी',
     type_hotel: 'होटल',
     type_agency: 'यात्रा एजेंसी',
+    type_attraction: 'पर्यटन स्थल',
+    type_bar: 'बार',
   },
 };
 
@@ -1086,712 +1155,846 @@ const places: Place[] = [
     food: false,
     benefitKind: 'gift',
   },
-];
 
-const categoryKeys = [
-  'all',
-  'type_agency',
-  'type_quick',
-  'type_grill',
-  'type_pasta',
-  'type_icecream',
-  'type_pizza',
-  'type_bakery',
-  'type_coffee',
-  'type_taxi',
-  'type_disco',
-  'type_brewery',
-  'type_souvenir',
-  'type_pharmacy',
-  'type_hotel',
-];
-
-let currentLang: LangCode = (localStorage.getItem('pa-language') as LangCode) || 'es';
-let currentTab = 'home';
-let currentCategory = 'all';
-let searchTerm = '';
-let favorites: string[] = JSON.parse(localStorage.getItem('pa-favorites') || '[]') as string[];
-let selection: Array<{ placeId: string; item: string; qty: number }> = JSON.parse(localStorage.getItem('pa-selection') || '[]') as Array<{ placeId: string; item: string; qty: number }>;
-let mapInstance: any = null;
-let userMarker: any = null;
-const markers = new Map<string, any>();
-
-const view = document.querySelector<HTMLElement>('#view')!;
-const sheet = document.querySelector<HTMLElement>('#sheet')!;
-const sheetContent = document.querySelector<HTMLElement>('#sheetContent')!;
-const toast = document.querySelector<HTMLElement>('#toast')!;
-
-function t(key: string): string {
-  return copy[currentLang][key] || copy.es[key] || key;
-}
-
-function flag(): string {
-  return languages.find(item => item.code === currentLang)?.flag || '🌐';
-}
-
-function typeLabel(place: Place): string {
-  return t(place.typeKey);
-}
-
-function benefitLabel(place: Place): string {
-  if (place.benefitKind === 'wine') return t('benefit_wine');
-  if (place.benefitKind === 'starter') return t('benefit_starter');
-  if (place.benefitKind === 'dessert') return t('benefit_dessert');
-  if (place.benefitKind === 'coffee') return t('benefit_coffee');
-  if (place.benefitKind === 'gift') return t('benefit_gift');
-  if (place.benefitKind === 'twoforone') return '2x1 · ' + t('benefit_selected');
-  return (place.benefitValue || '10%') + ' ' + t('benefit_off');
-}
-
-function benefitStatusLabel(): string {
-  const labels: Record<LangCode, string> = {
-    es: 'NO HABILITADO',
-    en: 'NOT ENABLED',
-    pt: 'NÃO HABILITADO',
-    fr: 'NON ACTIVÉ',
-    de: 'NICHT AKTIVIERT',
-    it: 'NON ABILITATO',
-    zh: '未启用',
-    ar: 'غير مفعّل',
-    ru: 'НЕ АКТИВИРОВАНО',
-    hi: 'सक्रिय नहीं',
-  };
-  return labels[currentLang];
-}
-
-function illustrativePhotoLabel(): string {
-  const labels: Record<LangCode, string> = {
-    es: 'Foto ilustrativa',
-    en: 'Illustrative photo',
-    pt: 'Foto ilustrativa',
-    fr: 'Photo illustrative',
-    de: 'Beispielfoto',
-    it: 'Foto illustrativa',
-    zh: '示意图片',
-    ar: 'صورة توضيحية',
-    ru: 'Иллюстративное фото',
-    hi: 'उदाहरण फोटो',
-  };
-  return labels[currentLang];
-}
-
-function productImage(place: Place, item: string): string | null {
-  if (!place.food) return null;
-  const value = (place.typeKey + ' ' + item).toLowerCase();
-  if (value.includes('pizza')) return 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=420&q=78';
-  if (value.includes('pasta') || value.includes('raviol') || value.includes('tagliatelle') || value.includes('lasa')) return 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=420&q=78';
-  if (value.includes('café') || value.includes('cafe') || value.includes('coffee')) return 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=420&q=78';
-  if (value.includes('helado') || value.includes('icecream')) return 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=420&q=78';
-  if (value.includes('pan') || value.includes('scone') || value.includes('bizco') || value.includes('pastelito')) return 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=420&q=78';
-  if (value.includes('cordero') || value.includes('bife') || value.includes('parrill') || value.includes('lomo')) return 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=420&q=78';
-  return 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=420&q=78';
-}
-
-function googlePlaceId(place: Place): string | undefined {
-  return GOOGLE_PLACE_IDS[place.id];
-}
-
-function mapsUrl(place: Place): string {
-  const base = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(place.name + ', ' + place.address);
-  const placeId = googlePlaceId(place);
-  return placeId ? base + '&query_place_id=' + encodeURIComponent(placeId) : base;
-}
-
-function googleWriteReviewUrl(place: Place): string {
-  const placeId = googlePlaceId(place);
-  return placeId ? 'https://search.google.com/local/writereview?placeid=' + encodeURIComponent(placeId) : mapsUrl(place);
-}
-
-function googleReviewsLabel(): string {
-  const labels: Record<LangCode, string> = { es:'Ver reseñas en Google', en:'View Google reviews', pt:'Ver avaliações no Google', fr:'Voir les avis Google', de:'Google-Bewertungen ansehen', it:'Vedi recensioni Google', zh:'查看 Google 评价', ar:'عرض مراجعات Google', ru:'Отзывы Google', hi:'Google समीक्षाएँ देखें' };
-  return labels[currentLang];
-}
-
-function writeGoogleReviewLabel(): string {
-  const labels: Record<LangCode, string> = { es:'Escribir reseña', en:'Write a review', pt:'Escrever avaliação', fr:'Écrire un avis', de:'Bewertung schreiben', it:'Scrivi una recensione', zh:'撰写评价', ar:'اكتب مراجعة', ru:'Оставить отзыв', hi:'समीक्षा लिखें' };
-  return labels[currentLang];
-}
-
-function googleRatingHtml(place: Place): string {
-  return '<span class="google-rating"><b>Google</b><strong>★ ' + place.rating.toFixed(1) + '</strong><small>' + place.reviews.toLocaleString('es-AR') + ' reviews</small></span>';
-}
-
-function callUrl(place: Place): string {
-  return 'tel:' + place.phone.replace(/[^\d+]/g, '');
-}
-
-function openWhats(message: string, number: string = DEFAULT_WHATSAPP): void {
-  window.open('https://wa.me/' + number + '?text=' + encodeURIComponent(message), '_blank', 'noopener');
-}
-
-function openPlaceWhats(place: Place, context: 'info' | 'benefit' = 'info'): void {
-  const direct = Boolean(place.whatsapp);
-  const message = direct
-    ? 'Hola 👋 Vi *' + place.name + '* en la guía digital de Perla Andina. ' + (context === 'benefit' ? 'Quiero consultar por el beneficio publicado en la guía.' : 'Quiero hacer una consulta.')
-    : 'Hola Perla Andina 👋 Estoy viendo *' + place.name + '* en la guía digital y quiero hacer una consulta.';
-  openWhats(message, place.whatsapp || DEFAULT_WHATSAPP);
-}
-
-function showToast(message: string): void {
-  toast.textContent = message;
-  toast.classList.add('show');
-  window.setTimeout(() => toast.classList.remove('show'), 1700);
-}
-
-function updateChrome(): void {
-  document.documentElement.lang = currentLang;
-  document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-  const brandSub = document.querySelector<HTMLElement>('.brand small');
-  if (brandSub) brandSub.textContent = t('brand_sub');
-  const langButton = document.querySelector<HTMLButtonElement>('#favShortcut');
-  if (langButton) {
-    langButton.textContent = flag();
-    langButton.title = t('language');
-  }
-  const navLabels: Record<string, { icon: string; label: string }> = {
-    home: { icon: '⌖', label: t('home') },
-    explore: { icon: '⌕', label: t('explore') },
-    map: { icon: '◎', label: t('map') },
-    benefits: { icon: '◇', label: t('benefits') },
-    profile: { icon: '◯', label: t('profile') },
-  };
-  document.querySelectorAll<HTMLButtonElement>('.bottom-nav button').forEach(button => {
-    const key = button.dataset.tab || 'home';
-    const item = navLabels[key];
-    if (item) button.innerHTML = '<span>' + item.icon + '</span>' + item.label;
-    button.classList.toggle('active', key === currentTab);
-  });
-}
-
-function categoryChips(): string {
-  return categoryKeys
-    .map(key => {
-      const label = key === 'all' ? t('all') : t(key);
-      return '<button data-category="' + key + '" class="' + (currentCategory === key ? 'active' : '') + '">' + label + '</button>';
-    })
-    .join('');
-}
-
-function filteredPlaces(): Place[] {
-  const q = searchTerm.trim().toLowerCase();
-  return places.filter(place => {
-    const categoryOk = currentCategory === 'all' || place.typeKey === currentCategory;
-    const text = [place.name, place.address, place.description, typeLabel(place), ...place.items].join(' ').toLowerCase();
-    return categoryOk && (!q || text.includes(q));
-  });
-}
-
-function renderHome(): string {
-  return (
-    '<section class="map-home">' +
-      '<div class="map-shell">' +
-        '<div id="map"></div>' +
-        '<div class="map-top">' +
-          '<div class="map-title"><span>PERLA ANDINA</span><strong>' + t('map_title') + '</strong><small>' + t('map_sub') + '</small></div>' +
-          '<label class="map-search"><span>⌕</span><input id="homeSearch" value="' + searchTerm.replace(/"/g, '&quot;') + '" placeholder="' + t('search') + '"></label>' +
-          '<div class="map-chips">' + categoryChips() + '</div>' +
-        '</div>' +
-        '<button class="locate-btn" id="locateButton" title="' + t('locate') + '">◎</button>' +
-        '<div class="map-legend"><span>🎁</span><div><strong>' + t('map_benefit') + '</strong><small>' + benefitStatusLabel() + '</small></div></div>' +
-      '</div>' +
-      '<div id="mapSelectionCard" class="map-selection-card" hidden></div>' +
-      '<div class="map-after">' +
-        '<div><span>' + t('places') + '</span><strong>' + filteredPlaces().length + '</strong></div>' +
-        '<div><span>' + t('categories') + '</span><strong>' + (categoryKeys.length - 1) + '</strong></div>' +
-        '<button data-action="go-benefits">🎁 ' + t('benefits') + '</button>' +
-      '</div>' +
-    '</section>'
-  );
-}
-
-function renderMapPage(): string {
-  return (
-    '<section>' +
-      '<div class="page-head compact"><span>PERLA ANDINA</span><h1>' + t('map_title') + '</h1><p>' + t('map_sub') + '</p></div>' +
-      '<div class="map-page-wrap"><div id="map"></div><button class="locate-btn page" id="locateButton" title="' + t('locate') + '">◎</button></div>' +
-      '<div id="mapSelectionCard" class="map-selection-card page" hidden></div>' +
-      '<div class="map-chips page">' + categoryChips() + '</div>' +
-      '<div class="map-list">' +
-        filteredPlaces().map(place => miniPlace(place)).join('') +
-      '</div>' +
-    '</section>'
-  );
-}
-
-function miniPlace(place: Place): string {
-  return (
-    '<article class="mini-place" data-place="' + place.id + '">' +
-      '<div class="mini-icon" style="--accent:' + place.accent + '">' + place.icon + '</div>' +
-      '<div><strong>' + place.name + '</strong><span>' + typeLabel(place) + '</span>' + googleRatingHtml(place) + '<small>🎁 ' + benefitLabel(place) + ' <b class="benefit-status-inline">' + benefitStatusLabel() + '</b></small></div>' +
-      '<button>›</button>' +
-    '</article>'
-  );
-}
-
-function renderExplore(): string {
-  const list = filteredPlaces();
-  return (
-    '<section>' +
-      '<div class="page-head"><span>PERLA ANDINA</span><h1>' + t('explore') + '</h1><p>' + t('map_sub') + '</p></div>' +
-      '<label class="search"><span>⌕</span><input id="searchInput" value="' + searchTerm.replace(/"/g, '&quot;') + '" placeholder="' + t('search') + '"></label>' +
-      '<div class="chips">' + categoryChips() + '</div>' +
-      '<div class="list">' +
-        (list.length
-          ? list.map(place =>
-            '<article class="list-card" data-place="' + place.id + '">' +
-              '<div class="list-art" style="--accent:' + place.accent + '">' + place.icon + '</div>' +
-              '<div><h3>' + place.name + '</h3><div class="meta"><span>' + typeLabel(place) + '</span></div>' + googleRatingHtml(place) + '<p>' + place.address + '</p><small class="benefit-line">🎁 ' + benefitLabel(place) + ' <b class="benefit-status-inline">' + benefitStatusLabel() + '</b></small></div>' +
-              '<button class="arrow">›</button>' +
-            '</article>'
-          ).join('')
-          : '<div class="empty">' + t('no_results') + '</div>') +
-      '</div>' +
-    '</section>'
-  );
-}
-
-function renderBenefits(): string {
-  return (
-    '<section>' +
-      '<div class="page-head"><span>PERLA ANDINA</span><h1>' + t('coupons_title') + '</h1><p>' + t('coupons_sub') + '</p></div>' +
-      '<div class="notice"><strong>' + t('demo') + '</strong><br>' + t('demo_notice') + '</div>' +
-      '<div class="coupons">' +
-        places.map(place =>
-          '<article class="coupon" style="background:linear-gradient(135deg,' + place.accent + ',#09263d)">' +
-            '<div class="coupon-top"><span>' + place.icon + '</span><small>' + place.name + '</small></div>' +
-            '<span class="benefit-status">' + benefitStatusLabel() + '</span>' +
-            '<h3>' + benefitLabel(place) + '</h3>' +
-            '<p>' + t('benefit_detail') + '</p>' +
-            '<div class="coupon-foot"><span class="coupon-code">' + t('demo') + '</span><button data-coupon="' + place.id + '">' + t('consult') + '</button></div>' +
-          '</article>'
-        ).join('') +
-      '</div>' +
-    '</section>'
-  );
-}
-
-function renderProfile(): string {
-  const totalQty = selection.reduce((sum, row) => sum + row.qty, 0);
-  return (
-    '<section>' +
-      '<div class="page-head"><span>PERLA ANDINA</span><h1>' + t('my_account') + '</h1></div>' +
-      '<div class="profile">' +
-        '<div class="profile-mark">▲</div><h2>' + t('visitor') + '</h2><p>' + t('brand_sub') + '</p>' +
-        '<div class="profile-stats">' +
-          '<div><strong>' + favorites.length + '</strong><span>' + t('favorites') + '</span></div>' +
-          '<div><strong>' + totalQty + '</strong><span>' + t('selected') + '</span></div>' +
-          '<div><strong>' + places.length + '</strong><span>' + t('allies') + '</span></div>' +
-        '</div>' +
-      '</div>' +
-      '<button class="wide" data-action="cart">🛍️ ' + t('cart') + '</button>' +
-      '<button class="wide secondary" data-action="language">🌐 ' + t('language') + '</button>' +
-      '<button class="wide whatsapp-wide" data-action="contact">💬 ' + t('contact') + '</button>' +
-      '<div class="notice"><strong>' + t('version') + ':</strong> ' + VERSION + '</div>' +
-    '</section>'
-  );
-}
-
-function render(): void {
-  if (mapInstance) {
-    mapInstance.remove();
-    mapInstance = null;
-    markers.clear();
-  }
-  if (currentTab === 'home') view.innerHTML = renderHome();
-  if (currentTab === 'explore') view.innerHTML = renderExplore();
-  if (currentTab === 'map') view.innerHTML = renderMapPage();
-  if (currentTab === 'benefits') view.innerHTML = renderBenefits();
-  if (currentTab === 'profile') view.innerHTML = renderProfile();
-  updateChrome();
-  bindViewEvents();
-  if (currentTab === 'home' || currentTab === 'map') window.setTimeout(() => void initMap(), 80);
-}
-
-function switchTab(tab: string): void {
-  currentTab = tab;
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function bindViewEvents(): void {
-  view.querySelectorAll<HTMLElement>('[data-place]').forEach(element => {
-    element.addEventListener('click', () => openPlace(element.dataset.place || ''));
-  });
-
-  view.querySelectorAll<HTMLButtonElement>('[data-action]').forEach(button => {
-    button.addEventListener('click', () => handleAction(button.dataset.action || ''));
-  });
-
-  view.querySelectorAll<HTMLButtonElement>('[data-category]').forEach(button => {
-    button.addEventListener('click', () => {
-      currentCategory = button.dataset.category || 'all';
-      render();
-    });
-  });
-
-  view.querySelectorAll<HTMLButtonElement>('[data-coupon]').forEach(button => {
-    button.addEventListener('click', () => useCoupon(button.dataset.coupon || ''));
-  });
-
-  const search = document.querySelector<HTMLInputElement>('#searchInput');
-  if (search) {
-    search.addEventListener('input', () => {
-      searchTerm = search.value;
-      render();
-    });
-  }
-
-  const homeSearch = document.querySelector<HTMLInputElement>('#homeSearch');
-  if (homeSearch) {
-    homeSearch.addEventListener('change', () => {
-      searchTerm = homeSearch.value;
-      render();
-    });
-    homeSearch.addEventListener('keydown', event => {
-      if (event.key === 'Enter') {
-        searchTerm = homeSearch.value;
-        currentTab = 'explore';
-        render();
-      }
-    });
-  }
-
-  document.querySelector<HTMLButtonElement>('#locateButton')?.addEventListener('click', locateUser);
-}
-
-function handleAction(action: string): void {
-  if (action === 'go-benefits') switchTab('benefits');
-  if (action === 'cart') openSelection();
-  if (action === 'language') showLanguagePicker();
-  if (action === 'contact') openWhats('Hola Perla Andina 👋 Quiero información sobre El Calafate.');
-}
-
-function openSheet(html: string): void {
-  sheetContent.innerHTML = html;
-  sheet.classList.add('open');
-  sheet.setAttribute('aria-hidden', 'false');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeSheet(): void {
-  sheet.classList.remove('open');
-  sheet.setAttribute('aria-hidden', 'true');
-  document.body.style.overflow = '';
-}
-
-function openPlace(id: string): void {
-  const place = places.find(item => item.id === id);
-  if (!place) return;
-  const sectionLabel = place.food ? t('menu') : t('services');
-  const rows = place.items
-    .map(item => {
-      const image = productImage(place, item);
-      return (
-        '<div class="menu-row">' +
-          (image ? '<div class="product-photo"><img src="' + image + '" alt="' + item.replace(/"/g, '&quot;') + '" loading="lazy"><small>' + illustrativePhotoLabel() + '</small></div>' : '<div class="product-photo fallback"><span>' + place.icon + '</span></div>') +
-          '<div class="menu-copy"><strong>' + item + '</strong><p>' + t('ask') + '</p></div>' +
-          '<div class="menu-side"><button class="add" data-add="' + place.id + '::' + item.replace(/"/g, '&quot;') + '">+</button></div>' +
-        '</div>'
-      );
-    })
-    .join('');
-
-  openSheet(
-    '<div class="place-hero" style="--accent:' + place.accent + '"><span>' + place.icon + '</span><small>' + typeLabel(place) + '</small></div>' +
-    '<div class="place-info">' +
-      '<div class="meta"><span>' + typeLabel(place) + '</span></div>' +
-      googleRatingHtml(place) +
-      '<h2>' + place.name + '</h2><p>' + place.description + '</p>' +
-      '<div class="actions">' +
-        '<a href="' + mapsUrl(place) + '" target="_blank" rel="noopener"><span>📍</span>' + t('route') + '</a>' +
-        '<button data-place-whats="' + place.id + '"><span>💬</span>' + t('whatsapp') + '</button>' +
-        '<a href="' + callUrl(place) + '"><span>☎️</span>' + t('phone') + '</a>' +
-        '<button data-fav="' + place.id + '"><span>' + (favorites.includes(place.id) ? '♥' : '♡') + '</span>' + (favorites.includes(place.id) ? t('saved') : t('save')) + '</button>' +
-      '</div>' +
-      '<div class="google-review-actions"><a href="' + mapsUrl(place) + '" target="_blank" rel="noopener">🔎 ' + googleReviewsLabel() + '</a><a href="' + googleWriteReviewUrl(place) + '" target="_blank" rel="noopener">⭐ ' + writeGoogleReviewLabel() + '</a></div>' +
-      '<div class="info"><strong>' + t('address') + '</strong><br>' + place.address + '<br><strong>' + t('phone') + ':</strong> ' + place.phone + '<br><strong>' + t('hours') + ':</strong> ' + place.hours + '</div>' +
-      '<div class="menu"><h3>' + sectionLabel + '</h3>' + rows + '</div>' +
-      '<div class="demo-box"><span class="benefit-status">' + benefitStatusLabel() + '</span><small>' + t('demo') + '</small><h3>' + benefitLabel(place) + '</h3><p>' + t('benefit_detail') + '</p><button class="primary" data-coupon="' + place.id + '">' + t('consult') + ' · WhatsApp</button></div>' +
-      '<div class="info"><strong>' + t('public_data') + '</strong><br>' + place.name + ' · ' + place.address + '</div>' +
-    '</div>'
-  );
-
-  sheetContent.querySelectorAll<HTMLButtonElement>('[data-add]').forEach(button => {
-    button.addEventListener('click', () => addToSelection(button.dataset.add || ''));
-  });
-  sheetContent.querySelectorAll<HTMLButtonElement>('[data-place-whats]').forEach(button => {
-    button.addEventListener('click', () => {
-      const selectedPlace = places.find(item => item.id === button.dataset.placeWhats);
-      if (selectedPlace) openPlaceWhats(selectedPlace);
-    });
-  });
-  sheetContent.querySelectorAll<HTMLButtonElement>('[data-fav]').forEach(button => {
-    button.addEventListener('click', () => toggleFavorite(button.dataset.fav || ''));
-  });
-  sheetContent.querySelectorAll<HTMLButtonElement>('[data-coupon]').forEach(button => {
-    button.addEventListener('click', () => useCoupon(button.dataset.coupon || ''));
-  });
-}
-
-function toggleFavorite(id: string): void {
-  favorites = favorites.includes(id) ? favorites.filter(item => item !== id) : [...favorites, id];
-  localStorage.setItem('pa-favorites', JSON.stringify(favorites));
-  showToast(favorites.includes(id) ? t('favorite_added') : t('favorite_removed'));
-  openPlace(id);
-}
-
-function addToSelection(key: string): void {
-  const splitIndex = key.indexOf('::');
-  if (splitIndex < 0) return;
-  const placeId = key.slice(0, splitIndex);
-  const item = key.slice(splitIndex + 2);
-  const row = selection.find(entry => entry.placeId === placeId && entry.item === item);
-  if (row) row.qty += 1;
-  else selection.push({ placeId, item, qty: 1 });
-  localStorage.setItem('pa-selection', JSON.stringify(selection));
-  showToast(t('added'));
-}
-
-function openSelection(): void {
-  if (!selection.length) {
-    openSheet('<span class="modal-kicker">' + t('cart') + '</span><h2>' + t('selected') + '</h2><div class="empty">' + t('empty_cart') + '</div>');
-    return;
-  }
-
-  const rows = selection
-    .map(row => {
-      const place = places.find(item => item.id === row.placeId);
-      if (!place) return '';
-      return (
-        '<div class="cart-row"><div><strong>' + row.item + '</strong><small>' + place.name + '</small></div>' +
-        '<div class="qty"><button data-minus="' + place.id + '::' + row.item.replace(/"/g, '&quot;') + '">−</button><b>' + row.qty + '</b><button data-plus="' + place.id + '::' + row.item.replace(/"/g, '&quot;') + '">+</button></div>' +
-        '<button data-remove="' + place.id + '::' + row.item.replace(/"/g, '&quot;') + '">×</button></div>'
-      );
-    })
-    .join('');
-
-  openSheet('<span class="modal-kicker">' + t('cart') + '</span><h2>' + t('selected') + '</h2>' + rows + '<button class="whatsapp" id="sendSelection">' + t('send_whatsapp') + '</button>');
-
-  sheetContent.querySelectorAll<HTMLButtonElement>('[data-minus]').forEach(button => {
-    button.addEventListener('click', () => changeSelection(button.dataset.minus || '', -1));
-  });
-  sheetContent.querySelectorAll<HTMLButtonElement>('[data-plus]').forEach(button => {
-    button.addEventListener('click', () => changeSelection(button.dataset.plus || '', 1));
-  });
-  sheetContent.querySelectorAll<HTMLButtonElement>('[data-remove]').forEach(button => {
-    button.addEventListener('click', () => removeSelection(button.dataset.remove || ''));
-  });
-  document.querySelector<HTMLButtonElement>('#sendSelection')?.addEventListener('click', sendSelection);
-}
-
-function splitSelectionKey(key: string): { placeId: string; item: string } | null {
-  const splitIndex = key.indexOf('::');
-  if (splitIndex < 0) return null;
-  return { placeId: key.slice(0, splitIndex), item: key.slice(splitIndex + 2) };
-}
-
-function changeSelection(key: string, delta: number): void {
-  const parsed = splitSelectionKey(key);
-  if (!parsed) return;
-  const row = selection.find(entry => entry.placeId === parsed.placeId && entry.item === parsed.item);
-  if (!row) return;
-  row.qty += delta;
-  if (row.qty <= 0) selection = selection.filter(entry => entry !== row);
-  localStorage.setItem('pa-selection', JSON.stringify(selection));
-  openSelection();
-}
-
-function removeSelection(key: string): void {
-  const parsed = splitSelectionKey(key);
-  if (!parsed) return;
-  selection = selection.filter(entry => !(entry.placeId === parsed.placeId && entry.item === parsed.item));
-  localStorage.setItem('pa-selection', JSON.stringify(selection));
-  openSelection();
-}
-
-function sendSelection(): void {
-  const uniquePlaceIds = [...new Set(selection.map(row => row.placeId))];
-  const singlePlace = uniquePlaceIds.length === 1 ? places.find(place => place.id === uniquePlaceIds[0]) : undefined;
-  const direct = Boolean(singlePlace?.whatsapp);
-  const lines = [direct ? 'Hola 👋 Vi su negocio en la guía digital de Perla Andina.' : 'Hola Perla Andina 👋', 'Quiero consultar esta selección:', ''];
-  selection.forEach(row => {
-    const place = places.find(item => item.id === row.placeId);
-    if (place) lines.push('• ' + row.qty + 'x ' + row.item + ' — ' + place.name);
-  });
-  lines.push('', '¿Me confirman disponibilidad y valores?');
-  openWhats(lines.join('\n'), singlePlace?.whatsapp || DEFAULT_WHATSAPP);
-}
-
-function useCoupon(id: string): void {
-  const place = places.find(item => item.id === id);
-  if (!place) return;
-  openPlaceWhats(place, 'benefit');
-}
-
-function markerHtml(place: Place): string {
-  const featuredClass = place.id === 'perla-andina' ? ' perla-marker' : '';
-  const badge = place.id === 'perla-andina' ? '★' : '🎁';
-  return '<div class="pa-marker' + featuredClass + '" style="--accent:' + place.accent + '"><span>' + place.icon + '</span><b>' + badge + '</b>' + (place.id === 'perla-andina' ? '<em>PERLA</em>' : '') + '</div>';
-}
-
-function placePopup(place: Place): string {
-  return (
-    '<div class="map-popup">' +
-      '<div class="map-popup-title"><span>' + place.icon + '</span><div><strong>' + place.name + '</strong><small>' + typeLabel(place) + '</small>' + googleRatingHtml(place) + '<em>' + place.address + '</em></div></div>' +
-      '<div class="map-popup-benefit">🎁 <b>' + benefitLabel(place) + '</b><small class="benefit-status-inline">' + benefitStatusLabel() + '</small></div>' +
-      '<div class="map-card-actions"><button class="map-open" data-map-open="' + place.id + '">' + t('see_place') + '</button><a class="map-route" href="' + mapsUrl(place) + '" target="_blank" rel="noopener">📍 ' + t('route') + '</a><button class="map-whats" data-map-whats="' + place.id + '">💬 ' + t('whatsapp') + '</button><a class="map-review" href="' + googleWriteReviewUrl(place) + '" target="_blank" rel="noopener">⭐ ' + writeGoogleReviewLabel() + '</a></div>' +
-    '</div>'
-  );
-}
-
-function showMapPlaceCard(place: Place): void {
-  const card = document.querySelector<HTMLElement>('#mapSelectionCard');
-  if (!card) return;
-  card.innerHTML = placePopup(place);
-  card.hidden = false;
-  card.querySelector<HTMLButtonElement>('[data-map-open="' + place.id + '"]')?.addEventListener('click', () => openPlace(place.id));
-  card.querySelector<HTMLButtonElement>('[data-map-whats="' + place.id + '"]')?.addEventListener('click', () => openPlaceWhats(place));
-  window.setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 40);
-}
-
-function addMarker(place: Place): void {
-  if (!mapInstance || place.lat === null || place.lng === null || markers.has(place.id)) return;
-  const featured = place.id === 'perla-andina';
-  const icon = L.divIcon({
-    className: 'pa-marker-wrap',
-    html: markerHtml(place),
-    iconSize: featured ? [68, 72] : [46, 52],
-    iconAnchor: featured ? [34, 66] : [23, 48],
-    popupAnchor: [0, featured ? -61 : -45],
-  });
-  const marker = L.marker([place.lat, place.lng], { icon }).addTo(mapInstance);
-  marker.on('click', () => {
-    showMapPlaceCard(place);
-    mapInstance.panTo([place.lat, place.lng]);
-  });
-  markers.set(place.id, marker);
-}
-
-async function ensureCoordinates(place: Place): Promise<void> {
-  if (place.lat !== null && place.lng !== null) return;
-  const cacheKey = 'pa-geo-' + place.id;
-  const cached = localStorage.getItem(cacheKey);
-  if (cached) {
-    try {
-      const parsed = JSON.parse(cached) as { lat: number; lng: number };
-      place.lat = parsed.lat;
-      place.lng = parsed.lng;
-      return;
-    } catch {
-      localStorage.removeItem(cacheKey);
-    }
-  }
-
-  try {
-    const query = encodeURIComponent(place.address + ', Argentina');
-    const response = await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=ar&q=' + query, {
-      headers: { 'Accept-Language': 'es' },
-    });
-    if (!response.ok) return;
-    const data = (await response.json()) as Array<{ lat: string; lon: string }>;
-    if (data[0]) {
-      place.lat = Number(data[0].lat);
-      place.lng = Number(data[0].lon);
-      localStorage.setItem(cacheKey, JSON.stringify({ lat: place.lat, lng: place.lng }));
-    }
-  } catch {
-    return;
-  }
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => window.setTimeout(resolve, ms));
-}
-
-async function geocodeMissing(): Promise<void> {
-  for (const place of filteredPlaces()) {
-    if (place.lat === null || place.lng === null) {
-      await ensureCoordinates(place);
-      addMarker(place);
-      await sleep(1100);
-    }
-  }
-}
-
-async function initMap(): Promise<void> {
-  if (typeof L === 'undefined') {
-    showToast(t('map_error'));
-    return;
-  }
-  const mapNode = document.querySelector('#map');
-  if (!mapNode) return;
-
-  mapInstance = L.map('map', { zoomControl: false, attributionControl: true }).setView([-50.3372, -72.2638], 15);
-  L.control.zoom({ position: 'bottomright' }).addTo(mapInstance);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap',
-  }).addTo(mapInstance);
-
-  filteredPlaces().forEach(addMarker);
-  void geocodeMissing();
-}
-
-function locateUser(): void {
-  if (!navigator.geolocation || !mapInstance) return;
-  navigator.geolocation.getCurrentPosition(position => {
-    const coords: [number, number] = [position.coords.latitude, position.coords.longitude];
-    if (userMarker) userMarker.remove();
-    userMarker = L.circleMarker(coords, {
-      radius: 8,
-      color: '#ffffff',
-      weight: 3,
-      fillColor: '#079ac3',
-      fillOpacity: 1,
-    }).addTo(mapInstance);
-    mapInstance.setView(coords, 16);
-  });
-}
-
-function showLanguagePicker(): void {
-  let modal = document.querySelector<HTMLElement>('#languagePicker');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'languagePicker';
-    modal.className = 'language-picker';
-    document.body.appendChild(modal);
-  }
-  modal.innerHTML =
-    '<div class="language-panel">' +
-      '<div class="language-brand"><div class="language-logo">▲</div><div><b>PERLA ANDINA</b><span>EL CALAFATE</span></div></div>' +
-      '<h2>' + t('choose_language') + '</h2><p>' + t('choose_language_sub') + '</p>' +
-      '<div class="language-grid">' +
-        languages.map(language =>
-          '<button data-lang="' + language.code + '" class="' + (language.code === currentLang ? 'selected' : '') + '"><span>' + language.flag + '</span><b>' + language.name + '</b></button>'
-        ).join('') +
-      '</div>' +
-    '</div>';
-  modal.classList.add('open');
-  modal.querySelectorAll<HTMLButtonElement>('[data-lang]').forEach(button => {
-    button.addEventListener('click', () => {
-      currentLang = button.dataset.lang as LangCode;
-      localStorage.setItem('pa-language', currentLang);
-      modal?.classList.remove('open');
-      updateChrome();
-      render();
-    });
-  });
-}
-
-document.querySelectorAll<HTMLButtonElement>('.bottom-nav button').forEach(button => {
-  button.addEventListener('click', () => switchTab(button.dataset.tab || 'home'));
-});
-
-document.querySelector<HTMLButtonElement>('#brandHome')?.addEventListener('click', () => switchTab('home'));
-document.querySelector<HTMLButtonElement>('#favShortcut')?.addEventListener('click', showLanguagePicker);
-document.querySelector<HTMLElement>('.sheet-backdrop')?.addEventListener('click', closeSheet);
-document.querySelector<HTMLButtonElement>('.sheet-close')?.addEventListener('click', closeSheet);
-
-updateChrome();
-render();
-showLanguagePicker();
+  {
+    id: 'farmacia-el-calafate',
+    name: 'Farmacia El Calafate',
+    typeKey: 'type_pharmacy',
+    rating: 3.8,
+    reviews: 37,
+    address: 'Av. del Libertador 1190, El Calafate',
+    phone: '+54 2902 49-1407',
+    hours: 'Lun a Sáb · 08:00–22:00 · Dom 11:00–14:00 / 17:00–22:00',
+    accent: '#2f9f65',
+    initials: 'FE',
+    icon: '💊',
+    lat: null,
+    lng: null,
+    description: 'Farmacia sobre la avenida principal de El Calafate.',
+    items: ['Consultar disponibilidad', 'Productos de farmacia'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'farmacia-franco-sur',
+    name: 'Farmacias La Franco del Sur',
+    typeKey: 'type_pharmacy',
+    rating: 3.7,
+    reviews: 63,
+    address: 'Av. del Libertador 1337, El Calafate',
+    phone: '+54 2902 49-1496',
+    hours: 'Lun a Sáb · 09:00–21:00',
+    accent: '#2f9f65',
+    initials: 'FS',
+    icon: '💊',
+    lat: null,
+    lng: null,
+    description: 'Sucursal El Calafate de Farmacias La Franco del Sur.',
+    items: ['Consultar disponibilidad', 'Productos de farmacia'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'farmacia-santa-lucia',
+    name: 'Farmacia Santa Lucia',
+    typeKey: 'type_pharmacy',
+    rating: 3.5,
+    reviews: 17,
+    address: 'Av. Salvador Lara 1162, Local 1, El Calafate',
+    phone: '+54 2902 49-4666',
+    hours: 'Todos los días · 08:00–00:00',
+    accent: '#2f9f65',
+    initials: 'SL',
+    icon: '💊',
+    lat: null,
+    lng: null,
+    description: 'Farmacia en Av. Salvador Lara.',
+    items: ['Consultar disponibilidad', 'Productos de farmacia'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'farmacia-del-rosario',
+    name: 'Farmacia del Rosario',
+    typeKey: 'type_pharmacy',
+    rating: 4.6,
+    reviews: 23,
+    address: '9 de Julio 28, El Calafate',
+    phone: '+54 2902 50-0700',
+    hours: 'Consultar horario del día',
+    accent: '#2f9f65',
+    initials: 'FR',
+    icon: '💊',
+    lat: null,
+    lng: null,
+    description: 'Farmacia ubicada en 9 de Julio.',
+    items: ['Consultar disponibilidad', 'Productos de farmacia'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'farmacia-libertador',
+    name: 'Farmacia Libertador',
+    typeKey: 'type_pharmacy',
+    rating: 4.3,
+    reviews: 12,
+    address: 'Av. del Libertador 1536, El Calafate',
+    phone: '+54 2966 78-6857',
+    hours: 'Lun a Vie · 08:00–23:00 · Sáb y Dom 09:00–23:00',
+    accent: '#2f9f65',
+    initials: 'FL',
+    icon: '💊',
+    lat: null,
+    lng: null,
+    description: 'Farmacia sobre Av. del Libertador.',
+    items: ['Consultar disponibilidad', 'Productos de farmacia'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'farmacia-don-bosco',
+    name: 'Farmacia Don Bosco',
+    typeKey: 'type_pharmacy',
+    rating: 4.5,
+    reviews: 62,
+    address: 'Julio Argentino Roca 1350, El Calafate',
+    phone: '+54 2902 40-4438',
+    hours: 'Todos los días · 08:00–03:00',
+    accent: '#2f9f65',
+    initials: 'DB',
+    icon: '💊',
+    lat: null,
+    lng: null,
+    description: 'Farmacia Don Bosco en El Calafate.',
+    items: ['Consultar disponibilidad', 'Productos de farmacia'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'farmacia-the-pharmacy',
+    name: 'Farmacia The Pharmacy',
+    typeKey: 'type_pharmacy',
+    rating: 4.7,
+    reviews: 6,
+    address: 'Monseñor Fagnano y Av. 17 de Octubre 1414, El Calafate',
+    phone: '+54 2902 48-9748',
+    hours: 'Lun a Sáb · 07:00–23:00 · Dom 09:00–23:00',
+    accent: '#2f9f65',
+    initials: 'TP',
+    icon: '💊',
+    lat: null,
+    lng: null,
+    description: 'Farmacia en la zona de Av. 17 de Octubre.',
+    items: ['Consultar disponibilidad', 'Productos de farmacia'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'remis-calafate-viajes',
+    name: 'Taxi Remis Calafate Viajes Turísticos',
+    typeKey: 'type_taxi',
+    rating: 4.7,
+    reviews: 372,
+    address: 'Julio Argentino Roca 1104, El Calafate',
+    phone: '+54 2902 48-4111',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'RC',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de taxi y remis en El Calafate.',
+    items: ['Solicitar remis', 'Consultar traslado'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'ofc-traslados',
+    name: 'OFC Traslados',
+    typeKey: 'type_taxi',
+    rating: 4.9,
+    reviews: 50,
+    address: '9 de Julio 93, El Calafate',
+    phone: '+54 2966 40-1270',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'OFC',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de traslados y taxi en El Calafate.',
+    items: ['Solicitar traslado', 'Consultar viaje'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'calafate-central',
+    name: 'Calafate Central',
+    typeKey: 'type_taxi',
+    rating: 5.0,
+    reviews: 16,
+    address: '9 de Julio 133, El Calafate',
+    phone: '+54 2966 38-7340',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'CC',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de taxi en El Calafate.',
+    items: ['Solicitar taxi', 'Consultar traslado'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'remis-lago-argentino',
+    name: 'Remis Lago Argentino',
+    typeKey: 'type_taxi',
+    rating: 3.5,
+    reviews: 102,
+    address: 'Av. del Libertador y 15 de Febrero, El Calafate',
+    phone: '+54 2902 49-1479',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'LA',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Parada y servicio de remis en el centro de El Calafate.',
+    items: ['Solicitar remis', 'Consultar traslado'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'calafate-taxi',
+    name: 'Calafate Taxi',
+    typeKey: 'type_taxi',
+    rating: 5.0,
+    reviews: 4,
+    address: 'Av. Jorge Newbery 438, El Calafate',
+    phone: '+54 2966 63-4179',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'CT',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de taxi y traslado al aeropuerto.',
+    items: ['Solicitar taxi', 'Consultar aeropuerto'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'remises-otilnau',
+    name: 'Remises Otil-nau',
+    typeKey: 'type_taxi',
+    rating: 4.2,
+    reviews: 106,
+    address: 'Av. del Libertador 2107, El Calafate',
+    phone: '+54 2966 50-1271',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'ON',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de remis en El Calafate.',
+    items: ['Solicitar remis', 'Consultar traslado'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'blue-calafate',
+    name: 'Blue Calafate',
+    typeKey: 'type_taxi',
+    rating: 5.0,
+    reviews: 1,
+    address: '9 de Julio, El Calafate',
+    phone: '+54 9 2966 76-4900',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'BC',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de taxi en El Calafate.',
+    items: ['Solicitar taxi', 'Consultar traslado'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'taxi-remises-terminal',
+    name: 'Taxi/Remises La Terminal',
+    typeKey: 'type_taxi',
+    rating: 5.0,
+    reviews: 1,
+    address: 'Juan Esteban 222, El Calafate',
+    phone: '+54 9 2966 34-5696',
+    hours: 'Todos los días · 07:30–11:00',
+    accent: '#f6c945',
+    initials: 'LT',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de taxi y remis junto a la terminal.',
+    items: ['Solicitar taxi', 'Solicitar remis'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'taxiremis-region',
+    name: 'Taxi Remis Región',
+    typeKey: 'type_taxi',
+    rating: 4.2,
+    reviews: 5,
+    address: '9 de Julio 119, El Calafate',
+    phone: '+54 2902 49-1403',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'TR',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de taxi y remis en El Calafate.',
+    items: ['Solicitar taxi', 'Solicitar remis'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'traslados-privados-calafate',
+    name: 'Traslados Privados Calafate',
+    typeKey: 'type_taxi',
+    rating: 5.0,
+    reviews: 16,
+    address: 'Avenida Los Olivos 850, El Calafate',
+    phone: '+54 9 2966 34-3661',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'TP',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de traslados privados en El Calafate.',
+    items: ['Solicitar traslado', 'Consultar viaje'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'remis-nueva-libertador',
+    name: 'Remis La Nueva Libertador',
+    typeKey: 'type_taxi',
+    rating: 4.3,
+    reviews: 58,
+    address: 'Av. del Libertador 522, El Calafate',
+    phone: '+54 2902 49-0155',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'NL',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de remis y traslados.',
+    items: ['Solicitar remis', 'Consultar traslado'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'traslados-en-calafate',
+    name: 'Traslados en Calafate',
+    typeKey: 'type_taxi',
+    rating: 4.9,
+    reviews: 102,
+    address: 'Luis Haedo 35, El Calafate',
+    phone: '+54 2966 23-4069',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'TC',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de taxi y traslados en El Calafate.',
+    items: ['Solicitar traslado', 'Consultar viaje'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'remis-rolando',
+    name: 'Remis Rolando',
+    typeKey: 'type_taxi',
+    rating: 5.0,
+    reviews: 2,
+    address: 'Francisco M. Pontoriero 182, El Calafate',
+    phone: '+54 9 2966 72-5738',
+    hours: 'Consultar disponibilidad',
+    accent: '#f6c945',
+    initials: 'RR',
+    icon: '🚕',
+    lat: null,
+    lng: null,
+    description: 'Servicio de remis en El Calafate.',
+    items: ['Solicitar remis', 'Consultar traslado'],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'laguna-nimez',
+    name: 'Reserva Laguna Nimez',
+    typeKey: 'type_attraction',
+    rating: 4.3,
+    reviews: 6289,
+    address: 'Av. Costanera Pres. Néstor Carlos Kirchner 2075, El Calafate',
+    phone: '+54 2902 49-5536',
+    hours: 'Todos los días · 09:30–19:30',
+    accent: '#1d9b83',
+    initials: 'LN',
+    icon: '🦩',
+    lat: null,
+    lng: null,
+    description: 'Reserva natural urbana con sendero interpretativo y observación de aves.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'centro-interpretacion',
+    name: 'Centro de Interpretación Histórica Calafate',
+    typeKey: 'type_attraction',
+    rating: 4.4,
+    reviews: 2309,
+    address: 'Almirante G. Brown 1175, El Calafate',
+    phone: '+54 2902 49-2799',
+    hours: 'Todos los días · 10:00–18:00',
+    accent: '#5276a4',
+    initials: 'CI',
+    icon: '🏛️',
+    lat: null,
+    lng: null,
+    description: 'Museo y centro cultural dedicado a la historia natural y humana de la Patagonia austral.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'walichu',
+    name: 'Cuevas de Walichu / Punta Walichu',
+    typeKey: 'type_attraction',
+    rating: 4.4,
+    reviews: 2777,
+    address: 'Punta Walichu, El Calafate',
+    phone: '+54 2902 40-2073',
+    hours: 'Todos los días · 11:00–19:00',
+    accent: '#a05e39',
+    initials: 'PW',
+    icon: '🪨',
+    lat: null,
+    lng: null,
+    description: 'Reserva natural y arqueológica con arte rupestre y patrimonio de los pueblos originarios.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'plaza-perito-moreno',
+    name: 'Plaza Perito Moreno',
+    typeKey: 'type_attraction',
+    rating: 4.7,
+    reviews: 10,
+    address: 'Av. del Libertador 917-895, El Calafate',
+    phone: '',
+    hours: 'Abierto 24 horas',
+    accent: '#4b9a63',
+    initials: 'PM',
+    icon: '🌳',
+    lat: null,
+    lng: null,
+    description: 'Espacio público céntrico de El Calafate.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'heroes-malvinas',
+    name: 'Plazoleta Héroes de Malvinas',
+    typeKey: 'type_attraction',
+    rating: 4.2,
+    reviews: 230,
+    address: 'Av. del Libertador 1799-1849, El Calafate',
+    phone: '',
+    hours: 'Abierto 24 horas',
+    accent: '#4b9a63',
+    initials: 'HM',
+    icon: '🇦🇷',
+    lat: null,
+    lng: null,
+    description: 'Plazoleta y punto de interés sobre Av. del Libertador.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'glaciarium',
+    name: 'Glaciarium',
+    typeKey: 'type_attraction',
+    rating: 4.4,
+    reviews: 6340,
+    address: 'RP11, El Calafate',
+    phone: '+54 2902 49-7912',
+    hours: 'Todos los días · 12:00–19:00',
+    accent: '#3e9ed0',
+    initials: 'GL',
+    icon: '🧊',
+    lat: null,
+    lng: null,
+    description: 'Centro de interpretación dedicado al hielo y los glaciares patagónicos.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'museo-regional',
+    name: 'Museo de Historia Regional Horacio Echeverría',
+    typeKey: 'type_attraction',
+    rating: 3.8,
+    reviews: 85,
+    address: 'Av. del Libertador 575, El Calafate',
+    phone: '+54 2966 69-2304',
+    hours: 'Todos los días · 10:00–20:00',
+    accent: '#5276a4',
+    initials: 'MR',
+    icon: '🏛️',
+    lat: null,
+    lng: null,
+    description: 'Museo dedicado a la historia regional de El Calafate.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'museo-juguete',
+    name: 'Museo Argentino del Juguete',
+    typeKey: 'type_attraction',
+    rating: 4.4,
+    reviews: 656,
+    address: 'Av. del Libertador 975, El Calafate',
+    phone: '+54 2902 49-1400',
+    whatsapp: '5492966459544',
+    hours: 'Todos los días · 11:00–21:00',
+    accent: '#8a5fd3',
+    initials: 'MJ',
+    icon: '🧸',
+    lat: null,
+    lng: null,
+    description: 'Museo con miles de juguetes y objetos históricos de distintas generaciones.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'mirador-lago-argentino',
+    name: 'Mirador Lago Argentino',
+    typeKey: 'type_attraction',
+    rating: 4.7,
+    reviews: 1175,
+    address: 'Calle 2, El Calafate',
+    phone: '',
+    hours: 'Abierto 24 horas',
+    accent: '#3b87a5',
+    initials: 'ML',
+    icon: '👀',
+    lat: null,
+    lng: null,
+    description: 'Mirador panorámico con vistas sobre el Lago Argentino y la ciudad.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'mirador-ciudad',
+    name: 'Mirador de la Ciudad',
+    typeKey: 'type_attraction',
+    rating: 4.5,
+    reviews: 288,
+    address: 'El Calafate, Santa Cruz',
+    phone: '',
+    hours: 'Consultar acceso',
+    accent: '#3b87a5',
+    initials: 'MC',
+    icon: '👀',
+    lat: null,
+    lng: null,
+    description: 'Punto panorámico con vistas de El Calafate.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'plaza-pioneros',
+    name: 'Plaza de Los Pioneros',
+    typeKey: 'type_attraction',
+    rating: 4.5,
+    reviews: 1293,
+    address: 'Av. del Libertador 599-699, El Calafate',
+    phone: '',
+    hours: 'Abierto 24 horas',
+    accent: '#4b9a63',
+    initials: 'PP',
+    icon: '🌳',
+    lat: null,
+    lng: null,
+    description: 'Plaza histórica y espacio verde sobre la avenida principal.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'paseo-costanera',
+    name: 'Paseo Costanera Presidente Néstor Kirchner',
+    typeKey: 'type_attraction',
+    rating: 4.3,
+    reviews: 318,
+    address: 'Costanera de El Calafate',
+    phone: '',
+    hours: 'Abierto 24 horas',
+    accent: '#3b87a5',
+    initials: 'PC',
+    icon: '🌊',
+    lat: null,
+    lng: null,
+    description: 'Paseo costero junto al Lago Argentino.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'anfiteatro-bosque',
+    name: 'Anfiteatro del Bosque',
+    typeKey: 'type_attraction',
+    rating: 4.6,
+    reviews: 728,
+    address: 'Av. del Libertador 1500, El Calafate',
+    phone: '+54 2902 49-6497',
+    hours: 'Todos los días · 08:00–20:00',
+    accent: '#4b9a63',
+    initials: 'AB',
+    icon: '🎭',
+    lat: null,
+    lng: null,
+    description: 'Anfiteatro y punto de información sobre la avenida principal.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'punta-soberana',
+    name: 'Punta Soberana',
+    typeKey: 'type_attraction',
+    rating: 4.7,
+    reviews: 40,
+    address: 'Punta Soberana, El Calafate',
+    phone: '',
+    hours: 'Consultar acceso',
+    accent: '#3b87a5',
+    initials: 'PS',
+    icon: '🏞️',
+    lat: null,
+    lng: null,
+    description: 'Reserva natural y zona costera de El Calafate.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'playita-punta-soberana',
+    name: 'Playita Punta Soberana',
+    typeKey: 'type_attraction',
+    rating: 4.6,
+    reviews: 269,
+    address: 'Punta Soberana, El Calafate',
+    phone: '',
+    hours: 'Consultar acceso',
+    accent: '#3b87a5',
+    initials: 'PS',
+    icon: '🏖️',
+    lat: null,
+    lng: null,
+    description: 'Punto costero de Punta Soberana.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'estancia-25-mayo',
+    name: 'Estancia 25 de Mayo',
+    typeKey: 'type_attraction',
+    rating: 4.7,
+    reviews: 1221,
+    address: 'Ushuaia 200, El Calafate',
+    phone: '+54 2902 49-1450',
+    hours: 'Todos los días · 17:00–21:30',
+    accent: '#8b633f',
+    initials: '25M',
+    icon: '🐑',
+    lat: null,
+    lng: null,
+    description: 'Estancia y experiencia rural patagónica en El Calafate.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'punto-panoramico',
+    name: 'Punto Panorámico',
+    typeKey: 'type_attraction',
+    rating: 4.6,
+    reviews: 29,
+    address: 'MPJW+77, El Calafate',
+    phone: '',
+    hours: 'Abierto 24 horas',
+    accent: '#3b87a5',
+    initials: 'PP',
+    icon: '📷',
+    lat: null,
+    lng: null,
+    description: 'Punto panorámico de la zona de El Calafate.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'canadon-arroyo-calafate',
+    name: 'Cañadón del Arroyo Calafate',
+    typeKey: 'type_attraction',
+    rating: 4.5,
+    reviews: 301,
+    address: 'El Calafate, Santa Cruz',
+    phone: '',
+    hours: 'Consultar acceso',
+    accent: '#866a49',
+    initials: 'CA',
+    icon: '🥾',
+    lat: null,
+    lng: null,
+    description: 'Área natural y sendero en las cercanías de la ciudad.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'mountain-park',
+    name: 'Mountain Park',
+    typeKey: 'type_attraction',
+    rating: 4.6,
+    reviews: 102,
+    address: 'Calle 3015 Nº 2028, El Calafate',
+    phone: '+54 9 2902 41-6200',
+    hours: 'Todos los días · 09:00–17:00',
+    accent: '#5c7a42',
+    initials: 'MP',
+    icon: '🏔️',
+    lat: null,
+    lng: null,
+    description: 'Atracción turística de montaña en El Calafate.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'glaciar-perito-moreno',
+    name: 'Glaciar Perito Moreno',
+    typeKey: 'type_attraction',
+    rating: 4.9,
+    reviews: 2373,
+    address: 'Parque Nacional Los Glaciares, Santa Cruz',
+    phone: '',
+    hours: 'Consultar horario del Parque Nacional',
+    accent: '#3e9ed0',
+    initials: 'GPM',
+    icon: '🧊',
+    lat: null,
+    lng: null,
+    description: 'Uno de los principales atractivos del Parque Nacional Los Glaciares, a unos 80 km de El Calafate.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'parque-los-glaciares',
+    name: 'Parque Nacional Los Glaciares',
+    typeKey: 'type_attraction',
+    rating: 4.9,
+    reviews: 6457,
+    address: 'Santa Cruz, Argentina',
+    phone: '+54 2902 49-1005',
+    hours: 'Todos los días · 08:00–18:00',
+    accent: '#3e9ed0',
+    initials: 'PN',
+    icon: '🏔️',
+    lat: null,
+    lng: null,
+    description: 'Parque nacional que protege glaciares, lagos y bosques andino-patagónicos.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'pasarelas-perito-moreno',
+    name: 'Pasarelas del Glaciar Perito Moreno',
+    typeKey: 'type_attraction',
+    rating: 4.9,
+    reviews: 9432,
+    address: 'Parque Nacional Los Glaciares, Santa Cruz',
+    phone: '',
+    hours: 'Todos los días · 08:00–18:00',
+    accent: '#3e9ed0',
+    initials: 'PG',
+    icon: '🥾',
+    lat: null,
+    lng: null,
+    description: 'Circuito de pasarelas y miradores frente al Glaciar Perito Moreno.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'lago-roca',
+    name: 'Lago Roca',
+    typeKey: 'type_attraction',
+    rating: 4.7,
+    reviews: 151,
+    address: 'Parque Nacional Los Glaciares, Santa Cruz',
+    phone: '',
+    hours: 'Consultar acceso',
+    accent: '#3b87a5',
+    initials: 'LR',
+    icon: '🏞️',
+    lat: null,
+    lng: null,
+    description: 'Área lacustre del Parque Nacional Los Glaciares.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'lago-argentino',
+    name: 'Lago Argentino',
+    typeKey: 'type_attraction',
+    rating: 0,
+    reviews: 0,
+    address: 'El Calafate, Santa Cruz',
+    phone: '',
+    hours: 'Acceso según el sector',
+    accent: '#3b87a5',
+    initials: 'LA',
+    icon: '🌊',
+    lat: null,
+    lng: null,
+    description: 'El gran lago patagónico sobre cuya costa se encuentra El Calafate.',
+    items: [],
+    food: false,
+    benefitKind: 'none',
+  },
+  {
+    id: 'puerto-bajo-sombras',
+    name: 'Puerto Bajo las Sombras',
+    typeKey: 'type_attraction',
+    rating: 4.7,
