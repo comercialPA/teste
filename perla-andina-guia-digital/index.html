@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perla Andina | El Calafate</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <button class="brand" id="brandHome">
+          <span class="mountain">▲</span
+          ><span
+            ><b>PERLA ANDINA</b><small>El Calafate en tus manos</small></span
+          ></button
+        ><button class="round" id="favShortcut">♡</button>
+      </header>
+      <main id="view"></main>
+      <nav class="bottom-nav">
+        <button data-tab="home" class="active"><span>⌂</span>Inicio</button
+        ><button data-tab="explore"><span>⌕</span>Explorar</button
+        ><button data-tab="map"><span>⌖</span>Mapa</button
+        ><button data-tab="benefits"><span>◇</span>Beneficios</button
+        ><button data-tab="profile"><span>◯</span>Perfil</button>
+      </nav>
+      <div id="sheet" class="sheet" aria-hidden="true">
+        <div class="sheet-backdrop"></div>
+        <section class="sheet-card">
+          <button class="sheet-close">×</button>
+          <div id="sheetContent"></div>
+        </section>
+      </div>
+      <div id="toast" class="toast"></div>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
