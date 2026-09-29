@@ -24,7 +24,7 @@ type Place = {
   benefitValue?: string;
 };
 
-const VERSION = '1.0.9 perla andina';
+const VERSION = '1.0.10 perla andina';
 const DEFAULT_WHATSAPP = '5492901498474';
 const CATALOG_URL = 'https://catalogoperlaandina.vercel.app/';
 
@@ -1537,8 +1537,8 @@ const places: Place[] = [
     accent: '#1d9b83',
     initials: 'LN',
     icon: '🦩',
-    lat: null,
-    lng: null,
+    lat: -50.328323,
+    lng: -72.268287,
     description: 'Reserva natural urbana con sendero interpretativo y observación de aves.',
     items: [],
     food: false,
@@ -1880,8 +1880,8 @@ const places: Place[] = [
     accent: '#5c7a42',
     initials: 'MP',
     icon: '🏔️',
-    lat: null,
-    lng: null,
+    lat: -50.4,
+    lng: -72.32,
     description: 'Atracción turística de montaña en El Calafate.',
     items: [],
     food: false,
@@ -1997,8 +1997,7 @@ const places: Place[] = [
     lng: null,
     description: 'Puerto sobre el Lago Rico utilizado para navegaciones y actividades próximas al glaciar.',
     items: [],
-    food: false,    benefitKind: 'none',
-  },
+    food: false,    benefitKind: 'none',  },
   {
     id: 'puerto-bandera',
     name: 'Puerto Bandera',
@@ -2088,8 +2087,8 @@ const places: Place[] = [
     accent: '#70b9d5',
     initials: 'GB',
     icon: '🧊',
-    lat: null,
-    lng: null,
+    lat: -50.3366316,
+    lng: -72.3398192,
     description: 'Bar de hielo ubicado en el subsuelo del Glaciarium, con ambiente a aproximadamente -10 °C.',
     items: ['Ingreso a Glacio Bar', 'Consultar turnos'],
     food: false,
@@ -2690,27 +2689,49 @@ function placeSubcategory(place: Place): string {
   return place.typeKey;
 }
 
+function normalizeSearchText(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+function matchesSearch(place: Place): boolean {
+  const q = normalizeSearchText(searchTerm);
+  if (!q) return true;
+  const text = normalizeSearchText([
+    place.name,
+    place.address,
+    place.description,
+    typeLabel(place),
+    subcategoryLabel(placeSubcategory(place)),
+    ...place.items,
+  ].join(' '));
+  return text.includes(q);
+}
+
 function groupCount(key: string): number {
-  if (key === 'all') return places.length;
-  return places.filter(place => placeGroups(place).includes(key)).length;
+  return places.filter(place => (key === 'all' || placeGroups(place).includes(key)) && matchesSearch(place)).length;
 }
 
 function groupChips(): string {
   return groupKeys.map(key =>
     '<button data-group="' + key + '" class="' + (currentGroup === key ? 'active' : '') + '">' +
-      groupLabel(key) + '<b>' + groupCount(key) + '</b>' +
+      '<span>' + groupLabel(key) + '</span><b>' + groupCount(key) + '</b>' +
     '</button>'
   ).join('');
 }
 
 function subcategoryChips(): string {
   if (currentGroup === 'all') return '';
-  const groupPlaces = places.filter(place => placeGroups(place).includes(currentGroup));
+  const groupPlaces = places.filter(place => placeGroups(place).includes(currentGroup) && matchesSearch(place));
   const keys = Array.from(new Set(groupPlaces.map(place => placeSubcategory(place))));
   if (keys.length <= 1) return '';
   return ['all', ...keys].map(key => {
     const count = key === 'all' ? groupPlaces.length : groupPlaces.filter(place => placeSubcategory(place) === key).length;
-    return '<button data-subcategory="' + key + '" class="' + (currentSubcategory === key ? 'active' : '') + '">' + subcategoryLabel(key) + '<b>' + count + '</b></button>';
+    return '<button data-subcategory="' + key + '" class="' + (currentSubcategory === key ? 'active' : '') + '">' +
+      '<span>' + subcategoryLabel(key) + '</span><b>' + count + '</b></button>';
   }).join('');
 }
 
@@ -2727,6 +2748,7 @@ let currentTab = 'home';
 let currentGroup = 'all';
 let currentSubcategory = 'all';
 let searchTerm = '';
+let selectedMapPlaceId: string | null = null;
 let favorites: string[] = JSON.parse(localStorage.getItem('pa-favorites') || '[]') as string[];
 let selection: Array<{ placeId: string; item: string; qty: number }> = JSON.parse(localStorage.getItem('pa-selection') || '[]') as Array<{ placeId: string; item: string; qty: number }>;
 let mapInstance: any = null;
@@ -2765,6 +2787,7 @@ function diagnosticSummaryHtml(): string {
     '<div><span>Versión</span><b>' + VERSION + '</b></div>' +
     '<div><span>Pestaña</span><b>' + currentTab + '</b></div>' +
     '<div><span>Filtro</span><b>' + currentGroup + ' / ' + currentSubcategory + '</b></div>' +
+    '<div><span>Búsqueda</span><b>' + (searchTerm || '—') + '</b></div>' +
     '<div><span>Esperados</span><b>' + filtered.length + '</b></div>' +
     '<div><span>Con coordenadas</span><b>' + withCoords + '</b></div>' +
     '<div><span>Markers cargados</span><b>' + markers.size + '</b></div>' +
@@ -3043,50 +3066,143 @@ function updateChrome(): void {
 }
 
 function filteredPlaces(): Place[] {
-  const q = searchTerm.trim().toLowerCase();
   return places.filter(place => {
     const groupOk = currentGroup === 'all' || placeGroups(place).includes(currentGroup);
     const subOk = currentSubcategory === 'all' || placeSubcategory(place) === currentSubcategory;
-    const text = [place.name, place.address, place.description, typeLabel(place), subcategoryLabel(placeSubcategory(place)), ...place.items].join(' ').toLowerCase();
-    return groupOk && subOk && (!q || text.includes(q));
+    return groupOk && subOk && matchesSearch(place);
   });
+}
+
+function clearSearchForFilterChange(reason: string): void {
+  if (!searchTerm) return;
+  recordDiag('SEARCH_CLEAR', reason + ' · "' + searchTerm + '"');
+  searchTerm = '';
+}
+
+function googlePhotosLabel(): string {
+  const labels: Record<LangCode, string> = {
+    es: 'Fotos reales en Google',
+    en: 'Real photos on Google',
+    pt: 'Fotos reais no Google',
+    fr: 'Photos réelles sur Google',
+    de: 'Echte Fotos auf Google',
+    it: 'Foto reali su Google',
+    zh: 'Google 实景照片',
+    ar: 'صور حقيقية على Google',
+    ru: 'Реальные фото в Google',
+    hi: 'Google पर असली तस्वीरें',
+  };
+  return labels[currentLang];
+}
+
+function galleryLauncherHtml(place: Place): string {
+  return '<div class="google-gallery-card">' +
+    '<div class="google-gallery-icon">📷</div>' +
+    '<div class="google-gallery-copy"><strong>' + googlePhotosLabel() + '</strong><small>Google Maps · Place ID</small></div>' +
+    '<a href="' + mapsUrl(place) + '" target="_blank" rel="noopener">↗</a>' +
+  '</div>';
+}
+
+function dockResultCard(place: Place): string {
+  return '<button class="dock-result" data-dock-place="' + place.id + '">' +
+    '<span class="dock-icon" style="--accent:' + place.accent + '">' + place.icon + '</span>' +
+    '<span class="dock-copy"><b>' + place.name + '</b><small>' + subcategoryLabel(placeSubcategory(place)) + ' · Google ★ ' + (place.rating > 0 ? place.rating.toFixed(1) : '—') + '</small><em>' + place.address + '</em></span>' +
+    '<span class="dock-arrow">›</span>' +
+  '</button>';
+}
+
+function renderMapDockHtml(): string {
+  const selected = selectedMapPlaceId ? places.find(place => place.id === selectedMapPlaceId) : undefined;
+  if (selected) {
+    return '<div class="dock-selected">' +
+      '<div class="dock-selected-head">' +
+        '<button class="dock-back" data-dock-back aria-label="Volver">‹</button>' +
+        '<span class="dock-selected-icon" style="--accent:' + selected.accent + '">' + selected.icon + '</span>' +
+        '<div><small>' + subcategoryLabel(placeSubcategory(selected)) + '</small><strong>' + selected.name + '</strong>' + googleRatingHtml(selected) + '</div>' +
+      '</div>' +
+      '<div class="dock-selected-actions">' +
+        '<button data-dock-open="' + selected.id + '">' + t('see_place') + '</button>' +
+        '<a href="' + mapsUrl(selected) + '" target="_blank" rel="noopener">📍 ' + t('route') + '</a>' +
+        '<button data-dock-whats="' + selected.id + '">💬 ' + t('whatsapp') + '</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  const list = filteredPlaces();
+  return '<div class="dock-list">' +
+    '<div class="dock-list-head"><div><small>' + (searchTerm ? '“' + searchTerm + '”' : groupLabel(currentGroup)) + '</small><strong>' + list.length + ' ' + t('places') + '</strong></div><button data-dock-all>' + t('explore') + ' ›</button></div>' +
+    (list.length ? '<div class="dock-strip">' + list.slice(0, 12).map(dockResultCard).join('') + '</div>' : '<div class="dock-empty">' + t('no_results') + '</div>') +
+  '</div>';
+}
+
+function bindMapDockEvents(): void {
+  const dock = document.querySelector<HTMLElement>('#mapDock');
+  if (!dock) return;
+  dock.querySelectorAll<HTMLButtonElement>('[data-dock-place]').forEach(button => {
+    button.addEventListener('click', () => {
+      const id = button.dataset.dockPlace || '';
+      recordDiag('DOCK_CARD', id);
+      openPlace(id);
+    });
+  });
+  dock.querySelector<HTMLButtonElement>('[data-dock-back]')?.addEventListener('click', () => {
+    selectedMapPlaceId = null;
+    recordDiag('DOCK_BACK', currentGroup + '/' + currentSubcategory);
+    refreshMapDock();
+  });
+  dock.querySelector<HTMLButtonElement>('[data-dock-open]')?.addEventListener('click', buttonEvent => {
+    const button = buttonEvent.currentTarget as HTMLButtonElement;
+    openPlace(button.dataset.dockOpen || '');
+  });
+  dock.querySelectorAll<HTMLButtonElement>('[data-dock-whats]').forEach(button => {
+    button.addEventListener('click', () => {
+      const place = places.find(item => item.id === button.dataset.dockWhats);
+      if (place) openPlaceWhats(place);
+    });
+  });
+  dock.querySelector<HTMLButtonElement>('[data-dock-all]')?.addEventListener('click', () => {
+    recordDiag('DOCK_RESULTS', 'abrir lista completa');
+    switchTab('explore');
+  });
+}
+
+function refreshMapDock(): void {
+  const dock = document.querySelector<HTMLElement>('#mapDock');
+  if (!dock) return;
+  dock.innerHTML = renderMapDockHtml();
+  bindMapDockEvents();
+}
+
+function focusMapPlace(place: Place): void {
+  selectedMapPlaceId = place.id;
+  refreshMapDock();
+  if (mapInstance && place.lat !== null && place.lng !== null) {
+    mapInstance.panTo([place.lat, place.lng]);
+  }
+  recordDiag('DOCK_OPEN', place.name);
 }
 
 function renderHome(): string {
   return (
-    '<section class="map-home">' +
+    '<section class="map-home fast-map">' +
       '<div class="map-shell">' +
         '<div id="map"></div>' +
-        '<div class="map-top">' +
-          '<div class="map-title"><span>PERLA ANDINA</span><strong>' + t('map_title') + '</strong><small>' + t('map_sub') + '</small></div>' +
-          '<label class="map-search"><span>⌕</span><input id="homeSearch" value="' + searchTerm.replace(/"/g, '&quot;') + '" placeholder="' + t('search') + '"></label>' +
+        '<div class="map-top compact-map-top">' +
+          '<div class="map-search-row">' +
+            '<label class="map-search"><span>⌕</span><input id="homeSearch" value="' + searchTerm.replace(/"/g, '&quot;') + '" placeholder="' + t('search') + '"></label>' +
+            (searchTerm ? '<button id="homeSearchClear" class="search-clear" aria-label="Limpiar búsqueda">×</button>' : '') +
+          '</div>' +
           filterControls('map-overlay') +
         '</div>' +
         '<button class="locate-btn" id="locateButton" title="' + t('locate') + '">◎</button>' +
-        '<div class="map-legend"><span>🎁</span><div><strong>' + t('map_benefit') + '</strong><small>' + benefitStatusLabel() + '</small></div></div>' +
-      '</div>' +
-      '<div id="mapSelectionCard" class="map-selection-card" hidden></div>' +
-      '<div class="map-after">' +
-        '<div><span>' + t('places') + '</span><strong>' + filteredPlaces().length + '</strong></div>' +
-        '<div><span>' + t('categories') + '</span><strong>' + (groupKeys.length - 1) + '</strong></div>' +
-        '<button data-action="go-benefits">🎁 ' + t('benefits') + '</button>' +
+        '<div id="mapDock" class="map-dock">' + renderMapDockHtml() + '</div>' +
       '</div>' +
     '</section>'
   );
 }
 
 function renderMapPage(): string {
-  return (
-    '<section>' +
-      '<div class="page-head compact"><span>PERLA ANDINA</span><h1>' + t('map_title') + '</h1><p>' + t('map_sub') + '</p></div>' +
-      '<div class="map-page-wrap"><div id="map"></div><button class="locate-btn page" id="locateButton" title="' + t('locate') + '">◎</button></div>' +
-      '<div id="mapSelectionCard" class="map-selection-card page" hidden></div>' +
-      filterControls('page') +
-      '<div class="map-list">' +
-        filteredPlaces().map(place => miniPlace(place)).join('') +
-      '</div>' +
-    '</section>'
-  );
+  return renderHome();
 }
 
 function miniPlace(place: Place): string {
@@ -3107,11 +3223,16 @@ function miniPlace(place: Place): string {
 function renderExplore(): string {
   const list = filteredPlaces();
   return (
-    '<section>' +
-      '<div class="page-head"><span>PERLA ANDINA</span><h1>' + t('explore') + '</h1><p>' + t('map_sub') + '</p></div>' +
-      '<label class="search"><span>⌕</span><input id="searchInput" value="' + searchTerm.replace(/"/g, '&quot;') + '" placeholder="' + t('search') + '"></label>' +
-      filterControls('explore') +
-      '<div class="list refined-list">' +
+    '<section class="explore-page">' +
+      '<div class="explore-toolbar">' +
+        '<div class="explore-search-row">' +
+          '<label class="search compact-search"><span>⌕</span><input id="searchInput" value="' + searchTerm.replace(/"/g, '&quot;') + '" placeholder="' + t('search') + '"></label>' +
+          (searchTerm ? '<button id="searchClear" class="search-clear" aria-label="Limpiar búsqueda">×</button>' : '') +
+        '</div>' +
+        filterControls('explore') +
+        '<div class="result-summary"><strong>' + list.length + '</strong><span>' + t('places') + '</span><small>' + (currentSubcategory !== 'all' ? subcategoryLabel(currentSubcategory) : groupLabel(currentGroup)) + '</small></div>' +
+      '</div>' +
+      '<div id="exploreResults" class="list refined-list">' +
         (list.length ? list.map(place => miniPlace(place)).join('') : '<div class="empty">' + t('no_results') + '</div>') +
       '</div>' +
     '</section>'
@@ -3195,8 +3316,10 @@ function bindViewEvents(): void {
 
   view.querySelectorAll<HTMLButtonElement>('[data-group]').forEach(button => {
     button.addEventListener('click', () => {
+      clearSearchForFilterChange('group:' + (button.dataset.group || 'all'));
       currentGroup = button.dataset.group || 'all';
       currentSubcategory = 'all';
+      selectedMapPlaceId = null;
       recordDiag('FILTER_GROUP', currentGroup + ' · resultados=' + filteredPlaces().length);
       render();
     });
@@ -3204,7 +3327,9 @@ function bindViewEvents(): void {
 
   view.querySelectorAll<HTMLButtonElement>('[data-subcategory]').forEach(button => {
     button.addEventListener('click', () => {
+      clearSearchForFilterChange('subcategory:' + (button.dataset.subcategory || 'all'));
       currentSubcategory = button.dataset.subcategory || 'all';
+      selectedMapPlaceId = null;
       recordDiag('FILTER_SUB', currentSubcategory + ' · resultados=' + filteredPlaces().length);
       render();
     });
@@ -3218,26 +3343,59 @@ function bindViewEvents(): void {
   if (search) {
     search.addEventListener('input', () => {
       searchTerm = search.value;
+    });
+    search.addEventListener('change', () => {
+      searchTerm = search.value;
+      selectedMapPlaceId = null;
+      recordDiag('SEARCH_APPLY', searchTerm || '(vacío)');
       render();
     });
-  }
-
-  const homeSearch = document.querySelector<HTMLInputElement>('#homeSearch');
-  if (homeSearch) {
-    homeSearch.addEventListener('change', () => {
-      searchTerm = homeSearch.value;
-      render();
-    });
-    homeSearch.addEventListener('keydown', event => {
+    search.addEventListener('keydown', event => {
       if (event.key === 'Enter') {
-        searchTerm = homeSearch.value;
-        currentTab = 'explore';
+        searchTerm = search.value;
+        selectedMapPlaceId = null;
+        recordDiag('SEARCH_APPLY', searchTerm || '(vacío)');
         render();
       }
     });
   }
 
+  const homeSearch = document.querySelector<HTMLInputElement>('#homeSearch');
+  if (homeSearch) {
+    homeSearch.addEventListener('input', () => {
+      searchTerm = homeSearch.value;
+    });
+    homeSearch.addEventListener('change', () => {
+      searchTerm = homeSearch.value;
+      selectedMapPlaceId = null;
+      recordDiag('SEARCH_APPLY', searchTerm || '(vacío)');
+      render();
+    });
+    homeSearch.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        searchTerm = homeSearch.value;
+        selectedMapPlaceId = null;
+        recordDiag('SEARCH_APPLY', searchTerm || '(vacío)');
+        render();
+      }
+    });
+  }
+
+  document.querySelector<HTMLButtonElement>('#homeSearchClear')?.addEventListener('click', () => {
+    recordDiag('SEARCH_CLEAR', 'home');
+    searchTerm = '';
+    selectedMapPlaceId = null;
+    render();
+  });
+  document.querySelector<HTMLButtonElement>('#searchClear')?.addEventListener('click', () => {
+    recordDiag('SEARCH_CLEAR', 'explore');
+    searchTerm = '';
+    selectedMapPlaceId = null;
+    render();
+  });
+
   document.querySelector<HTMLButtonElement>('#locateButton')?.addEventListener('click', locateUser);
+  bindMapDockEvents();
 }
 
 function handleAction(action: string): void {
@@ -3248,6 +3406,7 @@ function handleAction(action: string): void {
 }
 
 function openSheet(html: string): void {
+  recordDiag('SHEET_OPEN', currentGroup + '/' + currentSubcategory);
   sheetContent.innerHTML = html;
   sheet.classList.add('open');
   sheet.setAttribute('aria-hidden', 'false');
@@ -3255,6 +3414,7 @@ function openSheet(html: string): void {
 }
 
 function closeSheet(): void {
+  recordDiag('SHEET_BACK', currentGroup + '/' + currentSubcategory);
   sheet.classList.remove('open');
   sheet.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
@@ -3295,6 +3455,7 @@ function openPlace(id: string): void {
         '<button data-fav="' + place.id + '"><span>' + (favorites.includes(place.id) ? '♥' : '♡') + '</span>' + (favorites.includes(place.id) ? t('saved') : t('save')) + '</button>' +
       '</div>' +
       '<div class="google-review-actions"><a href="' + mapsUrl(place) + '" target="_blank" rel="noopener">🔎 ' + googleReviewsLabel() + '</a><a href="' + googleWriteReviewUrl(place) + '" target="_blank" rel="noopener">⭐ ' + writeGoogleReviewLabel() + '</a></div>' +
+      galleryLauncherHtml(place) +
       '<div class="info"><strong>' + t('address') + '</strong><br>' + place.address + (place.phone ? '<br><strong>' + t('phone') + ':</strong> ' + place.phone : '') + '<br><strong>' + t('hours') + ':</strong> ' + place.hours + '</div>' +
       (place.items.length ? '<div class="menu"><h3>' + sectionLabel + '</h3>' + rows + '</div>' : '') +
       '<div class="demo-box"><span class="benefit-status">' + benefitStatusLabel() + '</span><small>' + t('demo') + '</small><h3>' + benefitLabel(place) + '</h3><p>' + t('benefit_detail') + '</p><button class="primary" data-coupon="' + place.id + '">' + t('consult') + ' · WhatsApp</button></div>' +
@@ -3431,13 +3592,7 @@ function placePopup(place: Place): string {
 }
 
 function showMapPlaceCard(place: Place): void {
-  const card = document.querySelector<HTMLElement>('#mapSelectionCard');
-  if (!card) return;
-  card.innerHTML = placePopup(place);
-  card.hidden = false;
-  card.querySelector<HTMLButtonElement>('[data-map-open="' + place.id + '"]')?.addEventListener('click', () => openPlace(place.id));
-  card.querySelector<HTMLButtonElement>('[data-map-whats="' + place.id + '"]')?.addEventListener('click', () => openPlaceWhats(place));
-  window.setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 40);
+  focusMapPlace(place);
 }
 
 function addMarker(place: Place): void {
@@ -3453,7 +3608,6 @@ function addMarker(place: Place): void {
   const marker = L.marker([place.lat, place.lng], { icon }).addTo(mapInstance);
   marker.on('click', () => {
     showMapPlaceCard(place);
-    mapInstance.panTo([place.lat, place.lng]);
   });
   markers.set(place.id, marker);
   recordDiag('MARKER', place.name + ' · total=' + markers.size);
