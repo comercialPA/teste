@@ -1,90 +1,106 @@
 [
   {
-    "name": "Diagnóstico registra clique, filtro e carga do mapa",
+    "name": "Filtro limpa busca antiga e contadores batem com resultados",
     "sanity": true,
     "viewport": "mobile",
     "covers": [
-      "botão de diagnóstico",
-      "registro de cliques",
-      "estado de filtros",
-      "contagem de markers",
-      "diagnóstico de geocodificação"
+      "bug searchTerm persistente",
+      "filtros",
+      "contadores",
+      "diagnóstico SEARCH_CLEAR"
     ],
-    "description": "Verifica que o botão DIAG mostra cada interação e o que efetivamente foi carregado no mapa.",
+    "description": "Verifica o bug visto no diagnóstico, em que Restaurante permanecia ativo e reduzia 23 resultados para 3/1/0.",
     "steps": [
-      "Abrir o app e escolher Español",
-      "Tocar Turismo e depois Museos",
-      "Tocar DIAG"
+      "Buscar Restaurante",
+      "Selecionar Comer & Beber",
+      "Selecionar Parrilla",
+      "Abrir DIAG"
     ],
-    "expected": "O painel de diagnóstico mostra os cliques, filtro tourism/museum, quantidade esperada, itens com coordenadas e markers carregados."
+    "expected": "Ao escolher o filtro a busca antiga é limpa, o contador e a lista mostram a mesma quantidade e o diagnóstico registra SEARCH_CLEAR."
   },
   {
-    "name": "Filtros gastronômicos mostram várias empresas reais por ramo",
+    "name": "Mapa usa dock inferior sem exigir rolagem da página",
     "viewport": "mobile",
     "covers": [
-      "múltiplas pizzarias",
-      "múltiplas comidas rápidas",
-      "múltiplas parrillas",
-      "tenedor libre"
+      "map dock",
+      "marker click",
+      "sem scrollIntoView",
+      "voltar à lista"
     ],
-    "description": "Verifica que Comer & Beber deixou de ser uma amostra de uma empresa por categoria.",
+    "description": "Verifica que tocar em um marcador abre o card no painel inferior fixo e voltar restaura a lista de resultados.",
+    "steps": [
+      "Abrir Inicio",
+      "Tocar um marcador",
+      "Tocar voltar no painel inferior",
+      "Tocar um card horizontal"
+    ],
+    "expected": "O painel muda entre lugar selecionado e lista sem deslocar a página; o card abre a ficha em modal."
+  },
+  {
+    "name": "Explore mantém filtros sempre visíveis",
+    "viewport": "mobile",
+    "covers": [
+      "toolbar sticky",
+      "cards legíveis",
+      "navegação rápida"
+    ],
+    "description": "Verifica que a busca e os filtros permanecem acessíveis ao navegar pela lista.",
     "steps": [
       "Abrir Explorar",
-      "Selecionar Comer & Beber",
-      "Selecionar Pizzería, depois Comida rápida, Parrilla e Tenedor libre"
+      "Selecionar Turismo",
+      "Selecionar Museos",
+      "Rolar os cards"
     ],
-    "expected": "Cada subfiltro mostra várias opções reais; Pizzería inclui El Gaita, Nápoles e La Lechuza, e Tenedor libre inclui Estilo Campo e Los Baguales."
+    "expected": "A barra de busca/filtros permanece fixa no topo e os cards usam mais largura para nome e endereço."
   },
   {
-    "name": "Serviços incluem várias lavanderias",
-    "viewport": "desktop",
+    "name": "Galeria real abre perfil exato do Google",
+    "viewport": "mobile",
     "covers": [
-      "lavanderias",
-      "serviços",
-      "Google Reviews"
+      "Google Place ID",
+      "fotos reais",
+      "sem foto genérica falsa"
     ],
-    "description": "Verifica que Serviços possui um subfiltro de lavanderias com múltiplas empresas reais.",
+    "description": "Verifica que a ficha oferece acesso às fotos reais do estabelecimento no Google Maps sem apresentar imagem ilustrativa como oficial.",
     "steps": [
-      "Selecionar Servicios",
-      "Selecionar Lavandería",
-      "Abrir Laundry Club"
+      "Abrir Glaciarium",
+      "Tocar Fotos reales en Google"
     ],
-    "expected": "A lista mostra várias lavanderias e a ficha de Laundry Club exibe endereço e Google Reviews."
+    "expected": "Abre o perfil Google do Glaciarium usando o Place ID correspondente."
   },
   {
-    "name": "Mobilidade contém somente táxi e remis e agência continua exclusiva",
-    "viewport": "desktop",
-    "covers": [
-      "táxi e remis",
-      "remoção de traslados privados",
-      "Perla Andina única agência"
-    ],
-    "description": "Verifica que a categoria de mobilidade não mistura empresas de traslado privado e que a agência de turismo segue exclusiva.",
-    "steps": [
-      "Selecionar Remis & Taxi",
-      "Revisar empresas listadas",
-      "Selecionar Perla Andina"
-    ],
-    "expected": "Mobilidade mostra apenas táxi/remis; Perla Andina é a única agência de turismo."
-  },
-  {
-    "name": "Pontos turísticos carregam e ajustam o mapa ao subfiltro",
+    "name": "Pontos conhecidos com coordenada fixa aparecem imediatamente",
     "viewport": "mobile",
     "covers": [
       "Laguna Nimez",
-      "Glaciarium",
-      "CIH",
-      "pontos turísticos",
-      "auto ajuste de mapa",
-      "fallback de geocodificação"
+      "Glacio Bar",
+      "Mountain Park",
+      "coordenadas fixas"
     ],
-    "description": "Verifica que os pontos turísticos podem ser carregados por subfiltro e ficam visíveis mesmo quando estão fora do centro da cidade.",
+    "description": "Verifica que pontos que falhavam na geocodificação entram no mapa sem depender de busca externa.",
     "steps": [
-      "Selecionar Turismo e Museos",
-      "Confirmar Glaciarium e CIH",
-      "Selecionar Naturaleza e confirmar Laguna Nimez",
+      "Selecionar Turismo",
+      "Filtrar Naturaleza e conferir Laguna Nimez",
+      "Filtrar Bares de hielo e conferir Glacio Bar",
       "Abrir DIAG"
     ],
-    "expected": "Os cards aparecem, o mapa ajusta o enquadramento quando aplicável e o diagnóstico registra markers carregados ou falhas de geocodificação."
+    "expected": "Os pontos com coordenada fixa aparecem como MARKER sem GEO_FAIL."
+  },
+  {
+    "name": "WhatsApp, catálogo e benefícios permanecem funcionando",
+    "viewport": "desktop",
+    "covers": [
+      "regressão",
+      "WhatsApp direto",
+      "catálogo Perla",
+      "benefício não habilitado"
+    ],
+    "description": "Garante que a repaginada não quebrou fluxos existentes.",
+    "steps": [
+      "Abrir Don Pichón e tocar WhatsApp",
+      "Abrir Perla Andina e tocar um passeio",
+      "Revisar benefício"
+    ],
+    "expected": "WhatsApp e catálogo abrem normalmente e o benefício continua marcado como não habilitado."
   }
 ]
