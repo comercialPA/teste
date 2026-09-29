@@ -1,86 +1,78 @@
 [
   {
-    "name": "Escolher idioma e abrir o mapa principal",
+    "name": "Mostrar Google Reviews na ficha",
     "sanity": true,
     "viewport": "mobile",
     "covers": [
-      "seletor inicial de idioma",
-      "mapa como capa do app",
-      "navegação traduzida"
+      "nota Google",
+      "quantidade de avaliações",
+      "ficha do negócio"
     ],
-    "description": "Verifica que o app exige escolha de idioma e entra diretamente na experiência de mapa.",
+    "description": "Verifica que a ficha mostra nota e quantidade de avaliações do Google.",
     "steps": [
       "Abrir o app",
       "Escolher Português",
-      "Confirmar que a tela principal é o mapa de El Calafate"
+      "Abrir Perla Andina Travel"
     ],
-    "expected": "O seletor de idioma fecha, os rótulos mudam para português e o mapa principal fica visível."
+    "expected": "A ficha mostra Google 5.0 e 52 avaliações."
   },
   {
-    "name": "Abrir marcador sem popup sobre o mapa",
+    "name": "Abrir Google Maps no estabelecimento correto",
     "viewport": "mobile",
     "covers": [
-      "card de mapa fora do mapa",
-      "marcador Perla Andina",
-      "acesso à ficha"
+      "Google Place ID",
+      "ver avaliações",
+      "link externo Google Maps"
     ],
-    "description": "Verifica que tocar em um marcador mostra o card do lugar abaixo do mapa, sem popup cobrindo o mapa.",
+    "description": "Verifica que o botão de avaliações usa o Place ID do negócio.",
     "steps": [
-      "Escolher Español",
-      "Selecionar Agencia de turismo",
-      "Tocar o marcador PERLA",
-      "Tocar Ver lugar no card exibido abaixo do mapa"
+      "Abrir Parrilla Don Pichón",
+      "Tocar Ver avaliações no Google"
     ],
-    "expected": "O mapa permanece visível sem popup Leaflet sobreposto, um card separado aparece abaixo dele e a ficha da Perla Andina pode ser aberta."
+    "expected": "O Google Maps abre diretamente no perfil de Parrilla Don Pichón."
   },
   {
-    "name": "Menu mostra fotos ilustrativas dos produtos",
+    "name": "Escrever avaliação diretamente",
     "viewport": "mobile",
     "covers": [
-      "fotos de produtos",
-      "menu digital",
-      "seleção de produto"
+      "Google review composer",
+      "Place ID",
+      "avaliação direta"
     ],
-    "description": "Verifica que itens gastronômicos possuem miniaturas de produto identificadas como ilustrativas.",
+    "description": "Verifica que o usuário pode iniciar uma avaliação do Google diretamente pelo app.",
     "steps": [
-      "Abrir El Gaita Pizza Bar",
-      "Ir ao menu digital",
-      "Confirmar miniatura na Mozzarella",
-      "Adicionar Mozzarella"
+      "Abrir BOkADO Trattoria",
+      "Tocar Escrever avaliação"
     ],
-    "expected": "A Mozzarella aparece com foto ilustrativa e continua podendo ser adicionada à seleção."
+    "expected": "O fluxo de escrita de avaliação do Google abre para BOkADO Trattoria."
   },
   {
-    "name": "Benefício é marcado como não habilitado",
+    "name": "Google Reviews também aparece no card do mapa",
     "viewport": "desktop",
     "covers": [
-      "benefício não habilitado",
-      "cupons demo",
-      "guardrail de informação comercial"
+      "card do mapa",
+      "Google rating",
+      "ação de avaliar"
     ],
-    "description": "Verifica que nenhum benefício de demonstração é apresentado como ativo.",
+    "description": "Verifica que o card externo do mapa mostra avaliação Google e botão para avaliar.",
     "steps": [
-      "Escolher Português",
-      "Abrir Benefícios",
-      "Verificar o status de um cupom",
-      "Abrir um estabelecimento pelo mapa e verificar o benefício no card"
+      "Tocar um marcador do mapa",
+      "Revisar o card abaixo do mapa"
     ],
-    "expected": "Os benefícios exibem explicitamente o status NÃO HABILITADO e continuam identificados como demonstração."
+    "expected": "O card mostra Google, nota, quantidade de avaliações e botão de avaliação."
   },
   {
-    "name": "WhatsApp direto continua funcionando após a alteração visual",
+    "name": "WhatsApp continua preservado",
     "viewport": "mobile",
     "covers": [
-      "WhatsApp direto do estabelecimento",
-      "mensagem de contato",
+      "WhatsApp direto",
       "preservação do fluxo existente"
     ],
-    "description": "Verifica que as mudanças de mapa e fotos não quebraram o contato direto.",
+    "description": "Verifica que os novos botões do Google não quebram o contato.",
     "steps": [
-      "Escolher Español",
-      "Abrir Parrilla Don Pichón",
+      "Abrir Don Pichón",
       "Tocar WhatsApp"
     ],
-    "expected": "O app tenta abrir o WhatsApp de Don Pichón com a mensagem preparada."
+    "expected": "O WhatsApp abre como antes."
   }
 ]
