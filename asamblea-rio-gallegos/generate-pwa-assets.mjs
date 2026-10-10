@@ -9,8 +9,8 @@ fs.mkdirSync(outDir,{recursive:true});
 
 const staticFiles=[
   'index.html',
-  'app-1.css','app-2.css','app-3.css','app-4.css','app-5.css','app-6.css',
-  'app-loader.js','app-gesture-fix.js',
+  'app-1.css','app-2.css','app-3.css','app-4.css','app-5.css','app-6.css','app-7.css',
+  'app-loader.js','app-gesture-fix.js','app-update-manager.js','version.json',
   'app-chunk-1.txt','app-chunk-2.txt','app-chunk-3.txt',
   'app-chunk-4.txt','app-chunk-5.txt','app-chunk-6.txt',
   'manifest.webmanifest','service-worker.js'
@@ -33,7 +33,7 @@ const crcTable=(()=>{
 
 function crc32(buf){
   let c=0xffffffff;
-  for(const b of buf) c=crcTable[(c^b)&0xff]^(c>>>8);
+  for(const b of buf) c=crcTable[(c^b)&0xff]^(c>>>8];
   return (c^0xffffffff)>>>0;
 }
 function chunk(type,data){
