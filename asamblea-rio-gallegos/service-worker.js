@@ -1,4 +1,4 @@
-const CACHE='rg26-v1.1.1';
+const CACHE='rg26-v1.1.2';
 const SHELL=[
   '/',
   '/manifest.webmanifest',
@@ -9,7 +9,9 @@ const SHELL=[
   '/app-4.css',
   '/app-5.css',
   '/app-6.css',
+  '/app-7.css',
   '/app-gesture-fix.js',
+  '/app-update-manager.js',
   '/app-chunk-1.txt',
   '/app-chunk-2.txt',
   '/app-chunk-3.txt',
@@ -34,16 +36,24 @@ self.addEventListener('activate',event=>{
   );
 });
 
+self.addEventListener('message',event=>{
+  if(event.data?.type==='SKIP_WAITING')self.skipWaiting();
+});
+
 self.addEventListener('fetch',event=>{
   const req=event.request;
   if(req.method!=='GET') return;
   const url=new URL(req.url);
   if(url.origin!==self.location.origin) return;
   if(url.pathname.startsWith('/api/')) return;
+  if(url.pathname==='/version.json'){
+    event.respondWith(fetch(req,{cache:'no-store'}));
+    return;
+  }
 
   if(req.mode==='navigate'){
     event.respondWith(
-      fetch(req)
+      fetch(req,{cache:'no-store'})
         .then(res=>{
           const copy=res.clone();
           caches.open(CACHE).then(cache=>cache.put('/',copy)).catch(()=>{});
