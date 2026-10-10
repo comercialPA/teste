@@ -1,0 +1,28 @@
+/* V1.1.4 · COMO USAR + COMPARTIR FOTO */
+.tour-help-btn{
+  width:auto!important;
+  min-width:0!important;
+  height:42px!important;
+  min-height:42px!important;
+  padding:0 12px!important;
+  gap:6px;
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  border-radius:16px!important;
+  white-space:nowrap;
+}
+.tour-help-btn .tour-help-icon{font:900 18px/1 system-ui,sans-serif;transform:translateY(-1px)}
+.tour-help-btn .tour-help-label{font:800 11px/1 system-ui,sans-serif;letter-spacing:.01em}
+
+@media(max-width:390px){
+  .top-actions{gap:5px!important}
+  .tour-help-btn{height:40px!important;min-height:40px!important;padding:0 9px!important;gap:5px;border-radius:14px!important}
+  .tour-help-btn .tour-help-icon{font-size:16px}
+  .tour-help-btn .tour-help-label{font-size:10px}
+}
+
+@media(max-width:340px){
+  .tour-help-btn{padding:0 7px!important;gap:4px}
+  .tour-help-btn .tour-help-label{font-size:9px}
+}
