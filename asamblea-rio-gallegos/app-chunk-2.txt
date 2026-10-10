@@ -1,0 +1,95 @@
+',e=>{if(e.key==='Escape'){closeLightbox();document.querySelectorAll('.modal.open').forEach(m=>closeModal(m.id));}});
+    }
+
+    function server(fn,...args){
+      if(window.google?.script?.run){
+        return new Promise((resolve,reject)=>{
+          google.script.run.withSuccessHandler(resolve).withFailureHandler(err=>reject(normalizeError(err)))[fn](...args);
+        });
+      }
+      return fetch('/api/rpc',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({fn,args})
+      }).then(async response=>{
+        const data=await response.json().catch(()=>({ok:false,error:'Respuesta inválida del servidor.'}));
+        if(!response.ok||!data.ok)throw new Error(data.error||`Error HTTP ${response.status}`);
+        return data.result;
+      }).catch(err=>{throw normalizeError(err);});
+    }
+
+    function normalizeError(err){
+      if(err instanceof Error)return err;
+      if(err&&err.message)return new Error(err.message);
+      return new Error(String(err||'Error desconocido'));
+    }
+
+    function renderSkeletons(){
+      $('gallery').innerHTML=Array.from({length:8},(_,i)=>`<div class="skeleton" style="height:${160+(i%4)*55}px"></div>`).join('');
+    }
+
+    function clearGallery(){ $('gallery').innerHTML=''; }
+
+    function fillCongregations(list){
+      const unique=[...new Set((list||[]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+      $('congregationFilter').innerHTML='<option value="">Todas las congregaciones</option>'+unique.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+      $('congregationList').innerHTML=unique.map(v=>`<option value="${esc(v)}"></option>`).join('');
+    }
+
+    function applyGalleryResult(result,reset){
+      if(reset)state.items=[];
+      state.items=state.items.concat(result.items||[]);
+      state.offset=result.nextOffset||state.items.length;
+      state.hasMore=!!result.hasMore;
+      state.total=Number(result.total||state.items.length);
+      renderGallery();
+    }
+
+    function renderGallery(){
+      let items=state.items.slice();
+      if(state.mode==='favorites')items=items.filter(p=>state.favorites.has(p.id));
+      if(state.mode==='mine')items=items.filter(p=>p.isMine);
+      $('gallery').innerHTML='';
+      items.forEach(photo=>$('gallery').appendChild(photoCard(photo)));
+      $('emptyState').hidden=items.length!==0;
+      $('btnLoadMore').hidden=!state.hasMore||state.mode!=='gallery';
+      $('galleryTitle').textContent=state.mode==='favorites'?'Mis favoritas':state.mode==='mine'?'Mis fotos':'Galería';
+      $('gallerySubtitle').textContent=state.mode==='favorites'?'Tus recuerdos marcados en este dispositivo.':state.mode==='mine'?'Solo las fotos que subiste con este perfil.':`${numberFmt(state.total)} fotos encontradas.`;
+      updateSelectionCount();
+    }
+
+    function photoCard(photo){
+      const card=document.createElement('article');
+      card.className='photo-card'+(state.selection.has(photo.id)?' selected':'');
+      card.dataset.id=photo.id;
+      const selected=state.selection.has(photo.id)?'✓':'';
+      card.innerHTML=`
+        <div class="select-dot">${selected}</div>
+        <img loading="lazy" src="${attr(photo.thumbnailUrl)}" alt="Foto compartida por ${attr(photo.uploaderName)}">
+        <div class="card-actions">
+          <button class="icon-btn card-fav" title="Favorita" aria-label="Favorita">${state.favorites.has(photo.id)?'♥':'♡'}</button>
+        </div>
+        <div class="photo-overlay"><div class="photo-meta"><strong>${esc(photo.uploaderName)}</strong><span>${esc(photo.congregation)}</span></div></div>`;
+      card.addEventListener('click',e=>{
+        if(e.target.closest('.card-fav'))return;
+        if(document.body.classList.contains('selection-mode'))toggleSelected(photo.id);
+        else openLightbox(photo);
+      });
+      card.querySelector('.card-fav').addEventListener('click',e=>{e.stopPropagation();toggleFavorite(photo.id,false);});
+      return card;
+    }
+
+    function refreshMode(){
+      exitSelectionMode();
+      if(state.mode==='gallery'){reloadGallery();scrollGallery();return;}
+      if(state.mode==='favorites'){
+        const ids=Array.from(state.favorites);
+        if(!ids.length){state.items=[];state.hasMore=false;state.total=0;renderGallery();scrollGallery();return;}
+        server('apiGetPhotosByIds',ids,state.profile?.profileId||'').then(items=>{state.items=items||[];state.hasMore=false;state.total=state.items.length;renderGallery();scrollGallery();}).catch(e=>toast(e.message,'error'));
+        return;
+      }
+      if(state.mode==='mine'){
+        if(!state.profile){openModal('profileModal');state.items=[];state.hasMore=false;renderGallery();return;}
+        state.congregation='';$('congregationFilter').value='';state.query='';$('searchInput').value='';
+        server('apiListPhotos',{offset:0,limit:120,congregation:'',query:'',profileId:state.profile.profileId}).then(r=>{
+          state.items=(r.ite
