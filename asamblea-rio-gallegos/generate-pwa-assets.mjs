@@ -33,7 +33,7 @@ const crcTable=(()=>{
 
 function crc32(buf){
   let c=0xffffffff;
-  for(const b of buf) c=crcTable[(c^b)&0xff]^(c>>>8];
+  for(const b of buf) c=crcTable[(c^b)&0xff]^(c>>>8);
   return (c^0xffffffff)>>>0;
 }
 function chunk(type,data){
