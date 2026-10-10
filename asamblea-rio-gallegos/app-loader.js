@@ -4,7 +4,33 @@
     const el=document.getElementById('eventDateLabel');
     if(el && el.textContent!==DATE_LABEL) el.textContent=DATE_LABEL;
   };
+  const ensureLink=(rel,href,attrs={})=>{
+    let el=document.querySelector(`link[rel="${rel}"]`);
+    if(!el){el=document.createElement('link');el.rel=rel;document.head.appendChild(el);}
+    el.href=href;
+    Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
+    return el;
+  };
+  const ensureMeta=(name,content)=>{
+    let el=document.querySelector(`meta[name="${name}"]`);
+    if(!el){el=document.createElement('meta');el.name=name;document.head.appendChild(el);}
+    el.content=content;
+  };
+  const setupPwa=()=>{
+    ensureLink('manifest','/manifest.webmanifest?v=109');
+    ensureLink('apple-touch-icon','/icons/apple-touch-icon.png?v=109',{sizes:'180x180'});
+    ensureLink('icon','/icons/icon-192.png?v=109',{type:'image/png',sizes:'192x192'});
+    ensureMeta('mobile-web-app-capable','yes');
+    ensureMeta('apple-mobile-web-app-capable','yes');
+    ensureMeta('apple-mobile-web-app-status-bar-style','black-translucent');
+    ensureMeta('apple-mobile-web-app-title','Recuerdos');
+    if('serviceWorker' in navigator){
+      const register=()=>navigator.serviceWorker.register('/service-worker.js?v=109',{scope:'/'}).catch(err=>console.warn('[PWA] Service worker',err));
+      if(document.readyState==='complete') register(); else window.addEventListener('load',register,{once:true});
+    }
+  };
   try{
+    setupPwa();
     document.title='Asamblea Río Gallegos · 10, 11 y 12 de octubre de 2026 · Recuerdos';
     const css=document.createElement('link');css.rel='stylesheet';css.href='/app-4.css?v=108';document.head.appendChild(css);
     pinEventDate();
