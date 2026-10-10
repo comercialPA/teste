@@ -60,9 +60,32 @@ rName;$('lightboxCong').textContent=photo.congregation;
     }
 
     async function sharePhoto(photo){
-      if(!photo)return;const base=state.bootstrap?.appUrl||location.href.split('?')[0];const url=`${base}?foto=${encodeURIComponent(photo.id)}`;
-      const data={title:'Asamblea Río Gallegos 2026',text:`Foto compartida por ${photo.uploaderName} · ${photo.congregation}`,url};
-      try{if(navigator.share)await navigator.share(data);else{await copyText(url);toast('Enlace copiado.','success');}}catch(e){if(e.name!=='AbortError')toast('No pudimos compartir el enlace.','error');}
+      if(!photo)return;
+      const base=state.bootstrap?.appUrl||location.href.split('?')[0];
+      const url=`${base}?foto=${encodeURIComponent(photo.id)}`;
+      const text=`Foto compartida por ${photo.uploaderName} · ${photo.congregation}`;
+      try{
+        const source=photo.downloadUrl||photo.thumbnailUrl||'';
+        if(source&&navigator.share&&navigator.canShare&&window.File){
+          try{
+            const response=await fetch(source,{cache:'no-store'});
+            if(response.ok){
+              const blob=await response.blob();
+              const type=blob.type||photo.mimeType||'image/jpeg';
+              const ext=type.includes('png')?'png':type.includes('webp')?'webp':type.includes('heic')?'heic':'jpg';
+              const safeId=String(photo.id||'foto').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,36)||'foto';
+              const file=new File([blob],`recuerdo-${safeId}.${ext}`,{type});
+              if(navigator.canShare({files:[file]})){
+                await navigator.share({files:[file],title:'Asamblea Río Gallegos 2026',text});
+                return;
+              }
+            }
+          }catch(fileError){console.warn('[SHARE PHOTO FILE]',fileError);}
+        }
+        const data={title:'Asamblea Río Gallegos 2026',text,url};
+        if(navigator.share)await navigator.share(data);
+        else{await copyText(url);toast('Enlace copiado.','success');}
+      }catch(e){if(e.name!=='AbortError')toast('No pudimos compartir la foto.','error');}
     }
 
     function deleteCurrentPhoto(){
