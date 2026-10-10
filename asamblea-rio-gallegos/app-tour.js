@@ -2,7 +2,7 @@
   'use strict';
 
   const TOUR_SEEN_KEY='rg26_tour_seen_v1';
-  const TOUR_TEASER_KEY='rg26_tour_teaser_v113';
+  const TOUR_TEASER_KEY='rg26_tour_teaser_v114';
   let stepIndex=0;
   let active=false;
   let resizeTimer=null;
@@ -14,7 +14,7 @@
       target:'.brand',
       kicker:'Bienvenido',
       title:'Tus recuerdos, en un solo lugar',
-      text:'Este recorrido te muestra cómo usar la galería en menos de un minuto. Podés volver a abrirlo cuando quieras desde el botón “?”.'
+      text:'Este recorrido te muestra cómo usar la galería en menos de un minuto. Podés volver a abrirlo cuando quieras desde el botón “? Cómo usar”.'
     },
     {
       target:'#btnProfile',
@@ -32,7 +32,7 @@
       target:'#btnHeroGallery',
       kicker:'Paso 3',
       title:'Entrá a la galería',
-      text:'Desde “Ver galería” podés recorrer todas las fotos compartidas. Tocá una imagen para verla en pantalla completa y deslizá a izquierda o derecha para cambiar de foto.'
+      text:'Desde “Ver galería” podés recorrer todas las fotos. Tocá una imagen para verla en pantalla completa, deslizá a izquierda o derecha y usá “Descargar” o “Compartir foto” para guardarla o enviarla directamente a WhatsApp, Instagram u otras apps compatibles.'
     },
     {
       target:'.panel.filters',
@@ -62,7 +62,7 @@
       target:'#btnHelpTour',
       kicker:'Listo',
       title:'Ya sabés usar Recuerdos',
-      text:'Cuando aparezca una versión nueva, tocá “Actualizar”: el app limpia el caché técnico y conserva tu perfil, nombre y datos locales. Para repetir este recorrido, tocá “?”.'
+      text:'Cuando aparezca una versión nueva, tocá “Actualizar”: el app limpia el caché técnico y conserva tu perfil, nombre y datos locales. Para repetir este recorrido, tocá “? Cómo usar”.'
     }
   ];
 
@@ -75,9 +75,23 @@
     btn.className='ghost-round tour-help-btn';
     btn.setAttribute('aria-label','Cómo usar el app');
     btn.setAttribute('title','Cómo usar el app');
-    btn.innerHTML='<span aria-hidden="true">?</span>';
+    btn.innerHTML='<span class="tour-help-icon" aria-hidden="true">?</span><span class="tour-help-label">Cómo usar</span>';
     btn.addEventListener('click',()=>startTour(0));
     actions.insertBefore(btn,actions.firstChild);
+  }
+
+  function ensureSharePhotoButton(){
+    const actions=document.querySelector('.lightbox-actions');
+    if(!actions || $('btnLightboxSharePhoto'))return;
+    const btn=document.createElement('button');
+    btn.id='btnLightboxSharePhoto';
+    btn.type='button';
+    btn.className='btn btn-secondary';
+    btn.textContent='Compartir foto';
+    btn.addEventListener('click',()=>$('btnLightboxShare')?.click());
+    const download=$('btnLightboxDownload');
+    if(download)actions.insertBefore(btn,download);
+    else actions.appendChild(btn);
   }
 
   function ensureUi(){
@@ -245,6 +259,7 @@
 
   function init(){
     ensureHelpButton();
+    ensureSharePhotoButton();
     ensureUi();
     window.RG26_startTour=startTour;
     window.addEventListener('resize',reposition,{passive:true});
