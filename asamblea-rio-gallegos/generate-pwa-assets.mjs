@@ -9,7 +9,7 @@ fs.mkdirSync(outDir,{recursive:true});
 
 const staticFiles=[
   'index.html',
-  'app-1.css','app-2.css','app-3.css','app-4.css',
+  'app-1.css','app-2.css','app-3.css','app-4.css','app-5.css',
   'app-loader.js',
   'app-chunk-1.txt','app-chunk-2.txt','app-chunk-3.txt',
   'app-chunk-4.txt','app-chunk-5.txt','app-chunk-6.txt',
