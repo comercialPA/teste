@@ -1,4 +1,4 @@
-const CACHE='rg26-v1.1.0';
+const CACHE='rg26-v1.1.1';
 const SHELL=[
   '/',
   '/manifest.webmanifest',
@@ -8,6 +8,8 @@ const SHELL=[
   '/app-3.css',
   '/app-4.css',
   '/app-5.css',
+  '/app-6.css',
+  '/app-gesture-fix.js',
   '/app-chunk-1.txt',
   '/app-chunk-2.txt',
   '/app-chunk-3.txt',
