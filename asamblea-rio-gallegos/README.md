@@ -1,15 +1,25 @@
 # Asamblea Río Gallegos · V1.0.4
 
-Galería colaborativa premium publicada en Vercel, manteniendo Google Drive para las fotos y Google Sheets para los datos.
+Galería colaborativa premium para reunir y compartir las fotos de la Asamblea Río Gallegos 2026.
+
+## Producción
+- App público: https://asamblea-rio-gallegos.vercel.app
+- Frontend y proxy: Vercel
+- Fotos: Google Drive
+- Datos: Google Sheets
+- Backend de datos: Google Apps Script
 
 ## Arquitectura
 - `index.html`: frontend público.
-- `api/rpc.js`: proxy server-side Vercel.
-- `apps-script/Codigo.gs`: backend Google Apps Script.
-- Drive: originales y ZIP.
-- Sheets: fotos, perfiles, congregaciones, configuración y auditoría.
+- `app-*.css` + `app-loader.js` + `app-chunk-*.txt`: interfaz y lógica del navegador.
+- `api/rpc.js`: proxy server-side Vercel; el secreto nunca se expone al navegador.
+- Google Apps Script: acceso autorizado a Drive/Sheets.
 
 ## Reglas críticas
 - `OWNER_DELETE_ONLY = TRUE`
 - `ADMIN_DELETE_OTHERS = FALSE`
-- El secreto del proxy queda únicamente en Vercel.
+- Cada participante solo puede eliminar las fotos asociadas a su propio perfil/segredo.
+- Administración puede ocultar/republicar, pero no eliminar fotos ajenas desde el app.
+
+## Estado
+El frontend V1.0.4 está publicado. Para activar la lectura/escritura de Drive y Sheets en el dominio Vercel hace falta completar una única implantación/autorización del backend Google Apps Script y configurar su URL `/exec` como `APPS_SCRIPT_URL` en Vercel.
