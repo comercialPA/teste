@@ -1,0 +1,85 @@
+rName;$('lightboxCong').textContent=photo.congregation;
+      $('lightboxCaption').textContent=photo.caption||'';$('lightboxCaption').style.display=photo.caption?'block':'none';
+      $('btnLightboxDelete').hidden=!photo.isMine;$('btnLightboxFavorite').textContent=state.favorites.has(photo.id)?'♥ Favorita':'♡ Favorita';
+      $('lightbox').classList.add('open');document.body.classList.add('no-scroll');
+    }
+    function closeLightbox(){$('lightbox').classList.remove('open');state.currentPhoto=null;if(!document.querySelector('.modal.open'))document.body.classList.remove('no-scroll');}
+
+    function toggleFavorite(id,fromLightbox){
+      if(!id)return;state.favorites.has(id)?state.favorites.delete(id):state.favorites.add(id);localStorage.setItem(LS_FAVORITES,JSON.stringify(Array.from(state.favorites)));
+      if(fromLightbox&&state.currentPhoto)$('btnLightboxFavorite').textContent=state.favorites.has(id)?'♥ Favorita':'♡ Favorita';
+      if(state.mode==='favorites')renderGallery();else{const card=document.querySelector(`.photo-card[data-id="${cssEscape(id)}"] .card-fav`);if(card)card.textContent=state.favorites.has(id)?'♥':'♡';}
+    }
+
+    function downloadPhoto(photo){if(photo?.downloadUrl)window.open(photo.downloadUrl,'_blank');}
+
+    function getAppShareUrl(){
+      const fromBootstrap=String(state.bootstrap?.appUrl||'').trim();
+      if(fromBootstrap)return fromBootstrap.split('?')[0].split('#')[0];
+      const current=String(location.href||'').split('?')[0].split('#')[0];
+      return current;
+    }
+
+    function openAppShare(){
+      const url=getAppShareUrl();
+      $('appShareUrl').value=url;
+      openModal('shareAppModal');
+      setTimeout(renderAppQr,30);
+    }
+
+    function renderAppQr(){
+      const host=$('appQrCode');
+      if(!host)return;
+      const url=getAppShareUrl();
+      $('appShareUrl').value=url;
+      host.innerHTML='';
+      if(!url){host.innerHTML='<div class="qr-fallback">No pudimos identificar el enlace público del app.</div>';return;}
+      if(typeof QRCode==='undefined'){
+        host.innerHTML='<div class="qr-fallback">El generador QR no pudo cargarse. Podés usar el botón “Copiar link”.</div>';
+        return;
+      }
+      try{
+        new QRCode(host,{text:url,width:260,height:260,colorDark:'#08151d',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+      }catch(e){host.innerHTML='<div class="qr-fallback">No pudimos generar el QR. Podés copiar el enlace debajo.</div>';}
+    }
+
+    async function copyAppLink(){
+      const url=getAppShareUrl();
+      if(!url){toast('No pudimos identificar el enlace del app.','error');return;}
+      await copyText(url);
+    }
+
+    async function shareApp(){
+      const url=getAppShareUrl();
+      if(!url){toast('No pudimos identificar el enlace del app.','error');return;}
+      const data={title:'Recuerdos · Asamblea Río Gallegos 2026',text:'Galería de recuerdos de la Asamblea Río Gallegos 2026',url};
+      try{
+        if(navigator.share)await navigator.share(data);
+        else await copyText(url);
+      }catch(e){if(e.name!=='AbortError')toast('No pudimos compartir el app.','error');}
+    }
+
+    async function sharePhoto(photo){
+      if(!photo)return;const base=state.bootstrap?.appUrl||location.href.split('?')[0];const url=`${base}?foto=${encodeURIComponent(photo.id)}`;
+      const data={title:'Asamblea Río Gallegos 2026',text:`Foto compartida por ${photo.uploaderName} · ${photo.congregation}`,url};
+      try{if(navigator.share)await navigator.share(data);else{await copyText(url);toast('Enlace copiado.','success');}}catch(e){if(e.name!=='AbortError')toast('No pudimos compartir el enlace.','error');}
+    }
+
+    function deleteCurrentPhoto(){
+      const p=state.currentPhoto;if(!p||!p.isMine||!state.profile)return;
+      if(!confirm('Esta foto dejará de estar disponible en la galería. Solo vos podés hacer esta acción. ¿Eliminarla?'))return;
+      const btn=$('btnLightboxDelete');btn.disabled=true;
+      server('apiDeleteOwnPhoto',p.id,state.profile.profileId,state.profile.ownerSecret).then(()=>{toast('Tu foto fue eliminada.','success');state.favorites.delete(p.id);closeLightbox();reloadStatsAndGallery();}).catch(e=>toast(e.message,'error')).finally(()=>btn.disabled=false);
+    }
+
+    function reloadStatsAndGallery(){
+      server('apiBootstrap',state.profile?.profileId||'').then(data=>{state.bootstrap=data;$('statPhotos').textContent=numberFmt(data.stats.photos||0);$('statCongregations').textContent=numberFmt(data.stats.congregations||0);fillCongregations(data.congregations||[]);applyGalleryResult(data.gallery,true);}).catch(e=>toast(e.message,'error'));
+    }
+
+    function resolveDeepLink(){
+      const openById=id=>{if(!id)return;server('apiGetPhoto',id,state.profile?.profileId||'').then(openLightbox).catch(()=>{});};
+      if(window.google?.script?.url?.getLocation){
+        google.script.url.getLocation(loc=>openById(loc?.parameter?.foto));
+        return;
+      }
+      openById(new UR
