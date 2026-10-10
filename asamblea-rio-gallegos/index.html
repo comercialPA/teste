@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07131d">
+  <meta name="color-scheme" content="light">
+  <title>Asamblea Río Gallegos 2026 · Recuerdos</title>
+  <!-- V1.0.2 · QR y compartir app -->
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="hero" id="homeSection">
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-mark"><span></span></div>
+          <div class="brand-copy">
+            <b>Recuerdos</b>
+            <small>Asamblea · 2026</small>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button id="btnShareApp" class="ghost-round" aria-label="Compartir app" title="Compartir app">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.9 7.6-4.6M8.2 13.1l7.6 4.6"/></svg>
+          </button>
+          <button id="btnProfile" class="ghost-round" aria-label="Mi perfil" title="Mi perfil">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.7-4.3 3.2-6.5 7.5-6.5s6.8 2.2 7.5 6.5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="hero-inner">
+        <div>
+          <div class="eyebrow" id="eventDateLabel">11 · OCTUBRE · 2026</div>
+          <h1>Momentos que <em>quedan.</em></h1>
+          <p class="hero-sub">Un espacio sencillo y privado en su administración para reunir las fotos de nuestros hermanos, encontrarlas por congregación y compartirlas sin que se pierdan entre tantos chats.</p>
+          <div class="hero-actions">
+            <button id="btnHeroUpload" class="btn btn-primary">Subir fotos</button>
+            <button id="btnHeroGallery" class="btn btn-secondary">Ver galería</button>
+            <button id="btnHeroShare" class="btn btn-secondary">Compartir app</button>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-chip"><strong id="statPhotos">0</strong><span>Fotos compartidas</span></div>
+          <div class="stat-chip"><strong id="statCongregations">0</strong><span>Congregaciones</span></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-wrap" id="gallerySection">
+      <div class="panel filters">
+        <div class="searchbox">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></svg>
+          <input id="searchInput" type="search" placeholder="Buscar por nombre, congregación o leyenda…" autocomplete="off">
+        </div>
+        <div class="selectbox">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V8l8-4 8 4v12"/><path d="M8 20v-5h8v5M8 10h.01M12 10h.01M16 10h.01"/></svg>
+          <select id="congregationFilter"><option value="">Todas las congregaciones</option></select>
+        </div>
+        <button id="btnSurprise" class="btn btn-soft">Sorprendeme</button>
+      </div>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h2 id="galleryTitle">Galería</h2>
+            <p id="gallerySubtitle">Los recuerdos más recientes del encuentro.</p>
+          </div>
+          <div class="section-tools">
+            <button id="btnSelectMode" class="btn btn-light btn-sm">Seleccionar</button>
+          </div>
+        </div>
+        <div id="gallery" class="gallery" aria-live="polite"></div>
+        <div id="emptyState" class="empty" hidden>No encontramos fotos con estos filtros.</div>
+        <div class="load-wrap"><button id="btnLoadMore" class="btn btn-light" hidden>Cargar más</button></div>
+      </section>
+
+      <div class="footer">
+        <div id="disclaimer">Proyecto independiente para compartir recuerdos entre asistentes. No es una aplicación oficial de los Testigos de Jehová.</div>
+        <button id="btnAdmin">Administración</button>
+      </div>
+    </main>
+  </div>
+
+  <div id="selectionBar" class="selection-bar">
+    <div class="selection-count"><span id="selectionCount">0</span> seleccionadas</div>
+    <button id="btnCancelSelection" class="btn btn-light btn-sm">Cancelar</button>
+    <button id="btnZip" class="btn btn-primary btn-sm">Descargar ZIP</button>
+  </div>
+
+  <nav class="bottom-nav" aria-label="Navegación principal">
+    <button id="navHome" class="nav-btn active" data-nav="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m4 11 8-7 8 7v9H4z"/><path d="M9 20v-6h6v6"/></svg><span>Inicio</span></button>
+    <button id="navGallery" class="nav-btn" data-nav="gallery"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m5 18 5-5 3 3 2-2 4 4"/></svg><span>Galería</span></button>
+    <button id="navUpload" class="nav-upload" aria-label="Subir fotos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button id="navFavorites" class="nav-btn" data-nav="favorites"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.4A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>Favoritas</span></button>
+    <button id="navMine" class="nav-btn" data-nav="mine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c.8-4 3.1-6 7-6s6.2 2 7 6"/></svg><span>Mis fotos</span></button>
+  </nav>
+
+  <div id="shareAppModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="shareAppTitle">
+    <div class="sheet share-app-sheet">
+      <div class="sheet-head"><h3 id="shareAppTitle">Compartir el app</h3><button class="close-btn" data-close="shareAppModal">×</button></div>
+      <div class="sheet-body">
+        <div class="share-app-card">
+          <div class="share-app-intro">
+            <div class="kicker">Asamblea · Río Gallegos 2026</div>
+            <h4>Escaneá y compartí.</h4>
+            <p>Mostrá este código QR a los hermanos o copiá el enlace para enviarlo por WhatsApp.</p>
+          </div>
+          <div class="qr-shell"><div id="appQrCode" aria-label="Código QR del app"></div></div>
+          <div class="share-link-box">
+            <input id="appShareUrl" class="share-url" type="text" readonly aria-label="Enlace del app">
+            <button id="btnCopyAppLink" class="btn btn-light btn-sm">Copiar link</button>
+          </div>
+          <div class="share-actions-grid">
+            <button id="btnNativeShareApp" class="btn btn-primary">Compartir</button>
+            <button id="btnRefreshQr" class="btn btn-light">Actualizar QR</button>
+          </div>
+          <p class="share-tip">El QR siempre apunta al enlace público de esta Web App. No da acceso directo a tu Google Drive.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="profileModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+    <div class="sheet">
+      <div class="sheet-head"><h3 id="profileTitle">Tu perfil</h3><button class="close-btn" data-close="profileModal">×</button></div>
+      <div class="sheet-body">
+        <div id="profileExisting" hidden>
+          <div class="profile-note"><strong id="profileNameText"></strong><br><span id="profileCongText"></span></div>
+          <p class="hint">Este perfil identifica cuáles fotos son tuyas. No compartas tu clave privada ni el código de recuperación.</p>
+          <button id="btnForgetLocal" class="btn btn-light">Cambiar de dispositivo/perfil</button>
+        </div>
+        <div id="profileCreate">
+          <div class="field"><label>Tu nombre</label><input id="profileName" maxlength="80" placeholder="Ej.: Fernando Flores"></div>
+          <div class="field"><label>Congregación</label><input id="profileCongregation" maxlength="100" list="congregationList" placeholder="Escribí el nombre de tu congregación"></div>
+          <datalist id="congregationList"></datalist>
+          <button id="btnCreateProfile" class="btn btn-primary" style="width:100%">Crear mi perfil</button>
+          <div class="mini-sep"></div>
+          <p class="hint">¿Ya subiste fotos desde otro dispositivo?</p>
+          <div class="field"><label>Código de recuperación</label><input id="recoveryInput" maxlength="32" placeholder="RG26-XXXX-XXXX-XXXX"></div>
+          <button id="btnRecoverProfile" class="btn btn-light" style="width:100%">Recuperar mis fotos</button>
+        </div>
+        <div id="recoveryReveal" hidden>
+          <div class="recovery-box"><small>Guardá este código. Se muestra una sola vez.</small><div id="recoveryCodeText" class="recovery-code"></div></div>
+          <button id="btnCopyRecovery" class="btn btn-light" style="width:100%">Copiar código</button>
+          <button class="btn btn-primary" data-close="profileModal" style="width:100%;margin-top:8px">Listo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="uploadModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="uploadTitle">
+    <div class="sheet">
+      <div class="sheet-head"><h3 id="uploadTitle">Subir fotos</h3><button class="close-btn" data-close="uploadModal">×</button></div>
+      <div class="sheet-body">
+        <div id="uploadIdentity" class="profile-note"></div>
+        <div id="dropZone" class="file-zone">
+          <input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple>
+          <div style="font-size:28px;margin-bottom:7px">＋</div>
+          <strong>Seleccioná varias fotos</strong>
+          <div class="hint" style="margin-top:5px">JPG, PNG, WEBP o HEIC. Si una foto es muy pesada intentaremos optimizarla antes de subirla.</div>
+          <button id="btnChooseFiles" class="btn btn-light btn-sm" style="margin-top:12px">Elegir fotos</button>
+        </div>
+        <div id="previewList" class="preview-list"></div>
+        <div id="uploadProgress" class="progress-wrap">
+          <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+          <div class="progress-text"><span id="progressLabel">Preparando…</span><span id="progressPercent">0%</span></div>
+        </div>
+        <label style="display:flex;gap:9px;align-items:flex-start;margin:15px 2px;font-size:11px;line-height:1.45;color:var(--muted)"><input id="consentCheck" type="checkbox" style="margin-top:2px"> <span>Confirmo que puedo compartir estas imágenes con los participantes del evento y entiendo que aparecerán en esta galería.</span></label>
+        <button id="btnStartUpload" class="btn btn-primary" style="width:100%" disabled>Subir fotos</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+    <div class="sheet">
+      <div class="sheet-head"><h3 id="adminTitle">Administración</h3><button class="close-btn" data-close="adminModal">×</button></div>
+      <div class="sheet-body">
+        <div id="adminLogin">
+          <div class="field"><label>Clave administrativa</label><input id="adminKeyInput" type="password" autocomplete="current-password" placeholder="Clave privada"></div>
+          <button id="btnAdminLogin" class="btn btn-primary" style="width:100%">Ingresar</button>
+          <p class="hint" style="margin-top:12px">Administración puede ocultar o volver a publicar fotos. No puede eliminar fotos ajenas desde el app.</p>
+        </div>
+        <div id="adminPanel" hidden>
+          <div id="adminStats" class="admin-grid"></div>
+          <div class="field"><label>Agregar congregación</label><div style="display:flex;gap:8px"><input id="adminNewCong" maxlength="100" placeholder="Nombre de congregación"><button id="btnAdminAddCong" class="btn btn-light btn-sm">Agregar</button></div></div>
+          <div class="mini-sep"></div>
+          <div style="font-weight:800;font-size:13px">Últimas fotos</div>
+          <div id="adminList" class="admin-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Foto">
+    <div class="lightbox-top"><button id="btnLightboxClose" aria-label="Cerrar">×</button><div style="font-size:11px;color:rgba(255,255,255,.55)">ASAMBLEA · RÍO GALLEGOS</div><button id="btnLightboxShare" aria-label="Compartir">↗</button></div>
+    <div class="lightbox-media"><img id="lightboxImage" alt="Foto del evento"></div>
+    <div class="lightbox-info">
+      <strong id="lightboxName"></strong><div id="lightboxCong" class="cong"></div><div id="lightboxCaption" class="caption"></div>
+      <div class="lightbox-actions">
+        <button id="btnLightboxFavorite" class="btn btn-secondary">♡ Favorita</button>
+        <button id="btnLightboxDownload" class="btn btn-secondary">Descargar</button>
+        <button id="btnLightboxDelete" class="btn btn-danger" hidden>Eliminar mi foto</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
