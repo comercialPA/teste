@@ -1,0 +1,81 @@
+(function(){
+    'use strict';
+
+    const LS_PROFILE='rg26_profile_v1';
+    const LS_FAVORITES='rg26_favorites_v1';
+    const SS_ADMIN='rg26_admin_key_v1';
+    const state={
+      bootstrap:null,
+      profile:readJson(LS_PROFILE),
+      favorites:new Set(readJson(LS_FAVORITES)||[]),
+      items:[],offset:0,hasMore:false,total:0,
+      congregation:'',query:'',mode:'gallery',
+      selection:new Set(),files:[],currentPhoto:null,
+      adminKey:sessionStorage.getItem(SS_ADMIN)||''
+    };
+
+    const $=id=>document.getElementById(id);
+
+    document.addEventListener('DOMContentLoaded', boot);
+
+    function boot(){
+      bindEvents();
+      renderSkeletons();
+      server('apiBootstrap', state.profile?.profileId||'')
+        .then(data=>{
+          state.bootstrap=data;
+          $('eventDateLabel').textContent=formatEventDate(data.event.date);
+          $('disclaimer').textContent=data.event.disclaimer||$('disclaimer').textContent;
+          $('statPhotos').textContent=numberFmt(data.stats.photos||0);
+          $('statCongregations').textContent=numberFmt(data.stats.congregations||0);
+          fillCongregations(data.congregations||[]);
+          applyGalleryResult(data.gallery,true);
+          refreshProfileUi();
+          resolveDeepLink();
+        })
+        .catch(err=>{ clearGallery(); toast(err.message||String(err),'error'); });
+    }
+
+    function bindEvents(){
+      $('btnHeroUpload').addEventListener('click',openUpload);
+      $('navUpload').addEventListener('click',openUpload);
+      $('btnHeroGallery').addEventListener('click',()=>scrollGallery());
+      $('btnShareApp').addEventListener('click',openAppShare);
+      $('btnHeroShare').addEventListener('click',openAppShare);
+      $('btnCopyAppLink').addEventListener('click',copyAppLink);
+      $('btnNativeShareApp').addEventListener('click',shareApp);
+      $('btnRefreshQr').addEventListener('click',renderAppQr);
+      $('navHome').addEventListener('click',()=>{setNav('home');$('homeSection').scrollIntoView({behavior:'smooth'});});
+      $('navGallery').addEventListener('click',()=>{state.mode='gallery';setNav('gallery');refreshMode();});
+      $('navFavorites').addEventListener('click',()=>{state.mode='favorites';setNav('favorites');refreshMode();});
+      $('navMine').addEventListener('click',()=>{state.mode='mine';setNav('mine');refreshMode();});
+      $('btnProfile').addEventListener('click',()=>{refreshProfileUi();openModal('profileModal');});
+      $('btnCreateProfile').addEventListener('click',createProfile);
+      $('btnRecoverProfile').addEventListener('click',recoverProfile);
+      $('btnCopyRecovery').addEventListener('click',()=>copyText($('recoveryCodeText').textContent));
+      $('btnForgetLocal').addEventListener('click',forgetLocalProfile);
+      $('btnChooseFiles').addEventListener('click',()=>$('fileInput').click());
+      $('fileInput').addEventListener('change',e=>setFiles(Array.from(e.target.files||[])));
+      $('dropZone').addEventListener('dragover',e=>{e.preventDefault();$('dropZone').classList.add('drag');});
+      $('dropZone').addEventListener('dragleave',()=>$('dropZone').classList.remove('drag'));
+      $('dropZone').addEventListener('drop',e=>{e.preventDefault();$('dropZone').classList.remove('drag');setFiles(Array.from(e.dataTransfer.files||[]));});
+      $('consentCheck').addEventListener('change',updateUploadButton);
+      $('btnStartUpload').addEventListener('click',startUpload);
+      $('searchInput').addEventListener('input',debounce(()=>{state.query=$('searchInput').value.trim();reloadGallery();},350));
+      $('congregationFilter').addEventListener('change',()=>{state.congregation=$('congregationFilter').value;reloadGallery();});
+      $('btnLoadMore').addEventListener('click',()=>loadMore());
+      $('btnSurprise').addEventListener('click',surpriseMe);
+      $('btnSelectMode').addEventListener('click',toggleSelectionMode);
+      $('btnCancelSelection').addEventListener('click',exitSelectionMode);
+      $('btnZip').addEventListener('click',downloadZip);
+      $('btnLightboxClose').addEventListener('click',closeLightbox);
+      $('btnLightboxShare').addEventListener('click',()=>sharePhoto(state.currentPhoto));
+      $('btnLightboxFavorite').addEventListener('click',()=>toggleFavorite(state.currentPhoto?.id,true));
+      $('btnLightboxDownload').addEventListener('click',()=>downloadPhoto(state.currentPhoto));
+      $('btnLightboxDelete').addEventListener('click',deleteCurrentPhoto);
+      $('btnAdmin').addEventListener('click',openAdmin);
+      $('btnAdminLogin').addEventListener('click',adminLogin);
+      $('btnAdminAddCong').addEventListener('click',adminAddCongregation);
+      document.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>closeModal(btn.dataset.close)));
+      document.querySelectorAll('.modal').forEach(modal=>modal.addEventListener('click',e=>{if(e.target===modal)closeModal(modal.id);}));
+      document.addEventListener('keydown
