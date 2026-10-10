@@ -2,8 +2,24 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 
-const outDir=path.resolve('icons');
+const publicDir=path.resolve('public');
+const outDir=path.join(publicDir,'icons');
+fs.rmSync(publicDir,{recursive:true,force:true});
 fs.mkdirSync(outDir,{recursive:true});
+
+const staticFiles=[
+  'index.html',
+  'app-1.css','app-2.css','app-3.css','app-4.css',
+  'app-loader.js',
+  'app-chunk-1.txt','app-chunk-2.txt','app-chunk-3.txt',
+  'app-chunk-4.txt','app-chunk-5.txt','app-chunk-6.txt',
+  'manifest.webmanifest','service-worker.js'
+];
+for(const file of staticFiles){
+  const src=path.resolve(file);
+  if(!fs.existsSync(src)) throw new Error(`Static asset missing: ${file}`);
+  fs.copyFileSync(src,path.join(publicDir,file));
+}
 
 const crcTable=(()=>{
   const table=new Uint32Array(256);
@@ -82,3 +98,5 @@ for(const [name,size,maskable] of [
   fs.writeFileSync(path.join(outDir,name),makeIcon(size,maskable));
   console.log('generated',name);
 }
+
+console.log(`PWA static bundle ready in ${publicDir}`);
