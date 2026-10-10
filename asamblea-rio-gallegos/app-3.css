@@ -142,7 +142,10 @@
   body{font-size:14px}
   .app-shell{padding-bottom:calc(106px + env(safe-area-inset-bottom))}
 
-  .hero{min-height:auto;padding:max(14px,env(safe-area-inset-top)) 12px 82px}
+  .hero{
+    min-height:auto;
+    padding:max(14px,env(safe-area-inset-top)) 12px 82px;
+  }
   .topbar{gap:8px;padding-bottom:12px}
   .brand{gap:9px;min-width:0}
   .brand-mark{width:40px;height:40px;border-radius:14px;flex:0 0 auto}
@@ -194,19 +197,39 @@
   .empty{padding:38px 15px;border-radius:19px}
   .load-wrap{padding:18px 0 6px}
 
-  .bottom-nav{width:calc(100% - 14px);bottom:max(8px,env(safe-area-inset-bottom));grid-template-columns:1fr 1fr 58px 1fr 1fr;gap:2px;padding:6px;border-radius:20px}
+  .bottom-nav{
+    width:calc(100% - 14px);
+    bottom:max(8px,env(safe-area-inset-bottom));
+    grid-template-columns:1fr 1fr 58px 1fr 1fr;
+    gap:2px;
+    padding:6px;
+    border-radius:20px;
+  }
   .nav-btn{min-height:52px;padding:6px 2px;border-radius:13px;font-size:8.5px;gap:3px}
   .nav-btn svg{width:19px;height:19px}
   .nav-upload{width:56px;height:56px;border-radius:18px;margin-top:-26px}
   .nav-upload svg{width:24px;height:24px}
-  .selection-bar{width:calc(100% - 16px);bottom:calc(84px + env(safe-area-inset-bottom));padding:8px;gap:6px;border-radius:17px}
+  .selection-bar{
+    width:calc(100% - 16px);
+    bottom:calc(84px + env(safe-area-inset-bottom));
+    padding:8px;
+    gap:6px;
+    border-radius:17px;
+  }
   .selection-count{font-size:11px;padding-left:4px}
   .selection-bar .btn{min-height:40px;padding:8px 10px;font-size:11px}
 
   .footer{margin-top:48px;padding:0 10px 22px;font-size:9.5px}
 
   .modal{align-items:flex-end;padding:0;overflow:hidden}
-  .sheet{width:100%;max-width:none;max-height:94vh;max-height:94dvh;border-radius:24px 24px 0 0;overscroll-behavior:contain}
+  .sheet{
+    width:100%;
+    max-width:none;
+    max-height:94vh;
+    max-height:94dvh;
+    border-radius:24px 24px 0 0;
+    overscroll-behavior:contain;
+  }
   .sheet-head{padding:15px 14px 13px}
   .sheet-head h3{font-size:25px}
   .close-btn{width:40px;height:40px;border-radius:13px}
@@ -272,4 +295,61 @@
   .sheet{max-height:96dvh}
   .lightbox-media img{max-height:48dvh}
   .lightbox-info{max-height:42dvh}
+}
+
+/* V1.0.6 · AJUSTE FINO MOBILE APÓS TESTE REAL
+   Somente CSS. Corrige sobreposição da navegação, compacta hero e reduz toast. */
+@media (max-width:719px){
+  .hero{
+    padding-top:max(10px,env(safe-area-inset-top));
+    padding-left:11px;
+    padding-right:11px;
+    padding-bottom:124px;
+  }
+  .topbar{padding-bottom:6px}
+  .hero-inner{margin-top:24px;gap:16px}
+  .eyebrow{margin-bottom:9px;font-size:8.5px;letter-spacing:.18em}
+  .hero h1{font-size:clamp(42px,13.2vw,54px);line-height:.88;letter-spacing:-.052em}
+  .hero-sub{font-size:12.25px;line-height:1.47;margin-top:14px;max-width:96%}
+  .hero-actions{margin-top:17px;gap:7px;grid-template-columns:1fr 1fr}
+  .hero-actions .btn{min-height:44px;padding:10px 8px;font-size:11.5px;border-radius:13px}
+  .hero-actions #btnHeroUpload{grid-column:auto}
+  .hero-actions #btnHeroGallery{grid-column:auto}
+  .hero-actions #btnHeroShare{grid-column:1/-1;min-height:42px}
+  .hero-stats{margin-top:15px;gap:7px}
+  .stat-chip{padding:10px 11px;border-radius:15px}
+  .stat-chip strong{font-size:24px}
+
+  .content-wrap{margin:-30px auto 0}
+
+  .bottom-nav{
+    width:calc(100% - 18px);
+    bottom:max(6px,env(safe-area-inset-bottom));
+    grid-template-columns:1fr 1fr 54px 1fr 1fr;
+    padding:5px;
+    border-radius:18px;
+  }
+  .nav-btn{min-height:48px;font-size:8px}
+  .nav-btn svg{width:18px;height:18px}
+  .nav-upload{width:52px;height:52px;border-radius:17px;margin-top:-23px}
+  .nav-upload svg{width:22px;height:22px}
+
+  .toast-stack{
+    top:calc(6px + env(safe-area-inset-top));
+    left:50%;
+    right:auto;
+    width:min(calc(100% - 24px),330px);
+    transform:translateX(-50%);
+  }
+  .toast{padding:9px 10px;border-radius:13px;font-size:10.5px;line-height:1.35;box-shadow:0 12px 32px rgba(3,14,19,.18)}
+  .toast.error{border-left-width:3px}
+}
+
+@media (max-width:390px){
+  .hero{padding-bottom:132px}
+  .hero-inner{margin-top:20px}
+  .hero h1{font-size:clamp(40px,12.8vw,50px)}
+  .hero-sub{font-size:11.8px;line-height:1.44}
+  .hero-actions .btn{font-size:11px}
+  .bottom-nav{width:calc(100% - 12px)}
 }
