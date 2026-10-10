@@ -1,0 +1,71 @@
+maxUploadMb||12));
+          const dataUrl=await readFile(prepared.file);
+          await server('apiUploadPhoto',{
+            profileId:state.profile.profileId,
+            ownerSecret:state.profile.ownerSecret,
+            uploaderName:state.profile.name,
+            congregation:state.profile.congregation,
+            caption:item.caption||'',
+            fileName:prepared.name,
+            mimeType:prepared.type,
+            base64:dataUrl.split(',')[1]||''
+          });
+          success++;
+        }catch(e){toast(`${item.file.name}: ${e.message}`,'error');}
+        setProgress(Math.round(((i+1)/state.files.length)*100),`Subiendo ${i+1} de ${state.files.length}`);
+      }
+      btn.disabled=false;setProgress(100,'Listo');
+      if(success){toast(`${success} foto${success===1?'':'s'} compartida${success===1?'':'s'}.`,'success');closeModal('uploadModal');reloadStatsAndGallery();}
+      else toast('No pudimos subir ninguna foto.','error');
+    }
+
+    async function prepareImage(file,maxMb){
+      // Vercel Functions limita el cuerpo HTTP. Cada foto viaja por debajo de 2,5 MB
+      // antes de convertirse a base64; la reducción solo ocurre cuando hace falta.
+      const transportMb=Math.min(Number(maxMb||12),2.5);
+      const maxBytes=transportMb*1024*1024;
+      if(file.size<=maxBytes)return {file,name:file.name,type:file.type||guessMime(file.name)};
+      if(!/^image\/(jpeg|jpg|png|webp)$/i.test(file.type))throw new Error(`supera ${transportMb} MB para la carga web`);
+      try{
+        const bitmap=await createImageBitmap(file);
+        const maxSide=3000,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
+        const canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);
+        canvas.getContext('2d',{alpha:false}).drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close?.();
+        let quality=.90,blob=await canvasBlob(canvas,'image/jpeg',quality);
+        while(blob.size>maxBytes&&quality>.62){quality-=.07;blob=await canvasBlob(canvas,'image/jpeg',quality);}
+        if(blob.size>maxBytes)throw new Error(`sigue superando ${transportMb} MB después de optimizarla`);
+        return {file:blob,name:file.name.replace(/\.[^.]+$/,'.jpg'),type:'image/jpeg'};
+      }catch(e){throw new Error(`supera ${transportMb} MB y no pudimos optimizarla`);}
+    }
+
+    function canvasBlob(canvas,type,quality){return new Promise((res,rej)=>canvas.toBlob(b=>b?res(b):rej(new Error('No se pudo optimizar')),type,quality));}
+    function readFile(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error('No se pudo leer la foto'));r.readAsDataURL(file);});}
+    function setProgress(pct,label){$('progressBar').style.width=pct+'%';$('progressPercent').textContent=pct+'%';$('progressLabel').textContent=label;}
+
+    function createProfile(){
+      const name=$('profileName').value.trim(),congregation=$('profileCongregation').value.trim();
+      const btn=$('btnCreateProfile');btn.disabled=true;
+      server('apiRegisterProfile',{name,congregation}).then(r=>{saveProfile(r.profile);showRecovery(r.profile.recoveryCode);toast('Perfil creado.','success');}).catch(e=>toast(e.message,'error')).finally(()=>btn.disabled=false);
+    }
+
+    function recoverProfile(){
+      const code=$('recoveryInput').value.trim();if(!code){toast('Ingresá tu código de recuperación.');return;}
+      const btn=$('btnRecoverProfile');btn.disabled=true;
+      server('apiRecoverProfile',code).then(r=>{saveProfile(r.profile);showRecovery(r.profile.recoveryCode);toast('Perfil recuperado. Se generó un nuevo código.','success');reloadGallery();}).catch(e=>toast(e.message,'error')).finally(()=>btn.disabled=false);
+    }
+
+    function saveProfile(profile){state.profile=profile;localStorage.setItem(LS_PROFILE,JSON.stringify(profile));refreshProfileUi();}
+    function showRecovery(code){$('profileCreate').hidden=true;$('profileExisting').hidden=true;$('recoveryReveal').hidden=false;$('recoveryCodeText').textContent=code||'';}
+    function refreshProfileUi(){
+      $('recoveryReveal').hidden=true;
+      if(state.profile){$('profileExisting').hidden=false;$('profileCreate').hidden=true;$('profileNameText').textContent=state.profile.name;$('profileCongText').textContent=state.profile.congregation;}
+      else{$('profileExisting').hidden=true;$('profileCreate').hidden=false;}
+    }
+    function forgetLocalProfile(){
+      if(!confirm('¿Querés quitar este perfil de este dispositivo? Tus fotos no se borrarán. Para recuperarlo después necesitarás el código de recuperación.'))return;
+      localStorage.removeItem(LS_PROFILE);state.profile=null;refreshProfileUi();toast('Perfil quitado de este dispositivo.');
+    }
+
+    function openLightbox(photo){
+      if(!photo)return;state.currentPhoto=photo;
+      $('lightboxImage').src=photo.thumbnailUrl;$('lightboxName').textContent=photo.uploade
