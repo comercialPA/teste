@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "Comparta sus momentos · Asamblea Río Gallegos 2026",
-  "short_name": "Sus momentos",
-  "description": "Galería compartida de momentos de la Asamblea de Río Gallegos · 10, 11 y 12 de octubre de 2026.",
+  "name": "Recuerdos · Asamblea Río Gallegos 2026",
+  "short_name": "Recuerdos",
+  "description": "Galería compartida de recuerdos de la Asamblea de Río Gallegos · 10, 11 y 12 de octubre de 2026.",
   "lang": "es-AR",
   "dir": "ltr",
   "start_url": "/?source=pwa",
