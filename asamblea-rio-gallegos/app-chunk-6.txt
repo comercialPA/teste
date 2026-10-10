@@ -1,0 +1,48 @@
+LSearchParams(location.search).get('foto'));
+    }
+
+    function openAdmin(){openModal('adminModal');if(state.adminKey){$('adminLogin').hidden=true;$('adminPanel').hidden=false;loadAdmin();}else{$('adminLogin').hidden=false;$('adminPanel').hidden=true;}}
+    function adminLogin(){
+      const key=$('adminKeyInput').value.trim();if(!key)return;
+      const btn=$('btnAdminLogin');btn.disabled=true;
+      server('apiAdminLogin',key).then(()=>{state.adminKey=key;sessionStorage.setItem(SS_ADMIN,key);$('adminLogin').hidden=true;$('adminPanel').hidden=false;loadAdmin();}).catch(e=>toast(e.message,'error')).finally(()=>btn.disabled=false);
+    }
+    function loadAdmin(){
+      server('apiAdminGetData',state.adminKey).then(data=>{
+        const s=data.stats||{};$('adminStats').innerHTML=[['Total',s.total],['Publicadas',s.published],['Pendientes',s.pending],['Ocultas',s.hidden],['Eliminadas',s.deleted]].map(([l,v])=>`<div class="admin-stat"><b>${numberFmt(v||0)}</b><span>${l}</span></div>`).join('');
+        $('adminList').innerHTML='';(data.photos||[]).forEach(p=>$('adminList').appendChild(adminItem(p)));fillCongregations(data.congregations||[]);
+      }).catch(e=>{toast(e.message,'error');sessionStorage.removeItem(SS_ADMIN);state.adminKey='';$('adminLogin').hidden=false;$('adminPanel').hidden=true;});
+    }
+    function adminItem(photo){
+      const div=document.createElement('div');div.className='admin-item';
+      div.innerHTML=`<div class="admin-item-top"><div><strong>${esc(photo.uploaderName)}</strong><small>${esc(photo.congregation)} · ${esc(photo.uploadedAt||'')}<br>${esc(photo.caption||photo.originalName||'')}</small></div><span class="badge ${attr(photo.status)}">${esc(photo.status)}</span></div><div class="admin-actions"></div>`;
+      const actions=div.querySelector('.admin-actions');
+      if(photo.status!=='ELIMINADA'){
+        if(photo.status==='PUBLICADA')actions.appendChild(adminButton('Ocultar',()=>adminSetStatus(photo.id,'OCULTA')));
+        else actions.appendChild(adminButton('Publicar',()=>adminSetStatus(photo.id,'PUBLICADA')));
+        if(photo.status!=='PENDIENTE')actions.appendChild(adminButton('Pendiente',()=>adminSetStatus(photo.id,'PENDIENTE')));
+      }
+      return div;
+    }
+    function adminButton(label,fn){const b=document.createElement('button');b.className='btn btn-light btn-sm';b.textContent=label;b.addEventListener('click',fn);return b;}
+    function adminSetStatus(id,status){
+      let reason='';if(status==='OCULTA')reason=prompt('Motivo opcional para ocultarla:','')||'';
+      server('apiAdminSetStatus',id,status,reason,state.adminKey).then(()=>{toast('Estado actualizado.','success');loadAdmin();reloadStatsAndGallery();}).catch(e=>toast(e.message,'error'));
+    }
+    function adminAddCongregation(){const name=$('adminNewCong').value.trim();if(!name)return;server('apiAdminAddCongregation',name,state.adminKey).then(r=>{$('adminNewCong').value='';fillCongregations(r.congregations||[]);toast('Congregación agregada.','success');}).catch(e=>toast(e.message,'error'));}
+
+    function openModal(id){$(id).classList.add('open');document.body.classList.add('no-scroll');}
+    function closeModal(id){$(id)?.classList.remove('open');if(!document.querySelector('.modal.open')&&!$('lightbox').classList.contains('open'))document.body.classList.remove('no-scroll');}
+
+    function toast(message,type=''){const div=document.createElement('div');div.className='toast '+type;div.textContent=message;$('toastStack').appendChild(div);setTimeout(()=>div.remove(),4600);}
+    function readJson(key){try{return JSON.parse(localStorage.getItem(key));}catch(e){return null;}}
+    function numberFmt(n){return new Intl.NumberFormat('es-AR').format(Number(n||0));}
+    function formatEventDate(value){try{const d=new Date(value+'T12:00:00');return new Intl.DateTimeFormat('es-AR',{day:'2-digit',month:'long',year:'numeric'}).format(d).toUpperCase();}catch(e){return '11 · OCTUBRE · 2026';}}
+    function formatBytes(bytes){const b=Number(bytes||0);if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1)+' KB';return (b/1048576).toFixed(1)+' MB';}
+    function guessMime(name){return /\.png$/i.test(name)?'image/png':/\.webp$/i.test(name)?'image/webp':/\.hei[cf]$/i.test(name)?'image/heic':'image/jpeg';}
+    function debounce(fn,ms){let t;return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn(...args),ms);};}
+    async function copyText(text){try{await navigator.clipboard.writeText(text);toast('Copiado.','success');}catch(e){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Copiado.','success');}}
+    function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+    function attr(v){return esc(v);}
+    function cssEscape(v){return window.CSS?.escape?CSS.escape(v):String(v).replace(/[^a-zA-Z0-9_-]/g,'\\$&');}
+  })();
