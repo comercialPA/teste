@@ -1,4 +1,4 @@
-const CACHE='rg26-v1.1.5';
+const CACHE='rg26-v1.1.6';
 const SHELL=[
   '/',
   '/manifest.webmanifest',
@@ -13,9 +13,11 @@ const SHELL=[
   '/app-8.css',
   '/app-9.css',
   '/app-10.css',
+  '/app-11.css',
   '/app-gesture-fix.js',
   '/app-update-manager.js',
   '/app-tour.js',
+  '/app-social.js',
   '/app-chunk-1.txt',
   '/app-chunk-2.txt',
   '/app-chunk-3.txt',
@@ -44,6 +46,41 @@ self.addEventListener('message',event=>{
   if(event.data?.type==='SKIP_WAITING')self.skipWaiting();
 });
 
+self.addEventListener('push',event=>{
+  let data={};
+  try{data=event.data?event.data.json():{};}catch(_){data={body:event.data?.text?.()||''};}
+  const title=data.title||'Recuerdos';
+  const options={
+    body:data.body||'Tenés una nueva notificación.',
+    icon:data.icon||'/icons/icon-192.png',
+    badge:data.badge||'/icons/icon-192.png',
+    tag:data.tag||'rg26-notification',
+    renotify:true,
+    data:{url:data.url||'/',photoId:data.photoId||''}
+  };
+  event.waitUntil(self.registration.showNotification(title,options));
+});
+
+self.addEventListener('notificationclick',event=>{
+  event.notification.close();
+  const target=event.notification?.data?.url||'/';
+  event.waitUntil((async()=>{
+    const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+    for(const client of windows){
+      try{
+        const current=new URL(client.url);
+        const next=new URL(target,self.location.origin);
+        if(current.origin===next.origin){
+          await client.focus();
+          if('navigate' in client)await client.navigate(next.href);
+          return;
+        }
+      }catch(_){}
+    }
+    if(self.clients.openWindow)return self.clients.openWindow(target);
+  })());
+});
+
 self.addEventListener('fetch',event=>{
   const req=event.request;
   if(req.method!=='GET') return;
@@ -64,6 +101,15 @@ self.addEventListener('fetch',event=>{
           return res;
         })
         .catch(()=>caches.match('/'))
+    );
+    return;
+  }
+
+  if(url.pathname==='/app-loader.js'||url.pathname==='/app-update-manager.js'){
+    event.respondWith(
+      fetch(req,{cache:'no-store'})
+        .then(res=>{const copy=res.clone();caches.open(CACHE).then(cache=>cache.put(req,copy)).catch(()=>{});return res;})
+        .catch(()=>caches.match(req))
     );
     return;
   }
