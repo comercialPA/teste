@@ -1,6 +1,6 @@
 {
-  "version": "1.2.0",
-  "build": 120,
-  "releasedAt": "2026-10-11T15:55:00-03:00",
-  "message": "4K, miniaturas y seguridad reforzada"
+  "version": "1.2.1",
+  "build": 121,
+  "releasedAt": "2026-10-11T17:38:00-03:00",
+  "message": "Diseño más compacto y versión visible"
 }
