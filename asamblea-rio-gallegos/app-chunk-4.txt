@@ -67,5 +67,5 @@ maxUploadMb||12));
     }
 
     function openLightbox(photo){
-      if(!photo)return;state.currentPhoto=photo;
+      if(!photo)return;state.currentPhoto=photo;$('lightbox').dataset.photoId=photo.id||'';
       $('lightboxImage').src=photo.thumbnailUrl;$('lightboxName').textContent=photo.uploade
