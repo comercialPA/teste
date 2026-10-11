@@ -1,5 +1,5 @@
-ms||[]).filter(p=>p.isMine);state.offset=r.nextOffset||0;state.hasMore=false;state.total=state.items.length;renderGallery();scrollGallery();
-        }).catch(e=>toast(e.message,'error'));
+ms||[]);state.offset=state.items.length;state.hasMore=false;state.total=Number(r.total||state.items.length);renderGallery();scrollGallery();
+        }).catch(e=>{clearGallery();toast(e.message,'error');});
       }
     }
 
