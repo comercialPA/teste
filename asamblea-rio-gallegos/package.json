@@ -1,12 +1,13 @@
 {
   "name": "asamblea-rio-gallegos",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "private": true,
   "scripts": {
     "build": "node generate-pwa-assets.mjs"
   },
   "dependencies": {
-    "@vercel/blob": "latest",
+    "@vercel/blob": "2.8.1",
+    "heic2any": "0.0.4",
     "jszip": "3.10.1",
     "web-push": "3.6.7"
   }
