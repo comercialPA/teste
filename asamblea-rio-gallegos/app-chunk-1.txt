@@ -24,7 +24,7 @@
       server('apiBootstrap', state.profile?.profileId||'')
         .then(data=>{
           state.bootstrap=data;
-          $('eventDateLabel').textContent=formatEventDate(data.event.date);
+          $('eventDateLabel').textContent=data.event?.dateLabel||formatEventDate(data.event?.date);
           $('disclaimer').textContent=data.event.disclaimer||$('disclaimer').textContent;
           $('statPhotos').textContent=numberFmt(data.stats.photos||0);
           $('statCongregations').textContent=numberFmt(data.stats.congregations||0);
