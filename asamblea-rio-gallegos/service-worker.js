@@ -1,4 +1,4 @@
-const CACHE='rg26-v1.1.7';
+const CACHE='rg26-v1.2.0';
 const SHELL=[
   '/',
   '/manifest.webmanifest',
@@ -36,29 +36,16 @@ self.addEventListener('install',event=>{
 });
 
 self.addEventListener('activate',event=>{
-  event.waitUntil(
-    caches.keys()
-      .then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))
-      .then(()=>self.clients.claim())
-  );
+  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
 });
 
-self.addEventListener('message',event=>{
-  if(event.data?.type==='SKIP_WAITING')self.skipWaiting();
-});
+self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')self.skipWaiting();});
 
 self.addEventListener('push',event=>{
   let data={};
   try{data=event.data?event.data.json():{};}catch(_){data={body:event.data?.text?.()||''};}
   const title=data.title||'Recuerdos';
-  const options={
-    body:data.body||'Tenés una nueva notificación.',
-    icon:data.icon||'/icons/icon-192.png',
-    badge:data.badge||'/icons/icon-192.png',
-    tag:data.tag||'rg26-notification',
-    renotify:true,
-    data:{url:data.url||'/',photoId:data.photoId||''}
-  };
+  const options={body:data.body||'Tenés una nueva notificación.',icon:data.icon||'/icons/icon-192.png',badge:data.badge||'/icons/icon-192.png',tag:data.tag||'rg26-notification',renotify:true,data:{url:data.url||'/',photoId:data.photoId||''}};
   event.waitUntil(self.registration.showNotification(title,options));
 });
 
@@ -69,13 +56,8 @@ self.addEventListener('notificationclick',event=>{
     const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
     for(const client of windows){
       try{
-        const current=new URL(client.url);
-        const next=new URL(target,self.location.origin);
-        if(current.origin===next.origin){
-          await client.focus();
-          if('navigate' in client)await client.navigate(next.href);
-          return;
-        }
+        const current=new URL(client.url),next=new URL(target,self.location.origin);
+        if(current.origin===next.origin){await client.focus();if('navigate' in client)await client.navigate(next.href);return;}
       }catch(_){}
     }
     if(self.clients.openWindow)return self.clients.openWindow(target);
@@ -84,47 +66,27 @@ self.addEventListener('notificationclick',event=>{
 
 self.addEventListener('fetch',event=>{
   const req=event.request;
-  if(req.method!=='GET') return;
+  if(req.method!=='GET')return;
   const url=new URL(req.url);
-  if(url.origin!==self.location.origin) return;
-  if(url.pathname.startsWith('/api/')) return;
+  if(url.origin!==self.location.origin)return;
+  if(url.pathname.startsWith('/api/'))return;
   if(url.pathname==='/version.json'){
     event.respondWith(fetch(req,{cache:'no-store'}));
     return;
   }
-
   if(req.mode==='navigate'){
-    event.respondWith(
-      fetch(req,{cache:'no-store'})
-        .then(res=>{
-          const copy=res.clone();
-          caches.open(CACHE).then(cache=>cache.put('/',copy)).catch(()=>{});
-          return res;
-        })
-        .catch(()=>caches.match('/'))
-    );
+    event.respondWith(fetch(req,{cache:'no-store'}).then(res=>{const copy=res.clone();caches.open(CACHE).then(cache=>cache.put('/',copy)).catch(()=>{});return res;}).catch(()=>caches.match('/')));
     return;
   }
-
   if(['/app-loader.js','/app-update-manager.js','/app-social.js','/app-tour.js','/app-gesture-fix.js'].includes(url.pathname)){
-    event.respondWith(
-      fetch(req,{cache:'no-store'})
-        .then(res=>{const copy=res.clone();caches.open(CACHE).then(cache=>cache.put(req,copy)).catch(()=>{});return res;})
-        .catch(()=>caches.match(req).then(hit=>hit||caches.match(url.pathname)))
-    );
+    event.respondWith(fetch(req,{cache:'no-store'}).then(res=>{const copy=res.clone();caches.open(CACHE).then(cache=>cache.put(req,copy)).catch(()=>{});return res;}).catch(()=>caches.match(req).then(hit=>hit||caches.match(url.pathname))));
     return;
   }
-
-  event.respondWith(
-    caches.match(req).then(cached=>{
-      if(cached) return cached;
-      return fetch(req).then(res=>{
-        if(res && res.ok && ['style','script','image','manifest'].includes(req.destination)){
-          const copy=res.clone();
-          caches.open(CACHE).then(cache=>cache.put(req,copy)).catch(()=>{});
-        }
-        return res;
-      });
-    })
-  );
+  event.respondWith(caches.match(req).then(cached=>{
+    if(cached)return cached;
+    return fetch(req).then(res=>{
+      if(res&&res.ok&&['style','script','image','manifest'].includes(req.destination)){const copy=res.clone();caches.open(CACHE).then(cache=>cache.put(req,copy)).catch(()=>{});}
+      return res;
+    });
+  }));
 });
