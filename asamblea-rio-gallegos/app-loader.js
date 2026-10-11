@@ -17,12 +17,7 @@
     el.content=content;
   };
   const loadScript=src=>new Promise((resolve,reject)=>{
-    const script=document.createElement('script');
-    script.src=src;
-    script.defer=true;
-    script.onload=resolve;
-    script.onerror=()=>reject(new Error('No se pudo cargar '+src));
-    document.body.appendChild(script);
+    const script=document.createElement('script');script.src=src;script.defer=true;script.onload=resolve;script.onerror=()=>reject(new Error('No se pudo cargar '+src));document.body.appendChild(script);
   });
   const setupPwa=()=>{
     ensureLink('manifest','/manifest.webmanifest?v=120');
@@ -34,7 +29,7 @@
     ensureMeta('apple-mobile-web-app-title','Recuerdos');
     if('serviceWorker' in navigator){
       const register=()=>navigator.serviceWorker.register('/service-worker.js?v=120',{scope:'/'}).catch(err=>console.warn('[PWA] Service worker',err));
-      if(document.readyState==='complete') register(); else window.addEventListener('load',register,{once:true});
+      if(document.readyState==='complete')register();else window.addEventListener('load',register,{once:true});
     }
   };
   try{
@@ -54,6 +49,7 @@
     await loadScript('/app-gesture-fix.js?v=120');
     await loadScript('/app-update-manager.js?v=120');
     await loadScript('/app-social.js?v=120');
+    await loadScript('/app-fullres.js?v=120');
     await loadScript('/app-tour.js?v=120');
 
     pinEventDate();
