@@ -32,6 +32,7 @@ builtIndex=builtIndex
   .replace(/<div class="eyebrow" id="eventDateLabel">[\s\S]*?<\/div>/,'<div class="eyebrow" id="eventDateLabel">10 · 11 · 12 · OCTUBRE · 2026</div>')
   .replace(/Proyecto independiente para compartir recuerdos entre asistentes\. No es una aplicación oficial de los Testigos de Jehová\./g,'Proyecto independiente creado para compartir recuerdos entre los asistentes. No es una aplicación oficial de los Testigos de Jehová.')
   .replace(/JPG, PNG, WEBP o HEIC\. Si una foto es muy pesada intentaremos optimizarla antes de subirla\./g,'JPG, PNG, WEBP o HEIC · hasta 4K. Las fotos grandes se optimizan sin superar 4096 px en el lado mayor.')
+  .replace(/https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/qrcodejs\/1\.0\.0\/qrcode\.min\.js/g,'/vendor/qrcode.min.js?v=120')
   .replace(/\/app-loader\.js(?:\?v=\d+)?/g,'/app-loader.js?v=120');
 fs.writeFileSync(builtIndexPath,builtIndex);
 
@@ -48,6 +49,9 @@ console.log('validated runtime JavaScript');
 const heicSource=path.resolve('node_modules/heic2any/dist/heic2any.min.js');
 if(!fs.existsSync(heicSource)) throw new Error('HEIC converter missing: heic2any/dist/heic2any.min.js');
 fs.copyFileSync(heicSource,path.join(vendorDir,'heic2any.min.js'));
+const qrSource=path.resolve('node_modules/qrcodejs/qrcode.min.js');
+if(!fs.existsSync(qrSource)) throw new Error('QR generator missing: qrcodejs/qrcode.min.js');
+fs.copyFileSync(qrSource,path.join(vendorDir,'qrcode.min.js'));
 
 const crcTable=(()=>{
   const table=new Uint32Array(256);
