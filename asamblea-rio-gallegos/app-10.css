@@ -1,0 +1,15 @@
+/* V1.1.5 · SEGURIDAD VISUAL DE PROPIEDAD
+   Fail-closed: cualquier elemento con `hidden` debe permanecer realmente oculto,
+   incluso si una clase del diseño define `display:flex/inline-flex`. */
+[hidden]{display:none!important}
+
+/* El botón de eliminación solo puede verse cuando el núcleo confirma photo.isMine. */
+#btnLightboxDelete[hidden]{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+#btnLightboxDelete:not([hidden]){
+  visibility:visible;
+  pointer-events:auto;
+}
