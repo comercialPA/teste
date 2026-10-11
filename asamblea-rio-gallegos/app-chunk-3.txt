@@ -50,7 +50,19 @@ ms||[]);state.offset=state.items.length;state.hasMore=false;state.total=Number(r
     function resetUpload(){state.files=[];$('fileInput').value='';$('previewList').innerHTML='';$('consentCheck').checked=false;$('uploadProgress').classList.remove('show');$('progressBar').style.width='0%';$('progressPercent').textContent='0%';updateUploadButton();}
 
     function setFiles(files){
-      state.files=(files||[]).filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|webp|heic|heif)$/i.test(f.name)).slice(0,40).map(f=>({file:f,caption:''}));
+      const maxSourceMb=Number(state.bootstrap?.limits?.maxSourceUploadMb||32);
+      const maxSourceBytes=maxSourceMb*1024*1024;
+      const accepted=[];
+      let rejected=0;
+      for(const file of Array.from(files||[])){
+        if(accepted.length>=40)break;
+        const supported=/^image\//.test(file.type)||/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name);
+        if(!supported){rejected++;continue;}
+        if(file.size>maxSourceBytes){toast(`${file.name}: supera ${maxSourceMb} MB.`,'error');rejected++;continue;}
+        accepted.push({file,caption:''});
+      }
+      state.files=accepted;
+      if(rejected&&accepted.length)toast(`${rejected} archivo${rejected===1?'':'s'} no se pudo${rejected===1?'':'ieron'} agregar.`);
       renderPreviews();updateUploadButton();
     }
 
@@ -59,9 +71,9 @@ ms||[]);state.offset=state.items.length;state.hasMore=false;state.total=Number(r
       state.files.forEach((item,index)=>{
         const row=document.createElement('div');row.className='preview-row';
         const img=document.createElement('img');img.alt='Vista previa';
-        const reader=new FileReader();reader.onload=e=>img.src=e.target.result;reader.readAsDataURL(item.file);
+        const objectUrl=URL.createObjectURL(item.file);img.src=objectUrl;img.onload=()=>URL.revokeObjectURL(objectUrl);img.onerror=()=>{URL.revokeObjectURL(objectUrl);img.removeAttribute('src');};
         const info=document.createElement('div');
-        info.innerHTML=`<strong>${esc(item.file.name)}</strong><span class="hint">${formatBytes(item.file.size)}</span><input maxlength="220" placeholder="Leyenda opcional para esta foto">`;
+        info.innerHTML=`<strong>${esc(item.file.name)}</strong><span class="hint">${formatBytes(item.file.size)} · hasta 4K</span><input maxlength="220" placeholder="Leyenda opcional para esta foto">`;
         info.querySelector('input').addEventListener('input',e=>state.files[index].caption=e.target.value);
         row.append(img,info);list.appendChild(row);
       });
@@ -69,12 +81,3 @@ ms||[]);state.offset=state.items.length;state.hasMore=false;state.total=Number(r
 
     function updateUploadButton(){$('btnStartUpload').disabled=!(state.files.length&&$('consentCheck').checked&&state.profile);}
 
-    async function startUpload(){
-      if(!state.profile||!state.files.length||!$('consentCheck').checked)return;
-      const btn=$('btnStartUpload');btn.disabled=true;$('uploadProgress').classList.add('show');
-      let success=0;
-      for(let i=0;i<state.files.length;i++){
-        const item=state.files[i];
-        const pct=Math.round((i/state.files.length)*100);setProgress(pct,`Preparando ${i+1} de ${state.files.length}`);
-        try{
-          const prepared=await prepareImage(item.file,Number(state.bootstrap?.limits?.
