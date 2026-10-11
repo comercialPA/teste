@@ -9,7 +9,7 @@
   let hintTimer=null;
 
   function overlayOpen(){
-    return !!document.querySelector('.modal.open') || !!$('lightbox')?.classList.contains('open');
+    return !!document.querySelector('.modal.open') || !!$('lightbox')?.classList.contains('open') || !!document.querySelector('.social-notifications-modal.open');
   }
 
   function syncScrollLock(){
@@ -138,7 +138,7 @@
       const card=e.target.closest?.('.photo-card');
       if(card?.dataset.id) activePhotoId=card.dataset.id;
 
-      if(e.target.closest?.('#btnLightboxClose,[data-close],.nav-btn,#btnHeroGallery')){
+      if(e.target.closest?.('#btnLightboxClose,[data-close],.nav-btn,#btnHeroGallery,#btnCloseNotifications')){
         setTimeout(syncScrollLock,0);
         setTimeout(syncScrollLock,180);
       }
@@ -166,6 +166,18 @@
       }
     });
     watched.forEach(el=>observer.observe(el,{attributes:true,attributeFilter:['class']}));
+
+    const socialObserver=new MutationObserver(syncScrollLock);
+    const watchSocial=()=>{
+      const social=document.querySelector('.social-notifications-modal');
+      if(social&&!social.dataset.scrollWatch){
+        social.dataset.scrollWatch='1';
+        socialObserver.observe(social,{attributes:true,attributeFilter:['class','hidden']});
+      }
+    };
+    watchSocial();
+    setTimeout(watchSocial,500);
+    setTimeout(watchSocial,1500);
 
     window.addEventListener('pageshow',()=>setTimeout(syncScrollLock,0));
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(syncScrollLock,0);});
