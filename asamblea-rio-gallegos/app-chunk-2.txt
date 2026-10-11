@@ -18,6 +18,20 @@
       }).catch(err=>{throw normalizeError(err);});
     }
 
+    function loadMyPhotos(){
+      if(!state.profile?.profileId||!state.profile?.ownerSecret)return Promise.reject(new Error('Perfil inválido.'));
+      return fetch('/api/my-photos',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        cache:'no-store',
+        body:JSON.stringify({profileId:state.profile.profileId,ownerSecret:state.profile.ownerSecret})
+      }).then(async response=>{
+        const data=await response.json().catch(()=>({ok:false,error:'Respuesta inválida del servidor.'}));
+        if(!response.ok||!data.ok)throw new Error(data.error||`Error HTTP ${response.status}`);
+        return data;
+      }).catch(err=>{throw normalizeError(err);});
+    }
+
     function normalizeError(err){
       if(err instanceof Error)return err;
       if(err&&err.message)return new Error(err.message);
@@ -91,5 +105,6 @@
       if(state.mode==='mine'){
         if(!state.profile){openModal('profileModal');state.items=[];state.hasMore=false;renderGallery();return;}
         state.congregation='';$('congregationFilter').value='';state.query='';$('searchInput').value='';
-        server('apiListPhotos',{offset:0,limit:120,congregation:'',query:'',profileId:state.profile.profileId}).then(r=>{
+        renderSkeletons();
+        loadMyPhotos().then(r=>{
           state.items=(r.ite
