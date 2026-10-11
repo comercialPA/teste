@@ -5,7 +5,7 @@ const SHELL=[
   '/app-loader.js',
   '/app-1.css','/app-2.css','/app-3.css','/app-4.css','/app-5.css','/app-6.css','/app-7.css','/app-8.css','/app-9.css','/app-10.css','/app-11.css',
   '/app-gesture-fix.js','/app-update-manager.js','/app-tour.js','/app-social.js','/app-fullres.js',
-  '/vendor/heic2any.min.js',
+  '/vendor/heic2any.min.js','/vendor/qrcode.min.js',
   '/app-chunk-1.txt','/app-chunk-2.txt','/app-chunk-3.txt','/app-chunk-4.txt','/app-chunk-5.txt','/app-chunk-6.txt',
   '/icons/icon-192.png','/icons/icon-512.png','/icons/icon-maskable-512.png','/icons/apple-touch-icon.png'
 ];
