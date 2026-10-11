@@ -4,8 +4,10 @@ import zlib from 'node:zlib';
 
 const publicDir=path.resolve('public');
 const outDir=path.join(publicDir,'icons');
+const vendorDir=path.join(publicDir,'vendor');
 fs.rmSync(publicDir,{recursive:true,force:true});
 fs.mkdirSync(outDir,{recursive:true});
+fs.mkdirSync(vendorDir,{recursive:true});
 
 const staticFiles=[
   'index.html',
@@ -20,6 +22,10 @@ for(const file of staticFiles){
   if(!fs.existsSync(src)) throw new Error(`Static asset missing: ${file}`);
   fs.copyFileSync(src,path.join(publicDir,file));
 }
+
+const heicSource=path.resolve('node_modules/heic2any/dist/heic2any.min.js');
+if(!fs.existsSync(heicSource)) throw new Error('HEIC converter missing: heic2any/dist/heic2any.min.js');
+fs.copyFileSync(heicSource,path.join(vendorDir,'heic2any.min.js'));
 
 const crcTable=(()=>{
   const table=new Uint32Array(256);
