@@ -1,6 +1,6 @@
 {
-  "version": "1.1.4",
-  "build": 114,
-  "releasedAt": "2026-10-10T20:42:00-03:00",
-  "message": "Nueva versión: Cómo usar + compartir fotos"
+  "version": "1.1.5",
+  "build": 115,
+  "releasedAt": "2026-10-11T13:40:00-03:00",
+  "message": "Corrección de seguridad: eliminar solo fotos propias"
 }
