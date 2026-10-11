@@ -1,4 +1,4 @@
-const CACHE='rg26-v1.1.6';
+const CACHE='rg26-v1.1.7';
 const SHELL=[
   '/',
   '/manifest.webmanifest',
@@ -18,6 +18,7 @@ const SHELL=[
   '/app-update-manager.js',
   '/app-tour.js',
   '/app-social.js',
+  '/vendor/heic2any.min.js',
   '/app-chunk-1.txt',
   '/app-chunk-2.txt',
   '/app-chunk-3.txt',
@@ -105,11 +106,11 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  if(url.pathname==='/app-loader.js'||url.pathname==='/app-update-manager.js'){
+  if(['/app-loader.js','/app-update-manager.js','/app-social.js','/app-tour.js','/app-gesture-fix.js'].includes(url.pathname)){
     event.respondWith(
       fetch(req,{cache:'no-store'})
         .then(res=>{const copy=res.clone();caches.open(CACHE).then(cache=>cache.put(req,copy)).catch(()=>{});return res;})
-        .catch(()=>caches.match(req))
+        .catch(()=>caches.match(req).then(hit=>hit||caches.match(url.pathname)))
     );
     return;
   }
