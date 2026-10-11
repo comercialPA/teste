@@ -2,7 +2,7 @@
   'use strict';
 
   const TOUR_SEEN_KEY='rg26_tour_seen_v1';
-  const TOUR_TEASER_KEY='rg26_tour_teaser_v114';
+  const TOUR_TEASER_KEY='rg26_tour_teaser_v117';
   let stepIndex=0;
   let active=false;
   let resizeTimer=null;
@@ -44,17 +44,23 @@
       target:'#navFavorites',
       kicker:'Paso 5',
       title:'Guardá tus favoritas',
-      text:'Marcá las fotos que más te gustan con ♡ y después encontralas rápidamente desde “Favoritas”.'
+      text:'Favoritas es una lista privada de este dispositivo. Marcá las fotos que querés guardar para encontrarlas rápidamente después.'
+    },
+    {
+      target:'#btnNotifications',
+      kicker:'Paso 6',
+      title:'Me gusta y notificaciones',
+      text:'Al abrir una foto podés tocar “Me gusta”. El hermano que la publicó recibe un aviso. Desde la campana podés ver tus notificaciones y activar avisos para recibirlos también cuando el app esté cerrado.'
     },
     {
       target:'#navMine',
-      kicker:'Paso 6',
+      kicker:'Paso 7',
       title:'Tus propias fotos',
-      text:'En “Mis fotos” ves lo que subiste desde tu perfil. Solo vos podés eliminar tus propias fotos desde el app.'
+      text:'En “Mis fotos” ves todas las fotos asociadas a tu perfil. Solo vos podés eliminar tus propias fotos desde el app.'
     },
     {
       target:'#btnHeroShare',
-      kicker:'Paso 7',
+      kicker:'Paso 8',
       title:'Compartí el app',
       text:'Abrí “Compartir app” para mostrar el QR o copiar el link y enviarlo por WhatsApp a otros hermanos.'
     },
@@ -240,7 +246,7 @@
     localStorage.setItem(TOUR_TEASER_KEY,'1');
     const teaser=document.createElement('div');
     teaser.className='tour-teaser';
-    teaser.innerHTML='<div><strong>Nuevo · Tour guiado</strong><span>Aprendé a usar el app paso a paso.</span></div><button type="button">Ver tour</button>';
+    teaser.innerHTML='<div><strong>Nuevo · Me gusta y notificaciones</strong><span>El tour ahora también explica las funciones sociales.</span></div><button type="button">Ver tour</button>';
     document.body.appendChild(teaser);
     teaser.querySelector('button').addEventListener('click',()=>{teaser.remove();startTour(0);});
     requestAnimationFrame(()=>teaser.classList.add('show'));
