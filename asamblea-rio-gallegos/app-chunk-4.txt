@@ -1,22 +1,61 @@
-maxUploadMb||12));
-          const dataUrl=await readFile(prepared.file);
-          await server('apiUploadPhoto',{
+    async function startUpload(){
+      if(!state.profile||!state.files.length||!$('consentCheck').checked)return;
+      const btn=$('btnStartUpload');btn.disabled=true;$('uploadProgress').classList.add('show');
+      let success=0;
+      for(let i=0;i<state.files.length;i++){
+        const item=state.files[i];
+        try{
+          setPhotoProgress(i,state.files.length,.04,`Preparando foto ${i+1} de ${state.files.length}…`);
+          const prepared=await prepareImage4K(item.file);
+          setPhotoProgress(i,state.files.length,.22,`Autorizando carga 4K ${i+1} de ${state.files.length}…`);
+          const ticket=await uploadPhotoApi('ticket',{
             profileId:state.profile.profileId,
             ownerSecret:state.profile.ownerSecret,
-            uploaderName:state.profile.name,
-            congregation:state.profile.congregation,
-            caption:item.caption||'',
             fileName:prepared.name,
             mimeType:prepared.type,
-            base64:dataUrl.split(',')[1]||''
+            size:prepared.file.size
+          });
+          setPhotoProgress(i,state.files.length,.35,`Subiendo foto 4K ${i+1} de ${state.files.length}…`);
+          await putSignedBlob(ticket.uploadUrl,prepared.file,prepared.type);
+          setPhotoProgress(i,state.files.length,.76,`Subiendo miniatura ${i+1} de ${state.files.length}…`);
+          await putSignedBlob(ticket.thumbnailUploadUrl,prepared.thumbnail,'image/jpeg');
+          setPhotoProgress(i,state.files.length,.90,`Publicando ${i+1} de ${state.files.length}…`);
+          await uploadPhotoApi('finalize',{
+            profileId:state.profile.profileId,
+            ownerSecret:state.profile.ownerSecret,
+            photoId:ticket.photoId,
+            caption:item.caption||'',
+            width:prepared.width,
+            height:prepared.height
           });
           success++;
-        }catch(e){toast(`${item.file.name}: ${e.message}`,'error');}
-        setProgress(Math.round(((i+1)/state.files.length)*100),`Subiendo ${i+1} de ${state.files.length}`);
+        }catch(e){
+          console.error('[UPLOAD 4K]',e);
+          toast(`${item.file.name}: ${e.message}`,'error');
+        }
+        setPhotoProgress(i,state.files.length,1,`Foto ${i+1} de ${state.files.length} procesada`);
       }
       btn.disabled=false;setProgress(100,'Listo');
-      if(success){toast(`${success} foto${success===1?'':'s'} compartida${success===1?'':'s'}.`,'success');closeModal('uploadModal');reloadStatsAndGallery();}
+      if(success){toast(`${success} foto${success===1?'':'s'} compartida${success===1?'':'s'} en alta calidad.`,'success');closeModal('uploadModal');reloadStatsAndGallery();}
       else toast('No pudimos subir ninguna foto.','error');
+    }
+
+    async function uploadPhotoApi(action,payload){
+      const response=await fetch('/api/upload-photo',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        cache:'no-store',
+        body:JSON.stringify({action,...payload})
+      });
+      const data=await response.json().catch(()=>({ok:false,error:'Respuesta inválida del servidor.'}));
+      if(!response.ok||!data.ok)throw new Error(data.error||`Error HTTP ${response.status}`);
+      return data.result;
+    }
+
+    async function putSignedBlob(url,blob,type){
+      if(!url)throw new Error('No recibimos la autorización de carga.');
+      const response=await fetch(url,{method:'PUT',headers:{'Content-Type':type},body:blob});
+      if(!response.ok)throw new Error(`No pudimos transferir la foto (${response.status}).`);
     }
 
     let heicLoaderPromise=null;
@@ -28,7 +67,7 @@ maxUploadMb||12));
         const done=()=>typeof window.heic2any==='function'?resolve(window.heic2any):reject(new Error('No se pudo iniciar el conversor HEIC'));
         if(existing){existing.addEventListener('load',done,{once:true});existing.addEventListener('error',()=>reject(new Error('No se pudo cargar el conversor HEIC')),{once:true});return;}
         const script=document.createElement('script');
-        script.src='/vendor/heic2any.min.js?v=117';
+        script.src='/vendor/heic2any.min.js?v=120';
         script.async=true;
         script.dataset.heic2any='1';
         script.onload=done;
@@ -41,7 +80,7 @@ maxUploadMb||12));
     async function convertHeic(file){
       try{
         const converter=await loadHeicConverter();
-        const result=await converter({blob:file,toType:'image/jpeg',quality:.90});
+        const result=await converter({blob:file,toType:'image/jpeg',quality:.94});
         const blob=Array.isArray(result)?result[0]:result;
         if(!blob||!blob.size)throw new Error('Conversión vacía');
         return blob;
@@ -51,38 +90,60 @@ maxUploadMb||12));
       }
     }
 
-    async function prepareImage(file,maxMb){
-      // El original puede ser más grande, pero el cuerpo final viaja por debajo de 2,5 MB.
-      const transportMb=Math.min(Number(maxMb||12),2.5);
-      const maxBytes=transportMb*1024*1024;
+    async function prepareImage4K(file){
+      const maxSide=Number(state.bootstrap?.limits?.maxImageSidePx||4096);
+      const maxBytes=Number(state.bootstrap?.limits?.maxUploadMb||32)*1024*1024;
+      const thumbSide=Number(state.bootstrap?.limits?.thumbnailSidePx||720);
       let work=file;
       let name=file.name||'foto.jpg';
       let type=file.type||guessMime(name);
       const isHeic=/image\/hei[cf]/i.test(type)||/\.hei[cf]$/i.test(name);
 
       if(isHeic){
-        setProgress(Number($('progressPercent').textContent.replace('%',''))||0,'Convirtiendo HEIC…');
+        setProgress(Number($('progressPercent').textContent.replace('%',''))||0,'Convirtiendo HEIC en alta calidad…');
         work=await convertHeic(file);
         name=name.replace(/\.[^.]+$/,'.jpg');
         type='image/jpeg';
       }
 
-      if(work.size<=maxBytes)return {file:work,name,type};
-      if(!/^image\/(jpeg|jpg|png|webp)$/i.test(type))throw new Error(`supera ${transportMb} MB para la carga web`);
-      try{
-        const bitmap=await createImageBitmap(work);
-        const maxSide=3000,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
-        const canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);
-        canvas.getContext('2d',{alpha:false}).drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close?.();
-        let quality=.90,blob=await canvasBlob(canvas,'image/jpeg',quality);
-        while(blob.size>maxBytes&&quality>.55){quality-=.07;blob=await canvasBlob(canvas,'image/jpeg',quality);}
-        if(blob.size>maxBytes)throw new Error(`sigue superando ${transportMb} MB después de optimizarla`);
-        return {file:blob,name:name.replace(/\.[^.]+$/,'.jpg'),type:'image/jpeg'};
-      }catch(e){throw new Error(`supera ${transportMb} MB y no pudimos optimizarla`);}
+      let bitmap;
+      try{bitmap=await createImageBitmap(work);}catch(e){throw new Error('no pudimos abrir esta imagen en el navegador');}
+      let width=bitmap.width,height=bitmap.height;
+      if(!width||!height){bitmap.close?.();throw new Error('la imagen no tiene dimensiones válidas');}
+
+      const needsResize=Math.max(width,height)>maxSide;
+      const needsCompression=work.size>maxBytes;
+      let finalBlob=work;
+      let finalType=type;
+      let finalName=name;
+
+      if(needsResize||needsCompression){
+        const scale=Math.min(1,maxSide/Math.max(width,height));
+        const targetW=Math.max(1,Math.round(width*scale));
+        const targetH=Math.max(1,Math.round(height*scale));
+        const canvas=document.createElement('canvas');canvas.width=targetW;canvas.height=targetH;
+        const ctx=canvas.getContext('2d',{alpha:false});ctx.drawImage(bitmap,0,0,targetW,targetH);
+        let quality=.94;
+        finalBlob=await canvasBlob(canvas,'image/jpeg',quality);
+        while(finalBlob.size>maxBytes&&quality>.62){quality-=.06;finalBlob=await canvasBlob(canvas,'image/jpeg',quality);}
+        if(finalBlob.size>maxBytes){bitmap.close?.();throw new Error(`sigue superando ${Math.round(maxBytes/1048576)} MB después de optimizarla`);}
+        width=targetW;height=targetH;finalType='image/jpeg';finalName=name.replace(/\.[^.]+$/,'.jpg');
+      }
+
+      const thumbScale=Math.min(1,thumbSide/Math.max(bitmap.width,bitmap.height));
+      const thumbW=Math.max(1,Math.round(bitmap.width*thumbScale));
+      const thumbH=Math.max(1,Math.round(bitmap.height*thumbScale));
+      const thumbCanvas=document.createElement('canvas');thumbCanvas.width=thumbW;thumbCanvas.height=thumbH;
+      thumbCanvas.getContext('2d',{alpha:false}).drawImage(bitmap,0,0,thumbW,thumbH);
+      const thumbnail=await canvasBlob(thumbCanvas,'image/jpeg',.82);
+      bitmap.close?.();
+
+      const finalFile=finalBlob instanceof File&&finalBlob.name===finalName&&finalBlob.type===finalType?finalBlob:new File([finalBlob],finalName,{type:finalType,lastModified:file.lastModified||Date.now()});
+      return {file:finalFile,thumbnail,name:finalName,type:finalType,width,height};
     }
 
     function canvasBlob(canvas,type,quality){return new Promise((res,rej)=>canvas.toBlob(b=>b?res(b):rej(new Error('No se pudo optimizar')),type,quality));}
-    function readFile(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error('No se pudo leer la foto'));r.readAsDataURL(file);});}
+    function setPhotoProgress(index,total,fraction,label){const pct=Math.max(0,Math.min(100,Math.round(((index+fraction)/Math.max(1,total))*100)));setProgress(pct,label);}
     function setProgress(pct,label){$('progressBar').style.width=pct+'%';$('progressPercent').textContent=pct+'%';$('progressLabel').textContent=label;}
 
     function createProfile(){
