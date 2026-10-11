@@ -24,11 +24,12 @@ export default async function handler(req, res) {
     const methods = {
       config: apiConfig,
       state: apiLikeState,
-      like: apiToggleLike,
+      like: apiSetLike,
       notifications: apiNotifications,
       markRead: apiMarkRead,
       subscribe: apiSubscribe,
-      unsubscribe: apiUnsubscribe
+      unsubscribe: apiUnsubscribe,
+      resetSubscriptions: apiResetSubscriptions
     };
     if (!methods[action]) throw new Error('Acción social no permitida.');
 
@@ -42,7 +43,7 @@ export default async function handler(req, res) {
 
 async function apiConfig() {
   return {
-    version: '1.1.6',
+    version: '1.1.7',
     pushAvailable: pushConfigured(),
     vapidPublicKey: pushConfigured() ? String(process.env.VAPID_PUBLIC_KEY || '') : ''
   };
@@ -60,10 +61,11 @@ async function apiLikeState(payload) {
     const record = await readJson(likePath(photoId, profileId));
     liked = !!record?.active;
   }
-  return { liked, count: Math.max(0, Number(meta.likeCount || 0)), isOwn: !!profileId && profileId === String(meta.profileId || '') };
+  const count = await countActiveLikes(photoId);
+  return { liked, count, isOwn: !!profileId && profileId === String(meta.profileId || '') };
 }
 
-async function apiToggleLike(payload) {
+async function apiSetLike(payload) {
   const photoId = safeText(payload.photoId, 100);
   const profileId = safeText(payload.profileId, 100);
   const ownerSecret = safeText(payload.ownerSecret, 300);
@@ -76,44 +78,59 @@ async function apiToggleLike(payload) {
 
   const path = likePath(photoId, profileId);
   const previous = await readJson(path);
-  const nextLiked = !previous?.active;
+  const previousLiked = !!previous?.active;
+  const requested = typeof payload.liked === 'boolean' ? payload.liked : !previousLiked;
   const now = new Date().toISOString();
-  const oldCount = Math.max(0, Number(meta.likeCount || 0));
-  const nextCount = Math.max(0, oldCount + (nextLiked ? 1 : -1));
+
+  if (requested === previousLiked) {
+    return { liked: requested, count: await countActiveLikes(photoId) };
+  }
 
   const likeRecord = {
     photoId,
     likerHash: hash(profileId),
-    active: nextLiked,
+    active: requested,
     createdAt: previous?.createdAt || now,
     updatedAt: now,
     lastNotifiedAt: previous?.lastNotifiedAt || ''
   };
 
-  meta.likeCount = nextCount;
-  meta.socialUpdatedAt = now;
+  const shouldCreateNotification = requested && !previousLiked && shouldNotify(previous?.lastNotifiedAt);
+  if (shouldCreateNotification) likeRecord.lastNotifiedAt = now;
+  await writeJson(path, likeRecord);
 
-  if (nextLiked && shouldNotify(previous?.lastNotifiedAt)) {
-    const notification = {
-      id: crypto.randomUUID(),
-      type: 'LIKE',
-      photoId,
-      fromName: safeText(profile.name, 80),
-      message: `${safeText(profile.name, 80)} indicó que le gusta tu foto.`,
-      createdAt: now,
-      readAt: '',
-      url: `${PUBLIC_APP_URL}/?foto=${encodeURIComponent(photoId)}`
-    };
-    await createNotification(String(meta.profileId || ''), notification);
-    likeRecord.lastNotifiedAt = now;
+  if (shouldCreateNotification) {
+    // Revalida a foto antes de avisar. Assim, uma ocultação/exclusão concorrente
+    // nunca é revertida pelo sistema social e não gera aviso de foto indisponível.
+    const currentMeta = await readJson(photoMetaPath(photoId));
+    if (currentMeta && currentMeta.status === STATUS_PUBLISHED && currentMeta.fileUrl) {
+      const notification = {
+        id: crypto.randomUUID(),
+        type: 'LIKE',
+        photoId,
+        fromName: safeText(profile.name, 80),
+        message: `${safeText(profile.name, 80)} indicó que le gusta tu foto.`,
+        createdAt: now,
+        readAt: '',
+        url: `${PUBLIC_APP_URL}/?foto=${encodeURIComponent(photoId)}`
+      };
+      await createNotification(String(currentMeta.profileId || ''), notification);
+    }
   }
 
-  await Promise.all([
-    writeJson(path, likeRecord),
-    writeJson(photoMetaPath(photoId), meta)
-  ]);
+  return { liked: requested, count: await countActiveLikes(photoId) };
+}
 
-  return { liked: nextLiked, count: nextCount };
+async function countActiveLikes(photoId) {
+  const blobs = (await listAll(likePrefix(photoId))).filter(b => b.pathname.endsWith('.json'));
+  if (!blobs.length) return 0;
+  let count = 0;
+  for (let i = 0; i < blobs.length; i += 40) {
+    const batch = blobs.slice(i, i + 40);
+    const rows = await Promise.all(batch.map(blob => fetchJsonUrl(blob.url)));
+    count += rows.filter(row => row?.active === true).length;
+  }
+  return count;
 }
 
 async function apiNotifications(payload) {
@@ -165,6 +182,13 @@ async function apiUnsubscribe(payload) {
   const endpoint = safeText(payload.endpoint, 2000);
   if (endpoint) await safeDeleteByPath(pushPath(profile.profileId, endpoint));
   return { ok: true };
+}
+
+async function apiResetSubscriptions(payload) {
+  const profile = await verifyProfile(safeText(payload.profileId, 100), safeText(payload.ownerSecret, 300));
+  const blobs = (await listAll(pushPrefix(profile.profileId))).filter(b => b.pathname.endsWith('.json'));
+  await Promise.all(blobs.map(blob => safeDelete(blob.url)));
+  return { ok: true, removed: blobs.length };
 }
 
 async function createNotification(ownerProfileId, notification) {
@@ -332,7 +356,8 @@ async function safeDelete(url) {
 
 function profilePath(id) { return `profiles/${safeId(id)}.json`; }
 function photoMetaPath(id) { return `photos/${safeId(id)}.json`; }
-function likePath(photoId, profileId) { return `social/likes/${safeId(photoId)}/${hash(profileId).slice(0, 40)}.json`; }
+function likePrefix(photoId) { return `social/likes/${safeId(photoId)}/`; }
+function likePath(photoId, profileId) { return `${likePrefix(photoId)}${hash(profileId).slice(0, 40)}.json`; }
 function notificationPrefix(profileId) { return `social/notifications/${hash(profileId).slice(0, 40)}/`; }
 function pushPrefix(profileId) { return `social/push/${hash(profileId).slice(0, 40)}/`; }
 function pushPath(profileId, endpoint) { return `${pushPrefix(profileId)}${hash(endpoint).slice(0, 40)}.json`; }
