@@ -1,7 +1,7 @@
 (()=>{
   'use strict';
 
-  const CURRENT_VERSION='1.1.5';
+  const CURRENT_VERSION='1.1.6';
   const VERSION_URL='/version.json';
   const PROFILE_KEY='rg26_profile_v1';
   const PERSISTENT_NAME_KEY='rg26_assistant_name_persistent_v1';
@@ -157,15 +157,17 @@
       if(!latest)return;
 
       const installed=localStorage.getItem(INSTALLED_VERSION_KEY)||'';
-      const firstManagedUpdate=!installed;
       const remoteIsNewer=versionNewer(latest,CURRENT_VERSION);
-      const localVersionChanged=installed && installed!==CURRENT_VERSION;
 
-      if(remoteIsNewer || localVersionChanged || firstManagedUpdate){
-        showUpdate(remoteIsNewer?latest:CURRENT_VERSION,data?.message||'Nueva versión disponible');
-      }else{
-        hideUpdate();
+      if(remoteIsNewer){
+        showUpdate(latest,data?.message||'Nueva versión disponible');
+        return;
       }
+
+      if(!installed||installed!==CURRENT_VERSION){
+        localStorage.setItem(INSTALLED_VERSION_KEY,CURRENT_VERSION);
+      }
+      hideUpdate();
     }catch(e){
       console.warn('[UPDATE CHECK]',e);
     }
