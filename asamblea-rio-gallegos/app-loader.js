@@ -25,15 +25,15 @@
     document.body.appendChild(script);
   });
   const setupPwa=()=>{
-    ensureLink('manifest','/manifest.webmanifest?v=117');
-    ensureLink('apple-touch-icon','/icons/apple-touch-icon.png?v=117',{sizes:'180x180'});
-    ensureLink('icon','/icons/icon-192.png?v=117',{type:'image/png',sizes:'192x192'});
+    ensureLink('manifest','/manifest.webmanifest?v=120');
+    ensureLink('apple-touch-icon','/icons/apple-touch-icon.png?v=120',{sizes:'180x180'});
+    ensureLink('icon','/icons/icon-192.png?v=120',{type:'image/png',sizes:'192x192'});
     ensureMeta('mobile-web-app-capable','yes');
     ensureMeta('apple-mobile-web-app-capable','yes');
     ensureMeta('apple-mobile-web-app-status-bar-style','black-translucent');
     ensureMeta('apple-mobile-web-app-title','Recuerdos');
     if('serviceWorker' in navigator){
-      const register=()=>navigator.serviceWorker.register('/service-worker.js?v=117',{scope:'/'}).catch(err=>console.warn('[PWA] Service worker',err));
+      const register=()=>navigator.serviceWorker.register('/service-worker.js?v=120',{scope:'/'}).catch(err=>console.warn('[PWA] Service worker',err));
       if(document.readyState==='complete') register(); else window.addEventListener('load',register,{once:true});
     }
   };
@@ -48,13 +48,13 @@
     let observer=null;
     if(dateEl){observer=new MutationObserver(pinEventDate);observer.observe(dateEl,{childList:true,characterData:true,subtree:true});}
     const files=['/app-chunk-1.txt','/app-chunk-2.txt','/app-chunk-3.txt','/app-chunk-4.txt','/app-chunk-5.txt','/app-chunk-6.txt'];
-    const parts=await Promise.all(files.map(async f=>{const r=await fetch(`${f}?v=117`,{cache:'no-store'});if(!r.ok)throw new Error('No se pudo cargar '+f);return r.text();}));
+    const parts=await Promise.all(files.map(async f=>{const r=await fetch(`${f}?v=120`,{cache:'no-store'});if(!r.ok)throw new Error('No se pudo cargar '+f);return r.text();}));
     const s=document.createElement('script');s.text=parts.join('');document.body.appendChild(s);if(document.readyState!=='loading')document.dispatchEvent(new Event('DOMContentLoaded'));
 
-    await loadScript('/app-gesture-fix.js?v=117');
-    await loadScript('/app-update-manager.js?v=117');
-    await loadScript('/app-social.js?v=117');
-    await loadScript('/app-tour.js?v=117');
+    await loadScript('/app-gesture-fix.js?v=120');
+    await loadScript('/app-update-manager.js?v=120');
+    await loadScript('/app-social.js?v=120');
+    await loadScript('/app-tour.js?v=120');
 
     pinEventDate();
     setTimeout(()=>{pinEventDate();observer?.disconnect();},12000);
