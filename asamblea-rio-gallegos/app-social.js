@@ -91,8 +91,7 @@
 
   function currentId(){
     const lb=$('lightbox');
-    const id=String(lb?.dataset?.photoId||currentPhotoId||'').trim();
-    return id;
+    return String(lb?.dataset?.photoId||currentPhotoId||'').trim();
   }
 
   async function refreshLike(){
@@ -143,9 +142,10 @@
     if(!id)return;
     likeBusy=true;
     const btn=$('btnLightboxLike');
+    const desired=btn?.dataset.liked!=='1';
     if(btn)btn.disabled=true;
     try{
-      const result=await api('like',{photoId:id,profileId:p.profileId,ownerSecret:p.ownerSecret});
+      const result=await api('like',{photoId:id,profileId:p.profileId,ownerSecret:p.ownerSecret,liked:desired});
       renderLike({liked:result.liked,count:result.count,isOwn:false});
       notify(result.liked?'Marcaste Me gusta.':'Quitaste tu Me gusta.',result.liked?'success':'info');
     }catch(e){
@@ -224,7 +224,10 @@
     const modal=$('socialNotificationsModal');
     if(!modal)return;
     modal.classList.remove('open');
-    setTimeout(()=>{modal.hidden=true;if(!$('lightbox')?.classList.contains('open')&&!document.querySelector('.modal.open'))document.body.classList.remove('no-scroll');},180);
+    setTimeout(()=>{
+      modal.hidden=true;
+      if(!$('lightbox')?.classList.contains('open')&&!document.querySelector('.modal.open')&&!document.querySelector('.social-notifications-modal.open'))document.body.classList.remove('no-scroll');
+    },180);
   }
 
   async function getConfig(){
@@ -233,29 +236,43 @@
     return socialConfig;
   }
 
+  function pushSupported(){
+    return 'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
+  }
+
   function updatePushUi(){
     const btn=$('btnEnablePush');
     const status=$('socialPushStatus');
     if(!btn||!status)return;
-    if(!('Notification'in window)||!('serviceWorker'in navigator)||!('PushManager'in window)){
+    if(!pushSupported()){
       btn.hidden=true;status.textContent='Este navegador no admite notificaciones push.';return;
     }
     if(Notification.permission==='denied'){
       btn.hidden=true;status.textContent='Las notificaciones están bloqueadas en los ajustes del navegador.';return;
     }
     if(Notification.permission==='granted'){
-      btn.textContent='Activadas';btn.disabled=true;status.textContent='Vas a recibir avisos cuando les guste una foto tuya.';return;
+      btn.hidden=false;btn.textContent='Activadas';btn.disabled=true;status.textContent='Vas a recibir avisos cuando les guste una foto tuya.';return;
     }
     btn.hidden=false;btn.disabled=false;btn.textContent='Activar';status.textContent='Podés activar avisos en este dispositivo.';
+  }
+
+  async function currentSubscription(){
+    if(!pushSupported())return null;
+    try{
+      const registration=await navigator.serviceWorker.ready;
+      return registration.pushManager.getSubscription();
+    }catch(_){return null;}
   }
 
   async function syncPush(requestPermission){
     const p=profile();
     if(!p?.profileId||!p?.ownerSecret){
-      $('btnProfile')?.click();notify('Primero necesitás tu perfil.');return;
+      if(requestPermission){$('btnProfile')?.click();notify('Primero necesitás tu perfil.');}
+      return;
     }
-    if(!('Notification'in window)||!('serviceWorker'in navigator)||!('PushManager'in window)){
-      notify('Este navegador no admite notificaciones push.','error');return;
+    if(!pushSupported()){
+      if(requestPermission)notify('Este navegador no admite notificaciones push.','error');
+      return;
     }
     try{
       let permission=Notification.permission;
@@ -266,15 +283,78 @@
       const registration=await navigator.serviceWorker.ready;
       let subscription=await registration.pushManager.getSubscription();
       if(!subscription){
-        subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey=urlBase64ToUint8Array(config.vapidPublicKey)});
+        subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(config.vapidPublicKey)});
       }
       await api('subscribe',{profileId:p.profileId,ownerSecret:p.ownerSecret,subscription:subscription.toJSON()});
       updatePushUi();
       if(requestPermission)notify('Notificaciones activadas.','success');
     }catch(e){
       console.warn('[SOCIAL PUSH SUBSCRIBE]',e);
-      notify(e.message||'No pudimos activar las notificaciones.','error');
+      if(requestPermission)notify(e.message||'No pudimos activar las notificaciones.','error');
       updatePushUi();
+    }
+  }
+
+  async function unsubscribeDevice(profileSnapshot,subscriptionSnapshot=null){
+    if(!profileSnapshot?.profileId||!profileSnapshot?.ownerSecret)return;
+    try{
+      const subscription=subscriptionSnapshot||await currentSubscription();
+      if(subscription?.endpoint){
+        await api('unsubscribe',{profileId:profileSnapshot.profileId,ownerSecret:profileSnapshot.ownerSecret,endpoint:subscription.endpoint});
+        await subscription.unsubscribe().catch(()=>{});
+      }
+    }catch(e){console.warn('[SOCIAL PUSH UNSUBSCRIBE]',e);}
+  }
+
+  async function resetRecoveredProfilePush(newProfile){
+    if(!newProfile?.profileId||!newProfile?.ownerSecret)return;
+    try{
+      await api('resetSubscriptions',{profileId:newProfile.profileId,ownerSecret:newProfile.ownerSecret});
+      const subscription=await currentSubscription();
+      if(subscription)await subscription.unsubscribe().catch(()=>{});
+      if(pushSupported()&&Notification.permission==='granted')await syncPush(false);
+    }catch(e){console.warn('[SOCIAL PUSH RESET]',e);}
+  }
+
+  function profileSignature(value){
+    return value?`${value.profileId||''}:${value.ownerSecret||''}`:'';
+  }
+
+  function waitForProfileChange(before,timeoutMs=12000){
+    const beforeSig=profileSignature(before);
+    return new Promise(resolve=>{
+      const started=Date.now();
+      const timer=setInterval(()=>{
+        const now=profile();
+        if(profileSignature(now)!==beforeSig){clearInterval(timer);resolve(now);return;}
+        if(Date.now()-started>=timeoutMs){clearInterval(timer);resolve(null);}
+      },250);
+    });
+  }
+
+  function bindProfileLifecycle(){
+    const forget=$('btnForgetLocal');
+    if(forget&&forget.dataset.socialBound!=='1'){
+      forget.dataset.socialBound='1';
+      forget.addEventListener('click',()=>{
+        const snapshot=profile();
+        currentSubscription().then(subscription=>{
+          setTimeout(()=>{
+            if(snapshot&&!profile())unsubscribeDevice(snapshot,subscription);
+          },80);
+        });
+      },true);
+    }
+
+    const recover=$('btnRecoverProfile');
+    if(recover&&recover.dataset.socialBound!=='1'){
+      recover.dataset.socialBound='1';
+      recover.addEventListener('click',()=>{
+        const before=profile();
+        waitForProfileChange(before).then(after=>{
+          if(after&&profileSignature(after)!==profileSignature(before))resetRecoveredProfilePush(after);
+        });
+      },true);
     }
   }
 
@@ -315,11 +395,14 @@
   async function init(){
     ensureUi();
     bindLightbox();
+    bindProfileLifecycle();
     updatePushUi();
     await refreshNotifications(false);
-    if(Notification?.permission==='granted')syncPush(false).catch(()=>{});
+    if(pushSupported()&&Notification.permission==='granted')syncPush(false).catch(()=>{});
     startPolling();
   }
+
+  window.RG26_social={refreshLike,refreshNotifications,syncPush};
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,250),{once:true});
   else setTimeout(init,250);

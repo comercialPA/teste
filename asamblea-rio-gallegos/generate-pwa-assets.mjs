@@ -4,8 +4,10 @@ import zlib from 'node:zlib';
 
 const publicDir=path.resolve('public');
 const outDir=path.join(publicDir,'icons');
+const vendorDir=path.join(publicDir,'vendor');
 fs.rmSync(publicDir,{recursive:true,force:true});
 fs.mkdirSync(outDir,{recursive:true});
+fs.mkdirSync(vendorDir,{recursive:true});
 
 const staticFiles=[
   'index.html',
@@ -20,6 +22,20 @@ for(const file of staticFiles){
   if(!fs.existsSync(src)) throw new Error(`Static asset missing: ${file}`);
   fs.copyFileSync(src,path.join(publicDir,file));
 }
+
+// Fail the build before publishing if one of the split runtime files no longer
+// forms valid JavaScript. The chunks are loaded and concatenated by app-loader.
+const chunkFiles=['app-chunk-1.txt','app-chunk-2.txt','app-chunk-3.txt','app-chunk-4.txt','app-chunk-5.txt','app-chunk-6.txt'];
+const assembled=chunkFiles.map(file=>fs.readFileSync(path.resolve(file),'utf8')).join('');
+new Function(assembled);
+for(const file of ['app-loader.js','app-gesture-fix.js','app-update-manager.js','app-tour.js','app-social.js','service-worker.js']){
+  new Function(fs.readFileSync(path.resolve(file),'utf8'));
+}
+console.log('validated runtime JavaScript');
+
+const heicSource=path.resolve('node_modules/heic2any/dist/heic2any.min.js');
+if(!fs.existsSync(heicSource)) throw new Error('HEIC converter missing: heic2any/dist/heic2any.min.js');
+fs.copyFileSync(heicSource,path.join(vendorDir,'heic2any.min.js'));
 
 const crcTable=(()=>{
   const table=new Uint32Array(256);

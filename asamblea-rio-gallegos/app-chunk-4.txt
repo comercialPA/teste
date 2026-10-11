@@ -19,22 +19,65 @@ maxUploadMb||12));
       else toast('No pudimos subir ninguna foto.','error');
     }
 
+    let heicLoaderPromise=null;
+    function loadHeicConverter(){
+      if(typeof window.heic2any==='function')return Promise.resolve(window.heic2any);
+      if(heicLoaderPromise)return heicLoaderPromise;
+      heicLoaderPromise=new Promise((resolve,reject)=>{
+        const existing=document.querySelector('script[data-heic2any]');
+        const done=()=>typeof window.heic2any==='function'?resolve(window.heic2any):reject(new Error('No se pudo iniciar el conversor HEIC'));
+        if(existing){existing.addEventListener('load',done,{once:true});existing.addEventListener('error',()=>reject(new Error('No se pudo cargar el conversor HEIC')),{once:true});return;}
+        const script=document.createElement('script');
+        script.src='/vendor/heic2any.min.js?v=117';
+        script.async=true;
+        script.dataset.heic2any='1';
+        script.onload=done;
+        script.onerror=()=>reject(new Error('No se pudo cargar el conversor HEIC'));
+        document.head.appendChild(script);
+      }).catch(err=>{heicLoaderPromise=null;throw err;});
+      return heicLoaderPromise;
+    }
+
+    async function convertHeic(file){
+      try{
+        const converter=await loadHeicConverter();
+        const result=await converter({blob:file,toType:'image/jpeg',quality:.90});
+        const blob=Array.isArray(result)?result[0]:result;
+        if(!blob||!blob.size)throw new Error('Conversión vacía');
+        return blob;
+      }catch(e){
+        console.warn('[HEIC]',e);
+        throw new Error('no pudimos convertir esta foto HEIC. Probá compartirla como JPG desde el teléfono');
+      }
+    }
+
     async function prepareImage(file,maxMb){
-      // Vercel Functions limita el cuerpo HTTP. Cada foto viaja por debajo de 2,5 MB
-      // antes de convertirse a base64; la reducción solo ocurre cuando hace falta.
+      // El original puede ser más grande, pero el cuerpo final viaja por debajo de 2,5 MB.
       const transportMb=Math.min(Number(maxMb||12),2.5);
       const maxBytes=transportMb*1024*1024;
-      if(file.size<=maxBytes)return {file,name:file.name,type:file.type||guessMime(file.name)};
-      if(!/^image\/(jpeg|jpg|png|webp)$/i.test(file.type))throw new Error(`supera ${transportMb} MB para la carga web`);
+      let work=file;
+      let name=file.name||'foto.jpg';
+      let type=file.type||guessMime(name);
+      const isHeic=/image\/hei[cf]/i.test(type)||/\.hei[cf]$/i.test(name);
+
+      if(isHeic){
+        setProgress(Number($('progressPercent').textContent.replace('%',''))||0,'Convirtiendo HEIC…');
+        work=await convertHeic(file);
+        name=name.replace(/\.[^.]+$/,'.jpg');
+        type='image/jpeg';
+      }
+
+      if(work.size<=maxBytes)return {file:work,name,type};
+      if(!/^image\/(jpeg|jpg|png|webp)$/i.test(type))throw new Error(`supera ${transportMb} MB para la carga web`);
       try{
-        const bitmap=await createImageBitmap(file);
+        const bitmap=await createImageBitmap(work);
         const maxSide=3000,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
         const canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);
         canvas.getContext('2d',{alpha:false}).drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close?.();
         let quality=.90,blob=await canvasBlob(canvas,'image/jpeg',quality);
-        while(blob.size>maxBytes&&quality>.62){quality-=.07;blob=await canvasBlob(canvas,'image/jpeg',quality);}
+        while(blob.size>maxBytes&&quality>.55){quality-=.07;blob=await canvasBlob(canvas,'image/jpeg',quality);}
         if(blob.size>maxBytes)throw new Error(`sigue superando ${transportMb} MB después de optimizarla`);
-        return {file:blob,name:file.name.replace(/\.[^.]+$/,'.jpg'),type:'image/jpeg'};
+        return {file:blob,name:name.replace(/\.[^.]+$/,'.jpg'),type:'image/jpeg'};
       }catch(e){throw new Error(`supera ${transportMb} MB y no pudimos optimizarla`);}
     }
 
