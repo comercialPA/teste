@@ -1,0 +1,76 @@
+/* V1.1.6 · ME GUSTA + NOTIFICACIONES */
+.social-bell-btn{position:relative!important;flex:0 0 auto}
+.social-unread-badge{
+  position:absolute;right:-4px;top:-5px;min-width:18px;height:18px;padding:0 5px;
+  display:grid;place-items:center;border-radius:999px;background:#d85a59;color:#fff;
+  border:2px solid #0a2029;font:800 9px/1 system-ui,sans-serif;box-shadow:0 5px 14px rgba(0,0,0,.24)
+}
+.social-bell-btn.has-unread svg{filter:drop-shadow(0 0 7px rgba(240,223,185,.52))}
+
+.social-like-btn{white-space:nowrap;min-width:126px}
+.social-like-btn.liked{
+  background:linear-gradient(135deg,#f7e5e3,#f4d4d0)!important;
+  color:#9d3f42!important;border:1px solid rgba(157,63,66,.14)!important
+}
+.social-like-btn.own-photo{opacity:.76!important;cursor:default!important}
+
+.social-notifications-modal{
+  position:fixed;inset:0;z-index:4200;background:rgba(3,13,18,.56);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  display:flex;align-items:flex-end;justify-content:center;padding:16px;
+  opacity:0;transition:opacity .18s ease
+}
+.social-notifications-modal.open{opacity:1}
+.social-notifications-sheet{
+  width:min(520px,100%);max-height:min(760px,calc(100dvh - 30px));overflow:auto;
+  background:linear-gradient(180deg,#fbfaf7,#f4f1e9);border:1px solid rgba(255,255,255,.9);
+  border-radius:28px;box-shadow:0 28px 90px rgba(0,0,0,.28);padding:18px;
+  transform:translateY(20px);transition:transform .22s ease;padding-bottom:calc(18px + env(safe-area-inset-bottom))
+}
+.social-notifications-modal.open .social-notifications-sheet{transform:translateY(0)}
+.social-notifications-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.social-notifications-head small{display:block;color:#8a7b5d;font:800 9px/1 system-ui,sans-serif;letter-spacing:.18em;margin-bottom:6px}
+.social-notifications-head h3{margin:0;color:#0d2730;font:500 27px/1.05 Georgia,serif;letter-spacing:-.03em}
+#btnCloseNotifications{
+  width:42px;height:42px;border-radius:15px;border:1px solid rgba(15,39,48,.1);background:#fff;color:#173843;
+  font:400 28px/1 system-ui,sans-serif;display:grid;place-items:center;box-shadow:0 8px 20px rgba(8,27,35,.06)
+}
+.social-push-card{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px;
+  border-radius:20px;background:linear-gradient(135deg,#0b2630,#123b46);color:#fff;margin-bottom:13px;
+  box-shadow:0 15px 34px rgba(5,24,31,.14)
+}
+.social-push-card strong{display:block;font-size:12px;line-height:1.3}
+.social-push-card span{display:block;margin-top:4px;color:rgba(255,255,255,.65);font-size:10px;line-height:1.35}
+#btnEnablePush{
+  flex:0 0 auto;border:0;border-radius:13px;padding:10px 12px;background:#ead7ad;color:#142129;font-weight:800;font-size:10px
+}
+#btnEnablePush:disabled{opacity:.72}
+.social-notifications-list{display:grid;gap:8px}
+.social-notification-row{
+  width:100%;display:grid;grid-template-columns:38px minmax(0,1fr) 18px;align-items:center;gap:10px;
+  text-align:left;border:1px solid rgba(15,39,48,.08);background:rgba(255,255,255,.72);border-radius:18px;
+  padding:12px;color:#17313a;box-shadow:0 7px 18px rgba(8,27,35,.035)
+}
+.social-notification-row.unread{background:#fff;border-color:rgba(168,132,73,.21);box-shadow:0 9px 24px rgba(8,27,35,.07)}
+.social-notification-heart{
+  width:38px;height:38px;border-radius:14px;display:grid;place-items:center;background:#f7dfdc;color:#ad4b4d;font-size:17px
+}
+.social-notification-copy{min-width:0}
+.social-notification-copy strong{display:block;font-size:11px;line-height:1.35;white-space:normal}
+.social-notification-copy small{display:block;margin-top:4px;color:#7b898d;font-size:9px}
+.social-notification-arrow{font-size:25px;color:#a88449;text-align:center}
+.social-notifications-empty{text-align:center;padding:32px 18px;color:#7c898d;font-size:12px;line-height:1.55}
+
+@media(max-width:719px){
+  .social-notifications-modal{padding:8px;align-items:flex-end}
+  .social-notifications-sheet{border-radius:25px 25px 18px 18px;max-height:88dvh;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+  .social-bell-btn{width:40px!important;height:40px!important;border-radius:14px!important}
+  .lightbox-actions .social-like-btn{flex:1 1 130px;min-width:0}
+}
+@media(max-width:390px){
+  .social-bell-btn{width:38px!important;height:38px!important;border-radius:13px!important}
+  .social-unread-badge{right:-5px;top:-6px}
+  .social-push-card{align-items:flex-start;flex-direction:column}
+  #btnEnablePush{width:100%}
+}
