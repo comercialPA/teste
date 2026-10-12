@@ -1,0 +1,18 @@
+/* V1.2.2 · NATIVE CAMERA CAPTURE */
+.camera-native-input{display:none!important}
+.camera-source-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  width:min(100%,430px);
+  margin:12px auto 0;
+}
+.camera-source-actions .btn{width:100%;margin:0!important}
+.camera-take-btn svg{flex:0 0 auto}
+@media(max-width:430px){
+  .camera-source-actions{gap:7px;margin-top:10px}
+  .camera-source-actions .btn{min-height:42px!important;padding:9px 8px!important;font-size:10.5px!important;border-radius:13px!important}
+}
+@media(max-width:340px){
+  .camera-source-actions{grid-template-columns:1fr}
+}
