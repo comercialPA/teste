@@ -1,6 +1,6 @@
 (async()=>{
-  const APP_VERSION='1.2.2';
-  const BUILD='122';
+  const APP_VERSION='1.2.3';
+  const BUILD='123';
   const DATE_LABEL='10 · 11 · 12 · OCTUBRE · 2026';
   const pinEventDate=()=>{
     const el=document.getElementById('eventDateLabel');
@@ -49,7 +49,7 @@
   try{
     setupPwa();
     document.title='Asamblea Río Gallegos · 10, 11 y 12 de octubre de 2026 · Recuerdos';
-    for(const href of ['/app-4.css?v=108','/app-5.css?v=110','/app-6.css?v=111','/app-7.css?v=112','/app-8.css?v=113','/app-9.css?v=114','/app-10.css?v=115','/app-11.css?v=117','/app-12.css?v=121',`/app-13.css?v=${BUILD}`]){
+    for(const href of ['/app-4.css?v=108','/app-5.css?v=110','/app-6.css?v=111','/app-7.css?v=112','/app-8.css?v=113','/app-9.css?v=114','/app-10.css?v=115','/app-11.css?v=117','/app-12.css?v=121','/app-13.css?v=122',`/app-14.css?v=${BUILD}`]){
       const css=document.createElement('link');css.rel='stylesheet';css.href=href;document.head.appendChild(css);
     }
     pinEventDate();
@@ -66,6 +66,7 @@
     await loadScript(`/app-social.js?v=${BUILD}`);
     await loadScript(`/app-fullres.js?v=${BUILD}`);
     await loadScript(`/app-camera.js?v=${BUILD}`);
+    await loadScript(`/app-frame.js?v=${BUILD}`);
     await loadScript(`/app-tour.js?v=${BUILD}`);
 
     pinEventDate();

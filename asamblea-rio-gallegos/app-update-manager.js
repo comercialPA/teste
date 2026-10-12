@@ -1,7 +1,7 @@
 (()=>{
   'use strict';
 
-  const CURRENT_VERSION='1.2.2';
+  const CURRENT_VERSION='1.2.3';
   const VERSION_URL='/version.json';
   const PROFILE_KEY='rg26_profile_v1';
   const PERSISTENT_NAME_KEY='rg26_assistant_name_persistent_v1';
