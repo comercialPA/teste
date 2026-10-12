@@ -11,8 +11,8 @@ fs.mkdirSync(vendorDir,{recursive:true});
 
 const staticFiles=[
   'index.html',
-  'app-1.css','app-2.css','app-3.css','app-4.css','app-5.css','app-6.css','app-7.css','app-8.css','app-9.css','app-10.css','app-11.css','app-12.css','app-13.css',
-  'app-loader.js','app-gesture-fix.js','app-update-manager.js','app-tour.js','app-social.js','app-fullres.js','app-camera.js','version.json',
+  'app-1.css','app-2.css','app-3.css','app-4.css','app-5.css','app-6.css','app-7.css','app-8.css','app-9.css','app-10.css','app-11.css','app-12.css','app-13.css','app-14.css',
+  'app-loader.js','app-gesture-fix.js','app-update-manager.js','app-tour.js','app-social.js','app-fullres.js','app-camera.js','app-frame.js','version.json',
   'app-chunk-1.txt','app-chunk-2.txt','app-chunk-3.txt',
   'app-chunk-4.txt','app-chunk-5.txt','app-chunk-6.txt',
   'manifest.webmanifest','service-worker.js'
@@ -29,15 +29,15 @@ builtIndex=builtIndex
   .replace(/<div class="eyebrow" id="eventDateLabel">[\s\S]*?<\/div>/,'<div class="eyebrow" id="eventDateLabel">10 · 11 · 12 · OCTUBRE · 2026</div>')
   .replace(/Proyecto independiente para compartir recuerdos entre asistentes\. No es una aplicación oficial de los Testigos de Jehová\./g,'Proyecto independiente creado para compartir recuerdos entre los asistentes. No es una aplicación oficial de los Testigos de Jehová.')
   .replace(/JPG, PNG, WEBP o HEIC\. Si una foto es muy pesada intentaremos optimizarla antes de subirla\./g,'JPG, PNG, WEBP o HEIC · hasta 4K. Podés tomar una foto con la cámara o elegir varias de tu galería.')
-  .replace(/https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/qrcodejs\/1\.0\.0\/qrcode\.min\.js/g,'/vendor/qrcode.min.js?v=122')
-  .replace(/\/vendor\/qrcode\.min\.js(?:\?v=\d+)?/g,'/vendor/qrcode.min.js?v=122')
-  .replace(/\/app-loader\.js(?:\?v=\d+)?/g,'/app-loader.js?v=122');
+  .replace(/https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/qrcodejs\/1\.0\.0\/qrcode\.min\.js/g,'/vendor/qrcode.min.js?v=123')
+  .replace(/\/vendor\/qrcode\.min\.js(?:\?v=\d+)?/g,'/vendor/qrcode.min.js?v=123')
+  .replace(/\/app-loader\.js(?:\?v=\d+)?/g,'/app-loader.js?v=123');
 fs.writeFileSync(builtIndexPath,builtIndex);
 
 const chunkFiles=['app-chunk-1.txt','app-chunk-2.txt','app-chunk-3.txt','app-chunk-4.txt','app-chunk-5.txt','app-chunk-6.txt'];
 const assembled=chunkFiles.map(file=>fs.readFileSync(path.resolve(file),'utf8')).join('');
 new Function(assembled);
-for(const file of ['app-loader.js','app-gesture-fix.js','app-update-manager.js','app-tour.js','app-social.js','app-fullres.js','app-camera.js','service-worker.js']){
+for(const file of ['app-loader.js','app-gesture-fix.js','app-update-manager.js','app-tour.js','app-social.js','app-fullres.js','app-camera.js','app-frame.js','service-worker.js']){
   new Function(fs.readFileSync(path.resolve(file),'utf8'));
 }
 console.log('validated runtime JavaScript');
