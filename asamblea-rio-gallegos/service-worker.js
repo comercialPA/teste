@@ -1,10 +1,10 @@
-const CACHE='rg26-v1.2.2';
+const CACHE='rg26-v1.2.3';
 const SHELL=[
   '/',
   '/manifest.webmanifest',
   '/app-loader.js',
-  '/app-1.css','/app-2.css','/app-3.css','/app-4.css','/app-5.css','/app-6.css','/app-7.css','/app-8.css','/app-9.css','/app-10.css','/app-11.css','/app-12.css','/app-13.css',
-  '/app-gesture-fix.js','/app-update-manager.js','/app-tour.js','/app-social.js','/app-fullres.js','/app-camera.js',
+  '/app-1.css','/app-2.css','/app-3.css','/app-4.css','/app-5.css','/app-6.css','/app-7.css','/app-8.css','/app-9.css','/app-10.css','/app-11.css','/app-12.css','/app-13.css','/app-14.css',
+  '/app-gesture-fix.js','/app-update-manager.js','/app-tour.js','/app-social.js','/app-fullres.js','/app-camera.js','/app-frame.js',
   '/vendor/heic2any.min.js','/vendor/qrcode.min.js',
   '/app-chunk-1.txt','/app-chunk-2.txt','/app-chunk-3.txt','/app-chunk-4.txt','/app-chunk-5.txt','/app-chunk-6.txt',
   '/icons/icon-192.png','/icons/icon-512.png','/icons/icon-maskable-512.png','/icons/apple-touch-icon.png'
@@ -51,7 +51,7 @@ self.addEventListener('fetch',event=>{
     event.respondWith(fetch(req,{cache:'no-store'}).then(res=>{const copy=res.clone();caches.open(CACHE).then(cache=>cache.put('/',copy)).catch(()=>{});return res;}).catch(()=>caches.match('/')));
     return;
   }
-  if(['/app-loader.js','/app-update-manager.js','/app-social.js','/app-tour.js','/app-gesture-fix.js','/app-fullres.js','/app-camera.js'].includes(url.pathname)){
+  if(['/app-loader.js','/app-update-manager.js','/app-social.js','/app-tour.js','/app-gesture-fix.js','/app-fullres.js','/app-camera.js','/app-frame.js'].includes(url.pathname)){
     event.respondWith(fetch(req,{cache:'no-store'}).then(res=>{const copy=res.clone();caches.open(CACHE).then(cache=>cache.put(req,copy)).catch(()=>{});return res;}).catch(()=>caches.match(req).then(hit=>hit||caches.match(url.pathname))));
     return;
   }
