@@ -1,6 +1,6 @@
 {
-  "version": "1.2.1",
-  "build": 121,
-  "releasedAt": "2026-10-11T17:38:00-03:00",
-  "message": "Diseño más compacto y versión visible"
+  "version": "1.2.2",
+  "build": 122,
+  "releasedAt": "2026-10-12T11:57:00-03:00",
+  "message": "Tomar fotos directamente desde el app"
 }
