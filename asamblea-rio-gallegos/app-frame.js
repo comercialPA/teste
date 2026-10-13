@@ -88,7 +88,7 @@
         <div class="sheet-body">
           <div class="frame-export-copy">
             <strong id="frameExportQuestion">¿Cómo querés descargarla?</strong>
-            <span>La versión con marco se genera en alta calidad sin modificar la foto original.</span>
+            <span>La versión con marco conserva la foto completa, sin recortar personas ni bordes.</span>
           </div>
           <div class="frame-export-actions">
             <button type="button" id="btnExportWithFrame" class="btn btn-primary">Con marco</button>
@@ -161,13 +161,15 @@
     ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();
   }
 
-  function drawCover(ctx,img,x,y,w,h){
+  function drawContain(ctx,img,x,y,w,h){
     const sw=img.width,sh=img.height;
-    const sourceRatio=sw/sh,targetRatio=w/h;
-    let sx=0,sy=0,cw=sw,ch=sh;
-    if(sourceRatio>targetRatio){cw=sh*targetRatio;sx=(sw-cw)/2;}
-    else{ch=sw/targetRatio;sy=(sh-ch)/2;}
-    ctx.drawImage(img,sx,sy,cw,ch,x,y,w,h);
+    if(!sw||!sh)return;
+    const scale=Math.min(w/sw,h/sh);
+    const dw=sw*scale,dh=sh*scale;
+    const dx=x+(w-dw)/2,dy=y+(h-dh)/2;
+    ctx.fillStyle='#151819';
+    ctx.fillRect(x,y,w,h);
+    ctx.drawImage(img,dx,dy,dw,dh);
   }
 
   function paperTexture(ctx,w,h){
@@ -211,7 +213,7 @@
 
     const hx=cfg.hole.x*scale,hy=cfg.hole.y*scale,hw=cfg.hole.w*scale,hh=cfg.hole.h*scale;
     ctx.fillStyle='#d7d2c8';ctx.fillRect(hx-W*.006,hy-H*.005,hw+W*.012,hh+H*.01);
-    drawCover(ctx,bitmap,hx,hy,hw,hh);
+    drawContain(ctx,bitmap,hx,hy,hw,hh);
     ctx.strokeStyle='rgba(54,50,44,.55)';ctx.lineWidth=Math.max(2,W*.0024);ctx.strokeRect(hx,hy,hw,hh);
     ctx.strokeStyle='rgba(255,255,255,.68)';ctx.lineWidth=Math.max(1,W*.0014);ctx.strokeRect(hx+W*.003,hy+H*.003,hw-W*.006,hh-H*.006);
 
