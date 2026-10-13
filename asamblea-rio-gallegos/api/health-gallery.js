@@ -17,14 +17,14 @@ export default async function handler(req,res){
     const prefixes={};
     for(const b of all){const p=String(b.pathname||'').split('/')[0]||'(root)';prefixes[p]=(prefixes[p]||0)+1;}
     const sample=all.find(b=>String(b.pathname||'').startsWith('photos/')&&String(b.pathname||'').endsWith('.json'))||null;
-    const probe={pathname:sample?.pathname||'',host:'',unauth:0,download:0,sdkPublic:0,sdkPrivate:0};
+    const probe={pathname:sample?.pathname||'',host:'',unauth:0,download:0,sdkPublic:0,sdkPrivate:0,sdkPublicError:'',sdkPrivateError:''};
     if(sample){
       try{probe.host=new URL(sample.url).host;}catch(_){}
       try{probe.unauth=(await fetch(sample.url,{cache:'no-store'})).status;}catch(_){probe.unauth=-1;}
       try{probe.download=sample.downloadUrl?(await fetch(sample.downloadUrl,{cache:'no-store'})).status:-2;}catch(_){probe.download=-1;}
-      try{probe.sdkPublic=(await get(sample.pathname,{access:'public'}))?.statusCode||0;}catch(_){probe.sdkPublic=-1;}
-      try{probe.sdkPrivate=(await get(sample.pathname,{access:'private'}))?.statusCode||0;}catch(_){probe.sdkPrivate=-1;}
+      try{probe.sdkPublic=(await get(sample.pathname,{access:'public'}))?.statusCode||0;}catch(err){probe.sdkPublic=-1;probe.sdkPublicError=String(err?.message||err).slice(0,240);}
+      try{probe.sdkPrivate=(await get(sample.pathname,{access:'private'}))?.statusCode||0;}catch(err){probe.sdkPrivate=-1;probe.sdkPrivateError=String(err?.message||err).slice(0,240);}
     }
     return res.status(200).json({ok:true,counts,store:{totalBlobs:all.length,prefixes},probe});
-  }catch(err){return res.status(500).json({ok:false,error:err?.message||'error'});}
+  }catch(err){return res.status(500).json({ok:false,error:String(err?.message||err).slice(0,300)});}
 }
