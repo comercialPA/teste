@@ -15,7 +15,16 @@ export default async function handler(req,res){
     }
     const prefixes={};
     for(const b of all){const p=String(b.pathname||'').split('/')[0]||'(root)';prefixes[p]=(prefixes[p]||0)+1;}
-    const jsonPaths=all.filter(b=>String(b.pathname||'').endsWith('.json')).slice(0,80).map(b=>b.pathname);
-    return res.status(200).json({ok:true,counts,store:{totalBlobs:all.length,prefixes,jsonPaths}});
+    const sample=all.find(b=>String(b.pathname||'').startsWith('photos/')&&String(b.pathname||'').endsWith('.json'))||null;
+    let probe={pathname:sample?.pathname||'',host:'',unauth:0,oidc:0};
+    if(sample?.url){
+      try{probe.host=new URL(sample.url).host;}catch(_){}
+      try{probe.unauth=(await fetch(sample.url,{cache:'no-store'})).status;}catch(_){probe.unauth=-1;}
+      try{
+        const token=String(process.env.VERCEL_OIDC_TOKEN||'');
+        probe.oidc=token?(await fetch(sample.url,{cache:'no-store',headers:{Authorization:`Bearer ${token}`}})).status:-2;
+      }catch(_){probe.oidc=-1;}
+    }
+    return res.status(200).json({ok:true,counts,store:{totalBlobs:all.length,prefixes},probe});
   }catch(err){return res.status(500).json({ok:false,error:err?.message||'error'});}
 }
