@@ -1,6 +1,6 @@
 (async()=>{
-  const APP_VERSION='1.2.3';
-  const BUILD='123';
+  const APP_VERSION='1.2.4';
+  const BUILD='124';
   const DATE_LABEL='10 · 11 · 12 · OCTUBRE · 2026';
   const pinEventDate=()=>{
     const el=document.getElementById('eventDateLabel');
