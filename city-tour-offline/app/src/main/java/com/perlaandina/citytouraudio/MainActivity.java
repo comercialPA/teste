@@ -109,6 +109,13 @@ public class MainActivity extends Activity {
         tracks.add(new Track("5.1 · Entre cartel y Punta Soberana", "02:14", "audio/audio_051_entre_cartel_y_punta_soberana.mp3"));
         tracks.add(new Track("6 · Punta Soberana", "01:02", "audio/audio_06_punta_soberana.mp3"));
         tracks.add(new Track("6.1 · Perito Pascacio Moreno", "01:59", "audio/audio_061_perito_pascacio_moreno.mp3"));
+        tracks.add(new Track("El Azul Antiguo", "02:51", "audio/audio_07_el_azul_antiguo.mp3"));
+        tracks.add(new Track("Palabra del Sur (Poesía Hablada)", "02:58", "audio/audio_08_palabra_del_sur_poesia_hablada.mp3"));
+        tracks.add(new Track("Lago Argentino (Chacarera)", "03:42", "audio/audio_09_lago_argentino_chacarera.mp3"));
+        tracks.add(new Track("Gente del Chaltén (Ancestral Folk)", "03:45", "audio/audio_10_gente_del_chalten_ancestral_folk.mp3"));
+        tracks.add(new Track("Humo de Pedra (Loncomeo Mix)", "03:10", "audio/audio_11_humo_de_pedra_loncomeo_mix.mp3"));
+        tracks.add(new Track("Cancha Carrera (Folk Rock Fusion)", "02:45", "audio/audio_12_cancha_carrera_folk_rock_fusion.mp3"));
+        tracks.add(new Track("Darwin - Poesía Hablada (Voz Priorizada)", "03:09", "audio/audio_13_darwin_poesia_hablada_voz_priorizada.mp3"));
     }
 
     private void buildUi() {
@@ -118,7 +125,7 @@ public class MainActivity extends Activity {
         root.setBackgroundColor(Color.rgb(12, 17, 24));
 
         TextView appTitle = text("CITY TOUR", 24, Color.rgb(244, 247, 250), true);
-        TextView version = text("OFFLINE · v1.0.1 PERLA ANDINA", 11, Color.rgb(142, 200, 242), true);
+        TextView version = text("OFFLINE · v1.0.2 PERLA ANDINA", 11, Color.rgb(142, 200, 242), true);
         version.setLetterSpacing(0.12f);
         root.addView(appTitle);
         root.addView(version, marginTop(dp(2)));
