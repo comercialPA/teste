@@ -118,7 +118,7 @@ public class MainActivity extends Activity {
         root.setBackgroundColor(Color.rgb(12, 17, 24));
 
         TextView appTitle = text("CITY TOUR", 24, Color.rgb(244, 247, 250), true);
-        TextView version = text("OFFLINE · v1.0.0 PERLA ANDINA", 11, Color.rgb(142, 200, 242), true);
+        TextView version = text("OFFLINE · v1.0.1 PERLA ANDINA", 11, Color.rgb(142, 200, 242), true);
         version.setLetterSpacing(0.12f);
         root.addView(appTitle);
         root.addView(version, marginTop(dp(2)));
