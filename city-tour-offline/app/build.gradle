@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace 'com.perlaandina.citytouraudio'
-    compileSdk 37
+    compileSdk 36
 
     defaultConfig {
         applicationId 'com.perlaandina.citytouraudio'
         minSdk 23
         targetSdk 36
-        versionCode 1
-        versionName '1.0.0 perla andina'
+        versionCode 2
+        versionName '1.0.1 perla andina'
     }
 
     buildTypes {
