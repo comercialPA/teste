@@ -1,0 +1,52 @@
+name: Build City Tour APK
+
+on:
+  push:
+    branches: [city-tour-apk-v1]
+    paths:
+      - 'city-tour-offline/**'
+      - '.github/workflows/city-tour-apk-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK components
+        run: sdkmanager 'platforms;android-37' 'build-tools;36.0.0'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.6.0'
+
+      - name: Build unsigned release APK
+        working-directory: city-tour-offline
+        run: gradle --no-daemon :app:assembleRelease
+
+      - name: Rename APK
+        run: cp city-tour-offline/app/build/outputs/apk/release/app-release-unsigned.apk CITY_TOUR_OFFLINE_V1.0.0_PERLA_ANDINA_UNSIGNED.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: CITY_TOUR_OFFLINE_V1.0.0_PERLA_ANDINA_UNSIGNED
+          path: CITY_TOUR_OFFLINE_V1.0.0_PERLA_ANDINA_UNSIGNED.apk
+          if-no-files-found: error
+          retention-days: 1
