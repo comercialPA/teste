@@ -1,0 +1,8 @@
+<resources>
+    <color name="app_bg">#0C1118</color>
+    <color name="panel_bg">#141C26</color>
+    <color name="panel_selected">#203248</color>
+    <color name="text_primary">#F4F7FA</color>
+    <color name="text_secondary">#AAB7C4</color>
+    <color name="accent">#8EC8F2</color>
+</resources>
