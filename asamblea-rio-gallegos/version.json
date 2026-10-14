@@ -1,6 +1,6 @@
 {
-  "version": "1.2.4",
-  "build": 124,
-  "releasedAt": "2026-10-13T11:37:00-03:00",
-  "message": "Marco sin recortes: la foto completa siempre visible"
+  "version": "1.2.5",
+  "build": 125,
+  "releasedAt": "2026-10-13T22:45:00-03:00",
+  "message": "Recuperación de galería y menor consumo de datos"
 }

@@ -1,4 +1,4 @@
-const CACHE='rg26-v1.2.4';
+const CACHE='rg26-v1.2.5';
 const SHELL=[
   '/',
   '/manifest.webmanifest',

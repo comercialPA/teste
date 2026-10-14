@@ -29,9 +29,9 @@ builtIndex=builtIndex
   .replace(/<div class="eyebrow" id="eventDateLabel">[\s\S]*?<\/div>/,'<div class="eyebrow" id="eventDateLabel">10 · 11 · 12 · OCTUBRE · 2026</div>')
   .replace(/Proyecto independiente para compartir recuerdos entre asistentes\. No es una aplicación oficial de los Testigos de Jehová\./g,'Proyecto independiente creado para compartir recuerdos entre los asistentes. No es una aplicación oficial de los Testigos de Jehová.')
   .replace(/JPG, PNG, WEBP o HEIC\. Si una foto es muy pesada intentaremos optimizarla antes de subirla\./g,'JPG, PNG, WEBP o HEIC · hasta 4K. Podés tomar una foto con la cámara o elegir varias de tu galería.')
-  .replace(/https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/qrcodejs\/1\.0\.0\/qrcode\.min\.js/g,'/vendor/qrcode.min.js?v=124')
-  .replace(/\/vendor\/qrcode\.min\.js(?:\?v=\d+)?/g,'/vendor/qrcode.min.js?v=124')
-  .replace(/\/app-loader\.js(?:\?v=\d+)?/g,'/app-loader.js?v=124');
+  .replace(/https:\/\/cdnjs\.cloudflare\.com\/ajax\/libs\/qrcodejs\/1\.0\.0\/qrcode\.min\.js/g,'/vendor/qrcode.min.js?v=125')
+  .replace(/\/vendor\/qrcode\.min\.js(?:\?v=\d+)?/g,'/vendor/qrcode.min.js?v=125')
+  .replace(/\/app-loader\.js(?:\?v=\d+)?/g,'/app-loader.js?v=125');
 fs.writeFileSync(builtIndexPath,builtIndex);
 
 const chunkFiles=['app-chunk-1.txt','app-chunk-2.txt','app-chunk-3.txt','app-chunk-4.txt','app-chunk-5.txt','app-chunk-6.txt'];

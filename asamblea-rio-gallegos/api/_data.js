@@ -107,9 +107,22 @@ export async function deleteUrl(url){
 export async function fetchRawJson(url){
   try{
     const response=await fetch(url,{cache:'no-store'});
-    if(!response.ok) return null;
+    if(!response.ok){
+      let detail='';
+      try{detail=(await response.text()).slice(0,160);}catch(_){}
+      if(response.status===403&&/store is blocked|limits?.*exceeded|suspend/i.test(detail)){
+        const err=new Error('El almacenamiento de fotos está temporalmente suspendido. Las fotos siguen guardadas; intentá nuevamente más tarde.');
+        err.code='STORAGE_SUSPENDED';
+        err.statusCode=503;
+        throw err;
+      }
+      return null;
+    }
     return response.json();
-  }catch(_){return null;}
+  }catch(err){
+    if(err?.code==='STORAGE_SUSPENDED')throw err;
+    return null;
+  }
 }
 
 export function dataStorageMode(){return 'encrypted-aes256gcm';}

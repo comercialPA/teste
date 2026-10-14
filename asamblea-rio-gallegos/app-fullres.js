@@ -1,31 +1,10 @@
 (()=>{
   'use strict';
-  const PROFILE_KEY='rg26_profile_v1';
   const $=id=>document.getElementById(id);
   let requestSeq=0;
 
-  function profileId(){
-    try{return JSON.parse(localStorage.getItem(PROFILE_KEY)||'null')?.profileId||'';}catch(_){return '';}
-  }
-
-  async function getPhoto(photoId){
-    const response=await fetch('/api/rpc',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      cache:'no-store',
-      body:JSON.stringify({fn:'apiGetPhoto',args:[photoId,profileId()]})
-    });
-    const data=await response.json().catch(()=>({ok:false}));
-    if(!response.ok||!data.ok)throw new Error(data.error||'No pudimos cargar la foto en alta calidad.');
-    return data.result;
-  }
-
-  function publicOriginalUrl(downloadUrl){
-    try{
-      const url=new URL(downloadUrl,location.origin);
-      url.searchParams.delete('download');
-      return url.href;
-    }catch(_){return downloadUrl||'';}
+  function previewUrl(photoId){
+    return `/api/image-preview?id=${encodeURIComponent(photoId)}&w=1600`;
   }
 
   async function upgradeLightbox(){
@@ -34,21 +13,17 @@
     if(!lb?.classList.contains('open')||!target||!photoId)return;
     if(target.dataset.fullPhotoId===photoId)return;
     const seq=++requestSeq;
-    try{
-      const photo=await getPhoto(photoId);
-      const fullUrl=publicOriginalUrl(photo?.downloadUrl||'');
-      if(!fullUrl)return;
-      const preload=new Image();
-      preload.decoding='async';
-      preload.onload=()=>{
-        if(seq!==requestSeq)return;
-        if(!$('lightbox')?.classList.contains('open'))return;
-        if(String($('lightbox')?.dataset?.photoId||'')!==photoId)return;
-        target.src=fullUrl;
-        target.dataset.fullPhotoId=photoId;
-      };
-      preload.src=fullUrl;
-    }catch(err){console.warn('[FULL RES]',err);}
+    const preload=new Image();
+    preload.decoding='async';
+    preload.onload=()=>{
+      if(seq!==requestSeq)return;
+      if(!$('lightbox')?.classList.contains('open'))return;
+      if(String($('lightbox')?.dataset?.photoId||'')!==photoId)return;
+      target.src=preload.src;
+      target.dataset.fullPhotoId=photoId;
+    };
+    preload.onerror=()=>console.warn('[PREVIEW] No pudimos cargar la vista ampliada.');
+    preload.src=previewUrl(photoId);
   }
 
   function init(){
