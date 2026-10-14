@@ -25,9 +25,6 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install Android SDK components
-        run: /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager 'platforms;android-37' 'build-tools;36.0.0'
-
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
@@ -37,13 +34,18 @@ jobs:
         working-directory: city-tour-offline
         run: gradle --no-daemon :app:assembleRelease
 
-      - name: Rename APK
-        run: cp city-tour-offline/app/build/outputs/apk/release/app-release-unsigned.apk CITY_TOUR_OFFLINE_V1.0.0_PERLA_ANDINA_UNSIGNED.apk
+      - name: Prepare artifact
+        run: |
+          mkdir -p artifact
+          cp city-tour-offline/app/build/outputs/apk/release/app-release-unsigned.apk artifact/CITY_TOUR_OFFLINE_V1.0.1_PERLA_ANDINA_UNSIGNED.apk
+          BT_DIR=$(find /usr/local/lib/android/sdk/build-tools -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
+          cp "$BT_DIR/lib/apksigner.jar" artifact/apksigner.jar
+          cp "$BT_DIR/zipalign" artifact/zipalign
 
-      - name: Upload APK
+      - name: Upload APK and signing tools
         uses: actions/upload-artifact@v4
         with:
-          name: CITY_TOUR_OFFLINE_V1.0.0_PERLA_ANDINA_UNSIGNED
-          path: CITY_TOUR_OFFLINE_V1.0.0_PERLA_ANDINA_UNSIGNED.apk
+          name: CITY_TOUR_OFFLINE_V1.0.1_PERLA_ANDINA_BUILD
+          path: artifact/
           if-no-files-found: error
           retention-days: 1
