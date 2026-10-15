@@ -24,6 +24,25 @@ jobs:
           echo "ef7f224405279e6fc044c7f01eee874d635f2f1604a999c042a7857aa8b93949  /tmp/metadia102.zip" | sha256sum -c -
           unzip -q /tmp/metadia102.zip -d /tmp/metadia102
 
+      - name: Patch Android version lookup
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/metadia102/METADIA_V1.0.2/app/src/main/java/com/metadia/app/MainActivity.java')
+          s=p.read_text()
+          s=s.replace('remoteCode > BuildConfig.VERSION_CODE', 'remoteCode > getCurrentVersionCode()')
+          s=s.replace('sendUpdateStatus("up_to_date", null, BuildConfig.VERSION_NAME, null);', 'sendUpdateStatus("up_to_date", null, getCurrentVersionName(), null);')
+          marker='    private void sendUpdateStatus(String state, String message, String versionName, String notes) {'
+          helpers='''    private long getCurrentVersionCode() {\n        try {\n            android.content.pm.PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);\n            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {\n                return info.getLongVersionCode();\n            }\n            return info.versionCode;\n        } catch (Exception e) {\n            return 0L;\n        }\n    }\n\n    private String getCurrentVersionName() {\n        try {\n            android.content.pm.PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);\n            return info.versionName == null ? "" : info.versionName;\n        } catch (Exception e) {\n            return "";\n        }\n    }\n\n'''
+          if marker not in s:
+              raise SystemExit('sendUpdateStatus marker not found')
+          s=s.replace(marker, helpers+marker, 1)
+          if 'BuildConfig.' in s:
+              raise SystemExit('BuildConfig reference remains')
+          p.write_text(s)
+          PY
+
       - name: Set up Java 21
         uses: actions/setup-java@v5
         with:
