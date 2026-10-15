@@ -15,38 +15,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Rebuild V1.0.2 Android base
+      - name: Rebuild and verify MetaDia V1.1.0 source
         shell: bash
         run: |
-          cat metadia-format/part_00 metadia-format/part_01 metadia-format/part_02 metadia-format/part_03 metadia-format/part_04 > /tmp/metadia102.b64
-          echo "bd818685b4c34a5b68202cc60ac3c01239e66741e1080b765be4b421af8bb47f  /tmp/metadia102.b64" | sha256sum -c -
-          base64 -d /tmp/metadia102.b64 > /tmp/metadia102.zip
-          echo "000ffb74e1f9557bb51c6a6ea9d48b18ecfc43995fb29671a757654868bd988d  /tmp/metadia102.zip" | sha256sum -c -
-          unzip -q /tmp/metadia102.zip -d /tmp/metadia110
-
-      - name: Apply MetaDia V1.1.0 multi-goal UI
-        shell: bash
-        run: |
-          cat metadia-v110/index_part_00 metadia-v110/index_part_01 > /tmp/index_v110.b64
-          base64 -d /tmp/index_v110.b64 > /tmp/index_v110.html.gz
-          echo "8485b8de227e0a5ef2d9ad72beaf90434b0b1b65a08bfed075e20e7de943e531  /tmp/index_v110.html.gz" | sha256sum -c -
-          gunzip -c /tmp/index_v110.html.gz > /tmp/metadia110/METADIA_V1.0.2/app/src/main/assets/index.html
-          echo "6a959e6e6119feaffb37498a548be038a4c5dbc99a57b778c5528a486955a958  /tmp/metadia110/METADIA_V1.0.2/app/src/main/assets/index.html" | sha256sum -c -
-
-      - name: Set Android version 1.1.0
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('/tmp/metadia110/METADIA_V1.0.2/app/build.gradle')
-          s=p.read_text()
-          import re
-          s=re.sub(r'versionCode\s+\d+', 'versionCode 4', s)
-          s=re.sub(r"versionName\s+['\"][^'\"]+['\"]", "versionName '1.1.0'", s)
-          p.write_text(s)
-          if 'versionCode 4' not in s or "versionName '1.1.0'" not in s:
-              raise SystemExit('Version patch failed')
-          PY
+          cat metadia-v110-full/part_00 metadia-v110-full/part_01 metadia-v110-full/part_02 metadia-v110-full/part_03 metadia-v110-full/part_04 > /tmp/metadia110.b64
+          base64 -d /tmp/metadia110.b64 > /tmp/METADIA_V1.1.0_ANDROID.zip
+          echo "c56044a0f215abd5f4bb00308ff46202b648df253429da96e778fc2123b72eaf  /tmp/METADIA_V1.1.0_ANDROID.zip" | sha256sum -c -
+          unzip -t /tmp/METADIA_V1.1.0_ANDROID.zip
+          unzip -q /tmp/METADIA_V1.1.0_ANDROID.zip -d /tmp/metadia110
+          echo "6a959e6e6119feaffb37498a548be038a4c5dbc99a57b778c5528a486955a958  /tmp/metadia110/METADIA_V1.1.0/app/src/main/assets/index.html" | sha256sum -c -
+          grep -q "metadia_state_v2" /tmp/metadia110/METADIA_V1.1.0/app/src/main/assets/index.html
+          grep -q "EUR" /tmp/metadia110/METADIA_V1.1.0/app/src/main/assets/index.html
+          grep -q "versionCode 4" /tmp/metadia110/METADIA_V1.1.0/app/build.gradle
+          grep -q "versionName '1.1.0'" /tmp/metadia110/METADIA_V1.1.0/app/build.gradle
 
       - name: Set up Java 21
         uses: actions/setup-java@v5
@@ -70,12 +51,14 @@ jobs:
           gradle-version: '8.10.2'
 
       - name: Build APK
-        working-directory: /tmp/metadia110/METADIA_V1.0.2
+        working-directory: /tmp/metadia110/METADIA_V1.1.0
         run: gradle assembleDebug --stacktrace
 
       - name: Prepare APK
         shell: bash
-        run: cp /tmp/metadia110/METADIA_V1.0.2/app/build/outputs/apk/debug/app-debug.apk /tmp/MetaDia_V1.1.0.apk
+        run: |
+          cp /tmp/metadia110/METADIA_V1.1.0/app/build/outputs/apk/debug/app-debug.apk /tmp/MetaDia_V1.1.0.apk
+          unzip -t /tmp/MetaDia_V1.1.0.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
