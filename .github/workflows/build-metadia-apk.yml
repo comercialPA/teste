@@ -18,7 +18,7 @@ jobs:
       - name: Rebuild and verify MetaDia V1.0.2 source
         shell: bash
         run: |
-          cat metadia-v102/part_00 metadia-v102/part_01 metadia-v102/part_02 metadia-v102/part_03 metadia-v102/part_04 metadia-v102/part_05 > /tmp/metadia102.b64
+          cat metadia-v102/part_00a metadia-v102/part_00b metadia-v102/part_01 metadia-v102/part_02 metadia-v102/part_03 metadia-v102/part_04 metadia-v102/part_05 > /tmp/metadia102.b64
           echo "4ea1e86d36bad4801681d8daf345fa2aebbd34c88560cfab72ca9cf6876acd33  /tmp/metadia102.b64" | sha256sum -c -
           base64 -d /tmp/metadia102.b64 > /tmp/metadia102.zip
           echo "ef7f224405279e6fc044c7f01eee874d635f2f1604a999c042a7857aa8b93949  /tmp/metadia102.zip" | sha256sum -c -
