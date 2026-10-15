@@ -1,4 +1,4 @@
-name: Build MetaDia APK
+name: Build MetaDia V1.0.2 unsigned APK
 
 on:
   push:
@@ -15,15 +15,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Rebuild source archive
+      - name: Rebuild MetaDia V1.0.2 source
         shell: bash
         run: |
-          cat metadia-build/part_00 metadia-build/part_01 metadia-build/part_02 metadia-build/part_03 metadia-build/part_04 > /tmp/metadia.b64
-          base64 -d /tmp/metadia.b64 > /tmp/metadia.zip
-          unzip -q /tmp/metadia.zip -d /tmp/metadia
+          cat metadia-v102/part_00 metadia-v102/part_01 > /tmp/metadia102.b64
+          base64 -d /tmp/metadia102.b64 > /tmp/metadia102.zip
+          unzip -q /tmp/metadia102.zip -d /tmp/metadia102
 
       - name: Set up Java 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '21'
@@ -43,19 +43,21 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
-      - name: Build debug APK
-        working-directory: /tmp/metadia/METADIA_V1.0.1
-        run: gradle assembleDebug --stacktrace
+      - name: Build release APK
+        working-directory: /tmp/metadia102/METADIA_V1.0.2
+        run: gradle assembleRelease --stacktrace
 
-      - name: Prepare APK
+      - name: Align unsigned APK
         shell: bash
-        run: cp /tmp/metadia/METADIA_V1.0.1/app/build/outputs/apk/debug/app-debug.apk /tmp/MetaDia_V1.0.1.apk
+        run: |
+          /usr/local/lib/android/sdk/build-tools/35.0.0/zipalign -f 4 \
+            /tmp/metadia102/METADIA_V1.0.2/app/build/outputs/apk/release/app-release-unsigned.apk \
+            /tmp/MetaDia_V1.0.2-unsigned-aligned.apk
+          /usr/local/lib/android/sdk/build-tools/35.0.0/zipalign -c -v 4 /tmp/MetaDia_V1.0.2-unsigned-aligned.apk
 
-      - name: Upload APK
+      - name: Upload unsigned APK
         uses: actions/upload-artifact@v4
         with:
-          name: MetaDia_V1.0.1_APK
-          path: /tmp/MetaDia_V1.0.1.apk
+          name: MetaDia_V1.0.2_UNSIGNED
+          path: /tmp/MetaDia_V1.0.2-unsigned-aligned.apk
           if-no-files-found: error
-
-# build trigger 2
