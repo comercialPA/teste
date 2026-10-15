@@ -18,7 +18,10 @@ jobs:
       - name: Rebuild and verify MetaDia V1.1.0 source
         shell: bash
         run: |
-          cat metadia-v110-full/part_00 metadia-v110-full/part_01 metadia-v110-full/part_02 metadia-v110-full/part_03 metadia-v110-full/part_04 > /tmp/metadia110.b64
+          cat metadia-v110-full/part_00 metadia-v110-full/part_01 \
+            metadia-v110-full/part_02a metadia-v110-full/part_02b metadia-v110-full/part_02c \
+            metadia-v110-full/part_02d metadia-v110-full/part_02e metadia-v110-full/part_02f metadia-v110-full/part_02g \
+            metadia-v110-full/part_03 metadia-v110-full/part_04 > /tmp/metadia110.b64
           base64 -d /tmp/metadia110.b64 > /tmp/METADIA_V1.1.0_ANDROID.zip
           echo "c56044a0f215abd5f4bb00308ff46202b648df253429da96e778fc2123b72eaf  /tmp/METADIA_V1.1.0_ANDROID.zip" | sha256sum -c -
           unzip -t /tmp/METADIA_V1.1.0_ANDROID.zip
