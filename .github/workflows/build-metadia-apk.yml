@@ -57,3 +57,5 @@ jobs:
           name: MetaDia_V1.0.1_APK
           path: /tmp/MetaDia_V1.0.1.apk
           if-no-files-found: error
+
+# build trigger 2
