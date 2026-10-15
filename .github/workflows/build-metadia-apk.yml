@@ -15,11 +15,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Rebuild MetaDia V1.0.2 source
+      - name: Rebuild and verify MetaDia V1.0.2 source
         shell: bash
         run: |
-          cat metadia-v102/part_00 metadia-v102/part_01 > /tmp/metadia102.b64
+          cat metadia-v102/part_00 metadia-v102/part_01 metadia-v102/part_02 metadia-v102/part_03 metadia-v102/part_04 metadia-v102/part_05 > /tmp/metadia102.b64
+          echo "4ea1e86d36bad4801681d8daf345fa2aebbd34c88560cfab72ca9cf6876acd33  /tmp/metadia102.b64" | sha256sum -c -
           base64 -d /tmp/metadia102.b64 > /tmp/metadia102.zip
+          echo "ef7f224405279e6fc044c7f01eee874d635f2f1604a999c042a7857aa8b93949  /tmp/metadia102.zip" | sha256sum -c -
           unzip -q /tmp/metadia102.zip -d /tmp/metadia102
 
       - name: Set up Java 21
@@ -47,17 +49,20 @@ jobs:
         working-directory: /tmp/metadia102/METADIA_V1.0.2
         run: gradle assembleRelease --stacktrace
 
-      - name: Align unsigned APK
+      - name: Align and prepare signing tool
         shell: bash
         run: |
           /usr/local/lib/android/sdk/build-tools/35.0.0/zipalign -f 4 \
             /tmp/metadia102/METADIA_V1.0.2/app/build/outputs/apk/release/app-release-unsigned.apk \
             /tmp/MetaDia_V1.0.2-unsigned-aligned.apk
           /usr/local/lib/android/sdk/build-tools/35.0.0/zipalign -c -v 4 /tmp/MetaDia_V1.0.2-unsigned-aligned.apk
+          cp /usr/local/lib/android/sdk/build-tools/35.0.0/lib/apksigner.jar /tmp/apksigner.jar
 
-      - name: Upload unsigned APK
+      - name: Upload unsigned APK and signing tool
         uses: actions/upload-artifact@v4
         with:
           name: MetaDia_V1.0.2_UNSIGNED
-          path: /tmp/MetaDia_V1.0.2-unsigned-aligned.apk
+          path: |
+            /tmp/MetaDia_V1.0.2-unsigned-aligned.apk
+            /tmp/apksigner.jar
           if-no-files-found: error
