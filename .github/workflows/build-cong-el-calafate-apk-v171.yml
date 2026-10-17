@@ -90,7 +90,6 @@ jobs:
             .github/v170-app/premium-v170b.js \
             .github/v171-app/premium-v171.js \
             > "$ASSETS/app.js"
-          test -s "$ASSETS/congregacion-home.jpg"
           curl -fsSL --retry 3 'https://cong-el-calafate-app.vercel.app/icons/icon-192.png' -o "$ASSETS/icons/icon-192.png"
           curl -fsSL --retry 3 'https://cong-el-calafate-app.vercel.app/icons/icon-512.png' -o "$ASSETS/icons/icon-512.png"
           cp "$ASSETS/icons/icon-512.png" cong_el_calafate_android/app/src/main/res/drawable/ic_launcher.png
