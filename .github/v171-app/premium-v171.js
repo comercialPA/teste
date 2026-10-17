@@ -17,3 +17,73 @@ function observe(){let queued=false;const mo=new MutationObserver(()=>{if(queued
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();
 window.CongElCalafateVisualV171={version:VERSION,globalMetric,refresh};
 })();
+
+
+
+/* Congregación El Calafate · V1.7.2: mapa restaurado, ES-AR y calendario sin feriados */
+(()=>{
+'use strict';
+const VERSION='1.7.2',$=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const calendarUrl='https://calendar.google.com/calendar/embed?src=congcalafate%40gmail.com&ctz=America%2FArgentina%2FRio_Gallegos&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0';
+function calendarOnly(){
+  try{
+    const r=typeof resources!=='undefined'&&resources.find(x=>x.id==='calendario');
+    if(r){r.url=calendarUrl;r.title='Calendario de la congregación';r.desc='Solo el calendario congregacional, sin los feriados automáticos de Google.';}
+    if(typeof currentResource!=='undefined'&&currentResource&&currentResource.id==='calendario'){
+      const a=$('#dialogOpen');if(a)a.href=calendarUrl;
+      const h=$('#dialogTitle');if(h)h.textContent='Calendario de la congregación';
+    }
+  }catch(e){console.warn('Calendario V1.7.2:',e)}
+}
+function localize(){
+  const screen=$('#cecCarritosScreen');
+  if(screen){
+    const walker=document.createTreeWalker(screen,NodeFilter.SHOW_TEXT);
+    let n;while((n=walker.nextNode())){
+      const t=n.nodeValue,next=t.replace(/\bvagas\b/g,'vacantes').replace(/\bVaga\b/g,'Vacante').replace(/\bHoje\b/g,'Hoy');
+      if(t!==next)n.nodeValue=next;
+    }
+  }
+  const meta=$('#cecPickerMeta');if(meta&&meta.textContent==='Vaga')meta.textContent='Vacante';
+}
+function ensureTerritories(){
+  const page=$('#territorios'),head=$('.page-head',page),card=$('.territory-control-card',page);
+  if(!page||!head||!card)return;
+  card.style.setProperty('display','block','important');
+  if(card.hasAttribute('hidden'))card.removeAttribute('hidden');
+  if(!$('#cecV172Actions')){
+    const actions=document.createElement('div');actions.id='cecV172Actions';actions.className='cec-v172-actions';
+    actions.innerHTML='<button id="cecV172MapGo" type="button" class="cec-v172-action"><span class="v172-icon">⌖</span><span class="v172-copy"><strong>ABRIR MAPA PARA MARCAR</strong><small>Elegí un territorio y marcá los lados o tramos realizados</small></span><span class="v172-arrow">›</span></button><button id="cecV172ThermoGo" type="button" class="cec-v172-action secondary"><span class="v172-icon">▥</span><span class="v172-copy"><strong>Informe y termómetro</strong><small>Consultá el progreso de los 102 territorios</small></span><span class="v172-arrow">›</span></button>';
+    ($('.p170-territory-overview',page)||head).insertAdjacentElement('afterend',actions);
+  }
+  const mapCard=$('.cec-map-card',card);
+  if(mapCard&&!$('#cecV172GeneralMap')){
+    const d=document.createElement('details');d.id='cecV172GeneralMap';d.className='cec-v172-map';
+    d.innerHTML='<summary><span style="font-size:23px;color:#087cf0">▧</span><span><strong>Plano general oficial · 102 territorios</strong><small>Disponible sin conexión · tocá para desplegarlo</small></span><span style="margin-left:auto;color:#087cf0">⌄</span></summary><div class="v172-general-tools"><button type="button" data-v172-zoom="out">− Alejar</button><span id="cecV172Zoom">100%</span><button type="button" data-v172-zoom="in">+ Acercar</button></div><div class="v172-general-frame"><img id="cecV172GeneralImg" src="territory-map-2026.png" alt="Plano oficial de El Calafate con 102 territorios" loading="lazy"></div><p>Para marcar un lado o tramo, primero elegí el número en el selector de arriba. El plano individual te permite registrar lo realizado.</p>';
+    mapCard.insertAdjacentElement('afterend',d);
+  }
+  const version=$('.about-card strong');if(version&&version.textContent!=='Aplicación v1.7.2 · Visual System 2026')version.textContent='Aplicación v1.7.2 · Visual System 2026';
+}
+function navigate(){const b=$('.nav-item[data-target="territorios"]');if(b)b.click();}
+function openMap(){
+  navigate();setTimeout(()=>{ensureTerritories();const target=$('.cec-t15-top')||$('#t15Select')||$('.territory-control-card');if(target){target.scrollIntoView({behavior:'smooth',block:'start'});target.classList.add('cec-v172-flash');setTimeout(()=>target.classList.remove('cec-v172-flash'),1250)}},300);
+}
+function progress(){navigate();setTimeout(()=>{const b=$('#cecV162OpenReport');if(b)b.click();else $('#cecV172Actions')?.scrollIntoView({block:'start',behavior:'smooth'})},300);}
+let zoom=1;
+function changeZoom(way){zoom=Math.min(4,Math.max(1,zoom+(way==='in'?.5:-.5)));const image=$('#cecV172GeneralImg');if(image)image.style.width=Math.round(zoom*100)+'%';const text=$('#cecV172Zoom');if(text)text.textContent=Math.round(zoom*100)+'%';}
+document.addEventListener('click',e=>{
+  const z=e.target.closest?.('[data-v172-zoom]');if(z){e.preventDefault();changeZoom(z.dataset.v172Zoom);return;}
+  const home=e.target.closest?.('#p171TerritoryShortcut'),map=e.target.closest?.('#cecV172MapGo'),thermo=e.target.closest?.('#cecV172ThermoGo');
+  if(home||map){e.preventDefault();e.stopImmediatePropagation();openMap();}
+  else if(thermo){e.preventDefault();e.stopImmediatePropagation();progress();}
+},true);
+let queued=false;
+function refresh(){calendarOnly();ensureTerritories();localize();}
+function start(){
+  const observer=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;refresh()})});
+  observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+  refresh();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+window.CongElCalafateVisualV172={version:VERSION,refresh,openMap,progress,calendarUrl};
+})();
