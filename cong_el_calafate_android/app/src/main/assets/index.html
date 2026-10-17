@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b4f6c" />
+  <meta name="description" content="Accesos y recursos de la Congregación El Calafate." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Congregación El Calafate</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 48 48" role="img"><path d="M6 35h36L31 18l-5 7-7-11L6 35Z" fill="currentColor" opacity=".9"/><path d="M7 37h34" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <strong>Congregación El Calafate</strong>
+          <span>Información para publicadores</span>
+        </div>
+      </div>
+      <button id="installBtn" class="icon-btn install-btn" hidden aria-label="Instalar aplicación" title="Instalar aplicación">
+        <span>Instalar</span>
+      </button>
+    </header>
+
+    <main id="mainContent" class="main-content">
+      <section id="inicio" class="view active" data-view="inicio">
+        <div class="hero">
+          <div class="hero-glow"></div>
+          <div class="hero-content">
+            <span class="eyebrow">EL CALAFATE · SANTA CRUZ</span>
+            <h1>Todo lo importante,<br>en un solo lugar.</h1>
+            <p>Reuniones, territorios, mantenimiento, documentos y accesos útiles desde el celular.</p>
+          </div>
+        </div>
+
+        <section class="section-block">
+          <div class="section-title-row">
+            <div>
+              <p class="section-kicker">Acceso rápido</p>
+              <h2>¿Qué necesitás hoy?</h2>
+            </div>
+          </div>
+          <div id="quickGrid" class="quick-grid"></div>
+        </section>
+
+        <section class="section-block">
+          <div class="section-title-row">
+            <div>
+              <p class="section-kicker">Actualizado</p>
+              <h2>Novedades</h2>
+            </div>
+            <span class="pill">Octubre 2026</span>
+          </div>
+          <div class="news-list">
+            <article class="news-card">
+              <span class="news-dot"></span>
+              <div><strong>Calendario de mantenimiento</strong><p>Se actualizó la información disponible.</p></div>
+            </article>
+            <article class="news-card">
+              <span class="news-dot"></span>
+              <div><strong>Encuentros de predicación</strong><p>Hay información nueva para consultar.</p></div>
+            </article>
+            <article class="news-card">
+              <span class="news-dot"></span>
+              <div><strong>Programas de reuniones</strong><p>Nuevos programas correspondientes a octubre de 2026.</p></div>
+            </article>
+            <article class="news-card">
+              <span class="news-dot"></span>
+              <div><strong>Contabilidad</strong><p>Se actualizaron los accesos relacionados.</p></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section-block emergency-card">
+          <div class="emergency-icon">↗</div>
+          <div>
+            <p class="section-kicker">Seguridad</p>
+            <h2>Plan de evacuación</h2>
+            <p>El plano completo y la información de emergencia están incorporados en la aplicación.</p>
+          </div>
+          <button class="primary-btn" type="button" data-resource="plan-evacuacion">Ver plan dentro del app</button>
+        </section>
+      </section>
+
+      <section id="reuniones" class="view" data-view="reuniones">
+        <div class="page-head">
+          <span class="page-icon">▦</span>
+          <div><p class="section-kicker">Organización</p><h1>Programa de reuniones</h1><p>Accesos a programas, calendario y recursos relacionados.</p></div>
+        </div>
+        <div id="meetingResources" class="resource-list"></div>
+      </section>
+
+      <section id="territorios" class="view" data-view="territorios">
+        <div class="page-head">
+          <span class="page-icon">⌖</span>
+          <div><p class="section-kicker">Predicación</p><h1>Territorios</h1><p>Controlá por territorio qué calles o tramos ya fueron completados.</p></div>
+        </div>
+
+        <section class="territory-control-card" aria-labelledby="territoryControlTitle">
+          <div class="territory-control-head">
+            <div>
+              <p class="section-kicker">Control de calles</p>
+              <h2 id="territoryControlTitle">Seguimiento del territorio</h2>
+            </div>
+            <span id="territoryStatusBadge" class="status-badge">Sin iniciar</span>
+          </div>
+
+          <div class="territory-fields">
+            <label><span>Territorio</span><select id="territorySelect" aria-label="Número de territorio"></select></label>
+            <label><span>Conductor</span><input id="territoryDriver" type="text" placeholder="Nombre" autocomplete="off"></label>
+            <label><span>Fecha</span><input id="territoryDate" type="date"></label>
+          </div>
+
+          <div class="territory-progress-block">
+            <div class="territory-progress-meta"><span id="territoryProgressLabel">0 de 0 calles</span><strong id="territoryProgressText">0%</strong></div>
+            <div class="territory-progress-track"><span id="territoryProgressBar"></span></div>
+          </div>
+
+          <div class="territory-map-card">
+            <iframe id="territoryMapFrame" title="Mapa de calles de El Calafate" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=-72.38%2C-50.40%2C-72.16%2C-50.27&amp;layer=mapnik&amp;marker=-50.337%2C-72.264"></iframe>
+            <div class="territory-map-caption"><span>Mapa de calles · OpenStreetMap</span><small>El mapa no usa la ubicación del teléfono.</small></div>
+          </div>
+
+          <div class="street-tools">
+            <div class="street-add-row">
+              <input id="streetInput" list="streetSuggestions" type="text" placeholder="Calle o tramo, ej. Libertador 1200–1500" autocomplete="off">
+              <datalist id="streetSuggestions"></datalist>
+              <button id="addStreetBtn" class="primary-btn" type="button">Añadir</button>
+            </div>
+            <button id="loadOsmStreetsBtn" class="secondary-btn wide" type="button">Cargar nombres reales de calles de El Calafate</button>
+            <div class="search-box compact-search"><span aria-hidden="true">⌕</span><input id="territoryStreetSearch" type="search" placeholder="Buscar dentro de este territorio..."></div>
+          </div>
+
+          <div id="territoryStreetList" class="street-checklist"></div>
+          <div id="territoryEmpty" class="empty-state compact-empty">Todavía no agregaste calles o tramos a este territorio.</div>
+
+          <label class="territory-notes"><span>Observaciones</span><textarea id="territoryNotes" rows="3" placeholder="Ej.: faltó una vivienda, volver por la tarde..."></textarea></label>
+
+          <div class="territory-actions">
+            <button id="markAllStreetsBtn" class="secondary-btn" type="button">✓ Marcar todas</button>
+            <button id="unmarkAllStreetsBtn" class="secondary-btn" type="button">Desmarcar</button>
+            <button id="clearTerritoryBtn" class="danger-btn" type="button">Reiniciar territorio</button>
+          </div>
+          <p id="territoryUpdatedAt" class="tiny-meta"></p>
+          <p class="osm-attribution">Datos cartográficos © colaboradores de OpenStreetMap.</p>
+        </section>
+
+        <div class="section-title-row territory-resources-title"><div><p class="section-kicker">Documentos y mapas</p><h2>Otros recursos</h2></div></div>
+        <div id="territoryResources" class="resource-list"></div>
+      </section>
+
+      <section id="recursos" class="view" data-view="recursos">
+        <div class="page-head">
+          <span class="page-icon">▤</span>
+          <div><p class="section-kicker">Biblioteca</p><h1>Recursos</h1><p>Documentos, formularios, planillas y accesos organizados.</p></div>
+        </div>
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.4-4.4m2.4-5.1a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="resourceSearch" type="search" placeholder="Buscar documento o recurso..." autocomplete="off" />
+        </div>
+        <div id="resourceFilters" class="filter-row"></div>
+        <div id="allResources" class="resource-list"></div>
+        <div id="emptySearch" class="empty-state" hidden>No se encontraron recursos con ese texto.</div>
+      </section>
+
+      <section id="mas" class="view" data-view="mas">
+        <div class="page-head">
+          <span class="page-icon">•••</span>
+          <div><p class="section-kicker">Más</p><h1>Otros accesos</h1><p>Herramientas y servicios complementarios.</p></div>
+        </div>
+        <div id="moreResources" class="resource-list"></div>
+        <div class="about-card">
+          <strong>Aplicación v1.3.0 · planillas y territorios integrados</strong>
+          <p>Las planillas públicas se muestran como tablas propias del app y el control de territorios guarda calles, tramos y progreso directamente en el dispositivo.</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <button class="nav-item active" data-target="inicio" aria-label="Inicio"><span>⌂</span><small>Inicio</small></button>
+      <button class="nav-item" data-target="reuniones" aria-label="Reuniones"><span>▦</span><small>Reuniones</small></button>
+      <button class="nav-item" data-target="territorios" aria-label="Territorios"><span>⌖</span><small>Territorios</small></button>
+      <button class="nav-item" data-target="recursos" aria-label="Recursos"><span>▤</span><small>Recursos</small></button>
+      <button class="nav-item" data-target="mas" aria-label="Más"><span>•••</span><small>Más</small></button>
+    </nav>
+  </div>
+
+  <dialog id="resourceDialog" class="resource-dialog">
+    <div class="dialog-sheet">
+      <button class="dialog-close" id="dialogClose" aria-label="Cerrar">×</button>
+      <div id="dialogIcon" class="dialog-icon"></div>
+      <p id="dialogType" class="section-kicker"></p>
+      <h2 id="dialogTitle"></h2>
+      <p id="dialogDescription"></p>
+      <div id="dialogDetails" class="dialog-details" hidden></div>
+      <div id="dialogGallery" class="dialog-gallery" hidden></div>
+      <div class="dialog-actions">
+        <a id="dialogOpen" class="primary-btn wide" href="#">Abrir dentro del app</a>
+        <button id="dialogFavorite" class="secondary-btn wide" type="button">☆ Guardar en favoritos</button>
+      </div>
+    </div>
+  </dialog>
+
+
+  <section id="sheetScreen" class="sheet-screen" hidden aria-label="Planilla dentro del app">
+    <header class="sheet-toolbar">
+      <button id="sheetBack" class="sheet-back" type="button" aria-label="Volver">‹</button>
+      <div class="sheet-title-wrap"><small>PLANILLA INTERNA</small><strong id="sheetTitle">Planilla</strong></div>
+      <button id="sheetRefresh" class="sheet-refresh" type="button">Actualizar</button>
+    </header>
+    <div class="sheet-body">
+      <div id="sheetStatus" class="sheet-status">Preparando datos...</div>
+      <div class="search-box"><span aria-hidden="true">⌕</span><input id="sheetSearch" type="search" placeholder="Buscar dentro de la planilla..."></div>
+      <div class="sheet-action-row">
+        <span id="sheetRowCount" class="tiny-meta"></span>
+        <a id="sheetOpenOriginal" class="secondary-btn" href="#">Vista Google</a>
+      </div>
+      <div id="sheetError" class="sheet-error" hidden></div>
+      <div id="sheetTableWrap" class="sheet-table-wrap"><table id="sheetTable"></table></div>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
