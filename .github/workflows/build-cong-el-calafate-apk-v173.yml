@@ -56,15 +56,15 @@ jobs:
           python .github/v165-app/patch_native_v165.py
           python .github/v170-app/patch_native_v170.py
           python .github/v171-app/patch_native_v171.py
-          python .github/v173-app/patch_native_v173.py
           python -c "from pathlib import Path; p=Path('cong_el_calafate_android/app/src/main/java/app/congregacion/elcalafate/MainActivity.java'); s=p.read_text(); s=s.replace('1.7.1','1.7.2').replace(r'1.7.2\t25\t',r'1.7.2\t26\t'); p.write_text(s)"
+          python .github/v173-app/patch_native_v173.py
           JAVA='cong_el_calafate_android/app/src/main/java/app/congregacion/elcalafate/MainActivity.java'
           grep -q 'externalNav' "$JAVA"
           grep -q 'showEmergencyDiagnostics' "$JAVA"
           grep -q 'createRescueBar' "$JAVA"
           grep -q 'runPendingInternalNavigation' "$JAVA"
-          grep -q '1.7.2' "$JAVA"
-          grep -q '1.7.2\\t26' "$JAVA"
+          grep -q '1.7.3' "$JAVA"
+          grep -q '1.7.3\\t27' "$JAVA"
 
       - name: Assemble V1.7.3 app assets
         shell: bash
