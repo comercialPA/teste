@@ -1,0 +1,112 @@
+name: Build Cong El Calafate APK v1.4.1
+
+on:
+  push:
+    branches:
+      - build/cong-el-calafate-v1.4.1
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Verify Android SDK 35
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$ANDROID_HOME/platforms/android-35/android.jar"
+          test -d "$ANDROID_HOME/build-tools"
+
+      - name: Assemble embedded V1.4.1 assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASSETS='cong_el_calafate_android/app/src/main/assets'
+          mkdir -p "$ASSETS/icons" cong_el_calafate_android/app/src/main/res/drawable
+          cat .github/v130-app/app.part.00 .github/v130-app/app.part.01 .github/v130-app/app.part.02 .github/v130-app/app.part.03 .github/v140-app/carritos.module.js .github/v141-app/carritos.compact-bars.js > "$ASSETS/app.js"
+          curl -fsSL --retry 3 'https://cong-el-calafate-app.vercel.app/icons/icon-192.png' -o "$ASSETS/icons/icon-192.png"
+          curl -fsSL --retry 3 'https://cong-el-calafate-app.vercel.app/icons/icon-512.png' -o "$ASSETS/icons/icon-512.png"
+          cp "$ASSETS/icons/icon-512.png" cong_el_calafate_android/app/src/main/res/drawable/ic_launcher.png
+
+      - name: Verify V1.4.1 app integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASSETS='cong_el_calafate_android/app/src/main/assets'
+          node --check "$ASSETS/app.js"
+          grep -q 'CongElCalafateCarritos' "$ASSETS/app.js"
+          grep -q 'CongElCalafateCarritosCompact' "$ASSETS/app.js"
+          grep -q 'cecV141Overview' "$ASSETS/app.js"
+          grep -q 'cec-v141-bar' "$ASSETS/app.js"
+          grep -q 'Próx.' "$ASSETS/app.js"
+          grep -q 'ocupada' "$ASSETS/app.js"
+          grep -q 'carrito-anonima' "$ASSETS/app.js"
+          grep -q 'carrito-anfiteatro' "$ASSETS/app.js"
+          grep -q 'carrito-terminal' "$ASSETS/app.js"
+          grep -q 'Vacante disponible' "$ASSETS/app.js"
+          grep -q 'Ocupar' "$ASSETS/app.js"
+          grep -q "versionCode 15" cong_el_calafate_android/app/build.gradle
+          grep -q "versionName '1.4.1'" cong_el_calafate_android/app/build.gradle
+          grep -q 'Array.from({length:102}' "$ASSETS/app.js"
+          grep -q 'loadElCalafateStreets' "$ASSETS/app.js"
+          grep -q 'window.AndroidBridge.*loadSheet' "$ASSETS/app.js"
+
+      - name: Verify permissions and navigation policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          MAN='cong_el_calafate_android/app/src/main/AndroidManifest.xml'
+          JAVA='cong_el_calafate_android/app/src/main/java/app/congregacion/elcalafate/MainActivity.java'
+          test "$(grep -c '<uses-permission' "$MAN")" = '1'
+          grep -q 'android.permission.INTERNET' "$MAN"
+          ! grep -E 'CAMERA|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|READ_CONTACTS|WRITE_CONTACTS|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|POST_NOTIFICATIONS|RECORD_AUDIO' "$MAN"
+          grep -q 'addJavascriptInterface(new AppBridge(), "AndroidBridge")' "$JAVA"
+          ! grep -q 'Intent.ACTION_VIEW' "$JAVA"
+          ! grep -q 'openExternal' "$JAVA"
+
+      - name: Build installable APK
+        shell: bash
+        run: gradle -p cong_el_calafate_android --no-daemon :app:assembleDebug --stacktrace
+
+      - name: Verify APK payload and hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK='cong_el_calafate_android/app/build/outputs/apk/debug/app-debug.apk'
+          test -s "$APK"
+          unzip -t "$APK" >/dev/null
+          unzip -p "$APK" assets/app.js > /tmp/apk-app.js
+          node --check /tmp/apk-app.js
+          grep -q 'CongElCalafateCarritosCompact' /tmp/apk-app.js
+          grep -q 'cec-v141-bar' /tmp/apk-app.js
+          grep -q 'Vacante disponible' /tmp/apk-app.js
+          cp "$APK" CONG_EL_CALAFATE_V1.4.1.apk
+          sha256sum CONG_EL_CALAFATE_V1.4.1.apk | tee APK_SHA256.txt
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CONG_EL_CALAFATE_V1.4.1_APK
+          path: |
+            CONG_EL_CALAFATE_V1.4.1.apk
+            APK_SHA256.txt
+          if-no-files-found: error
+          retention-days: 30
