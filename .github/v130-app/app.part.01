@@ -1,0 +1,141 @@
+function render(){
+  $('#quickGrid').innerHTML = quick.map(q => `<button class="quick-card" data-quick-target="${q.target}" ${q.filter?`data-quick-filter="${q.filter}"`:''}>
+      <span class="quick-card-icon">${q.icon}</span>
+      <span><strong>${q.title}</strong><small>${q.subtitle}</small></span>
+    </button>`).join('');
+
+  $('#meetingResources').innerHTML = resources.filter(r=>r.section==='reuniones').map(resourceCard).join('');
+  $('#territoryResources').innerHTML = resources.filter(r=>r.section==='territorios').map(resourceCard).join('');
+  $('#moreResources').innerHTML = moreResources.map(resourceCard).join('');
+
+  const categories = ['Todos','Favoritos',...new Set(resources.filter(r=>r.category).map(r=>r.category))];
+  $('#resourceFilters').innerHTML = categories.map(c=>`<button class="filter-btn ${c===activeFilter?'active':''}" data-filter="${escapeHTML(c)}">${escapeHTML(c)}</button>`).join('');
+  renderResourceSearch();
+}
+
+function renderResourceSearch(){
+  const query = ($('#resourceSearch')?.value || '').trim().toLowerCase();
+  let list = resources.filter(r=>r.category);
+  if(activeFilter === 'Favoritos') list = list.filter(r=>favorites.has(r.id));
+  else if(activeFilter !== 'Todos') list = list.filter(r=>r.category===activeFilter);
+  if(query) list = list.filter(r => `${r.title} ${r.type} ${r.desc} ${r.category||''} ${(r.details||[]).join(' ')}`.toLowerCase().includes(query));
+  $('#allResources').innerHTML = list.map(resourceCard).join('');
+  $('#emptySearch').hidden = list.length !== 0;
+}
+
+function navigate(target){
+  $$('.view').forEach(v=>v.classList.toggle('active', v.dataset.view===target));
+  $$('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.target===target));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function findResource(id){
+  return resources.find(r=>r.id===id) || moreResources.map(m=>resources.find(r=>r.id===m.id) || m).find(r=>r.id===id);
+}
+
+function openResource(r){
+  if(r.sheetId){ openSheet(r); return; }
+  currentResource = r;
+  $('#dialogIcon').textContent = r.icon || '▤';
+  $('#dialogType').textContent = r.type || 'Recurso';
+  $('#dialogTitle').textContent = r.title;
+  $('#dialogDescription').textContent = r.desc || '';
+
+  const details = $('#dialogDetails');
+  if(r.details?.length){
+    details.hidden = false;
+    details.innerHTML = r.details.map(d=>`<div class="detail-line">${escapeHTML(d)}</div>`).join('');
+  } else {
+    details.hidden = true;
+    details.innerHTML = '';
+  }
+
+  const gallery = $('#dialogGallery');
+  if(r.gallery?.length){
+    gallery.hidden = false;
+    gallery.innerHTML = r.gallery.map((src,i)=>`<figure><img loading="lazy" src="${escapeHTML(src)}" alt="${escapeHTML(r.title)} · imagen ${i+1}"><figcaption>${escapeHTML(r.title)} · ${i+1}/${r.gallery.length}</figcaption></figure>`).join('');
+  } else {
+    gallery.hidden = true;
+    gallery.innerHTML = '';
+  }
+
+  const open = $('#dialogOpen');
+  if(r.url){
+    open.hidden = false;
+    open.href = r.url;
+    open.textContent = 'Abrir dentro del app';
+  } else {
+    open.hidden = true;
+    open.removeAttribute('href');
+  }
+
+  updateFavoriteButton();
+  const dialog = $('#resourceDialog');
+  if(typeof dialog.showModal === 'function') dialog.showModal();
+}
+
+function updateFavoriteButton(){
+  if(!currentResource) return;
+  const on = favorites.has(currentResource.id);
+  $('#dialogFavorite').textContent = on ? '★ Quitar de favoritos' : '☆ Guardar en favoritos';
+}
+
+function toggleFavorite(){
+  if(!currentResource) return;
+  if(favorites.has(currentResource.id)) favorites.delete(currentResource.id);
+  else favorites.add(currentResource.id);
+  localStorage.setItem('cec_favorites', JSON.stringify([...favorites]));
+  updateFavoriteButton();
+  render();
+}
+
+
+function loadTerritoryState(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(TERRITORY_STORAGE_KEY) || '{}');
+    return raw && typeof raw === 'object' ? raw : {};
+  }catch(_){ return {}; }
+}
+
+function saveTerritoryState(){
+  localStorage.setItem(TERRITORY_STORAGE_KEY, JSON.stringify(territoryState));
+}
+
+function territoryNumber(){
+  return String($('#territorySelect')?.value || '1');
+}
+
+function ensureTerritory(number=territoryNumber()){
+  if(!territoryState[number]) territoryState[number] = {driver:'', date:'', notes:'', streets:[], updatedAt:''};
+  if(!Array.isArray(territoryState[number].streets)) territoryState[number].streets = [];
+  return territoryState[number];
+}
+
+function touchTerritory(t){
+  t.updatedAt = new Date().toISOString();
+  saveTerritoryState();
+}
+
+function renderTerritorySelector(){
+  const select = $('#territorySelect');
+  if(!select) return;
+  const current = select.value || '1';
+  select.innerHTML = Array.from({length:102},(_,i)=>`<option value="${i+1}">Territorio ${i+1}</option>`).join('');
+  select.value = current;
+}
+
+function loadTerritoryIntoForm(){
+  const t = ensureTerritory();
+  $('#territoryDriver').value = t.driver || '';
+  $('#territoryDate').value = t.date || '';
+  $('#territoryNotes').value = t.notes || '';
+  $('#territoryStreetSearch').value = '';
+  renderTerritoryStreetList();
+}
+
+function territoryProgress(t=ensureTerritory()){
+  const total = t.streets.length;
+  const done = t.streets.filter(s=>s.done).length;
+  const pct = total ? Math.round(done*100/total) : 0;
+  return {total,done,pct};
+}
