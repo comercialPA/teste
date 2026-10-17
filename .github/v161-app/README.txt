@@ -1,0 +1,1 @@
+V1.6.1: foco automático no território selecionado e confirmação de traços para somar ao termômetro. O projeto Android completo é empacotado separadamente no snapshot binário do build.
