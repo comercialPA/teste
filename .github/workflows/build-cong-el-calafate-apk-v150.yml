@@ -38,8 +38,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gdown --id '1shssDk4kW6VnZKK6JLYBQxH8MaDCl5Xm' -O Territorios_MZ_1-109.xlsx
-          gdown --id '1ruG6gcrXb9CAcaruHFg9kDf5S0zIljyr' -O MAPA_CONG_CALAFATE_2026.pdf
+          gdown '1shssDk4kW6VnZKK6JLYBQxH8MaDCl5Xm' -O Territorios_MZ_1-109.xlsx
+          gdown '1ruG6gcrXb9CAcaruHFg9kDf5S0zIljyr' -O MAPA_CONG_CALAFATE_2026.pdf
           test -s Territorios_MZ_1-109.xlsx
           test -s MAPA_CONG_CALAFATE_2026.pdf
 
