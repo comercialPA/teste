@@ -1,0 +1,87 @@
+/* Congregación El Calafate · V1.7.1 refinements */
+body.p170 #inicio .hero{
+  min-height:0!important;
+  height:auto!important;
+  aspect-ratio:16/9!important;
+  max-height:none!important;
+  border-radius:0 0 28px 28px!important;
+}
+body.p170 #inicio .p170-hero-photo{
+  object-fit:cover!important;
+  object-position:center center!important;
+}
+body.p170 #inicio .p170-hero-wash{
+  background:linear-gradient(180deg,
+    rgba(247,250,252,.04) 0%,
+    rgba(247,250,252,0) 72%,
+    rgba(247,250,252,.05) 86%,
+    rgba(247,250,252,.28) 94%,
+    var(--p170-ice) 100%)!important;
+}
+body.p170 #inicio .p170-hero-grid{
+  opacity:.18!important;
+  mask-image:linear-gradient(to bottom,black,rgba(0,0,0,.42) 72%,transparent 98%)!important;
+}
+body.p170 #inicio .p170-hero-tech:before{right:18px!important;bottom:28px!important;width:42px!important;height:42px!important}
+body.p170 #inicio .p170-hero-tech:after{left:16px!important;bottom:22px!important}
+body.p170 #inicio .p170-hero-top{top:calc(10px + env(safe-area-inset-top))!important}
+body.p170 #inicio .p170-greeting{margin:-6px 2px 0!important;padding-top:0!important}
+
+.p171-territory-shortcut{
+  width:100%;
+  margin:12px 0 2px;
+  border:1px solid rgba(8,124,240,.18);
+  border-radius:20px;
+  background:linear-gradient(135deg,rgba(255,255,255,.97),rgba(241,249,255,.9));
+  box-shadow:0 8px 26px rgba(7,21,47,.055),inset 2px 0 0 var(--p170-cyan);
+  color:var(--p170-ink);
+  padding:13px 14px;
+  display:grid;
+  grid-template-columns:44px minmax(0,1fr) auto;
+  gap:11px;
+  align-items:center;
+  text-align:left;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.p171-territory-shortcut:active{transform:scale(.982)}
+.p171-territory-icon{width:44px;height:44px;border:1px solid rgba(8,124,240,.16);border-radius:14px;background:#f8fcff;color:var(--p170-blue);display:grid;place-items:center}
+.p171-territory-icon svg{width:22px;height:22px}
+.p171-territory-copy{min-width:0}
+.p171-territory-copy small{display:block;color:#6f8399;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.p171-territory-copy strong{display:block;margin-top:2px;color:var(--p170-ink);font-size:13.5px;font-weight:800}
+.p171-territory-copy span{display:block;margin-top:3px;color:#70839a;font-size:10px;line-height:1.35}
+.p171-territory-meter{display:flex;flex-direction:column;align-items:flex-end;gap:5px;min-width:58px}
+.p171-territory-meter strong{font-size:15px;color:var(--p170-blue)}
+.p171-territory-meter i{display:block;width:56px;height:4px;border-radius:99px;background:#e5edf4;overflow:hidden}
+.p171-territory-meter i:after{content:"";display:block;width:var(--p171-pct,0%);height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--p170-blue),var(--p170-cyan));transition:width .28s ease}
+
+/* Touchscreen: el mapa deja pasar el gesto vertical a la página por defecto. */
+body.p170 #cecV162Viewport:not(.p170-pan-mode):not(.p170-drawing){
+  overflow:hidden!important;
+  touch-action:pan-y!important;
+  overscroll-behavior-y:auto!important;
+  overscroll-behavior-x:none!important;
+}
+body.p170 #cecV162Viewport:not(.p170-pan-mode):not(.p170-drawing) #cecV162Stage{
+  pointer-events:none!important;
+}
+body.p170 #cecV162Viewport.p170-pan-mode{
+  overflow:auto!important;
+  touch-action:pan-x pan-y!important;
+  overscroll-behavior:contain!important;
+}
+body.p170 #cecV162Viewport.p170-pan-mode #cecV162Stage,
+body.p170 #cecV162Viewport.p170-drawing #cecV162Stage{
+  pointer-events:auto!important;
+}
+body.p170 #cecV162Viewport.p170-drawing{
+  overflow:hidden!important;
+  touch-action:none!important;
+}
+.p171-map-scroll-hint{font-size:9px;color:#70839a;font-weight:700;margin:2px 0 8px;text-align:center}
+
+@media(max-width:430px){
+  body.p170 #inicio .hero{aspect-ratio:16/9!important}
+  body.p170 #inicio .p170-hero-brand{font-size:9.5px!important}
+  body.p170 #inicio .p170-hero-coord{font-size:8px!important;padding:4px 6px!important}
+}
