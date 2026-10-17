@@ -1,0 +1,287 @@
+name: Build Cong El Calafate APK v1.1.0
+
+on:
+  push:
+    branches:
+      - build/cong-el-calafate-v1.1.0
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Verify preinstalled Android SDK 35
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          test -f "$ANDROID_HOME/platforms/android-35/android.jar"
+          test -d "$ANDROID_HOME/build-tools"
+
+      - name: Create Android project without permissions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p app/src/main/java/app/congregacion/elcalafate
+          mkdir -p app/src/main/res/values app/src/main/res/drawable app/src/main/assets/icons
+
+          cat > settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.name = 'CongElCalafate'
+          include ':app'
+          EOF
+
+          cat > build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
+          EOF
+
+          cat > gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+          android.useAndroidX=false
+          EOF
+
+          cat > app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'app.congregacion.elcalafate'
+              compileSdk 35
+
+              defaultConfig {
+                  applicationId 'app.congregacion.elcalafate'
+                  minSdk 24
+                  targetSdk 35
+                  versionCode 11
+                  versionName '1.1.0'
+              }
+
+              buildTypes {
+                  release {
+                      minifyEnabled false
+                      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+                  }
+              }
+
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+          EOF
+
+          : > app/proguard-rules.pro
+
+          cat > app/src/main/AndroidManifest.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <application
+                  android:allowBackup="false"
+                  android:icon="@drawable/ic_launcher"
+                  android:label="Cong. El Calafate"
+                  android:supportsRtl="true"
+                  android:theme="@style/AppTheme"
+                  android:usesCleartextTraffic="false">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:screenOrientation="portrait">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          cat > app/src/main/res/values/styles.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
+                  <item name="android:fontFamily">sans</item>
+                  <item name="android:windowActionModeOverlay">true</item>
+                  <item name="android:colorAccent">#0B4F6C</item>
+                  <item name="android:navigationBarColor">#FFFFFF</item>
+                  <item name="android:statusBarColor">#0B4F6C</item>
+                  <item name="android:windowLightStatusBar">false</item>
+              </style>
+          </resources>
+          EOF
+
+          cat > app/src/main/java/app/congregacion/elcalafate/MainActivity.java <<'EOF'
+          package app.congregacion.elcalafate;
+
+          import android.app.Activity;
+          import android.content.Intent;
+          import android.net.Uri;
+          import android.os.Bundle;
+          import android.os.Message;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebResourceRequest;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+
+          public class MainActivity extends Activity {
+              private WebView webView;
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  webView = new WebView(this);
+                  setContentView(webView);
+
+                  WebSettings settings = webView.getSettings();
+                  settings.setJavaScriptEnabled(true);
+                  settings.setDomStorageEnabled(true);
+                  settings.setAllowFileAccess(true);
+                  settings.setAllowContentAccess(false);
+                  settings.setAllowFileAccessFromFileURLs(false);
+                  settings.setAllowUniversalAccessFromFileURLs(false);
+                  settings.setJavaScriptCanOpenWindowsAutomatically(false);
+                  settings.setSupportMultipleWindows(true);
+
+                  webView.setWebViewClient(new ExternalLinkWebViewClient());
+                  webView.setWebChromeClient(new WebChromeClient() {
+                      @Override
+                      public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+                          WebView popup = new WebView(MainActivity.this);
+                          popup.setWebViewClient(new WebViewClient() {
+                              @Override
+                              public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                                  openExternal(request.getUrl());
+                                  return true;
+                              }
+                              @Override
+                              public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                                  openExternal(Uri.parse(url));
+                                  return true;
+                              }
+                          });
+                          WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+                          transport.setWebView(popup);
+                          resultMsg.sendToTarget();
+                          return true;
+                      }
+                  });
+                  webView.loadUrl("file:///android_asset/index.html");
+              }
+
+              private class ExternalLinkWebViewClient extends WebViewClient {
+                  @Override
+                  public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                      Uri uri = request.getUrl();
+                      if ("file".equalsIgnoreCase(uri.getScheme())) return false;
+                      openExternal(uri);
+                      return true;
+                  }
+                  @Override
+                  public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                      Uri uri = Uri.parse(url);
+                      if ("file".equalsIgnoreCase(uri.getScheme())) return false;
+                      openExternal(uri);
+                      return true;
+                  }
+              }
+
+              private void openExternal(Uri uri) {
+                  try {
+                      startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                  } catch (Exception ignored) {
+                  }
+              }
+
+              @Override
+              public void onBackPressed() {
+                  if (webView != null && webView.canGoBack()) webView.goBack();
+                  else super.onBackPressed();
+              }
+          }
+          EOF
+
+      - name: Embed audited web v1.1.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://cong-el-calafate-app.vercel.app'
+          curl -fsSL --compressed "$BASE/index.html" -o app/src/main/assets/index.html
+          curl -fsSL --compressed "$BASE/styles.css" -o app/src/main/assets/styles.css
+          curl -fsSL --compressed "$BASE/app.js" -o app/src/main/assets/app.js
+          curl -fsSL "$BASE/manifest.webmanifest" -o app/src/main/assets/manifest.webmanifest
+          curl -fsSL "$BASE/sw.js" -o app/src/main/assets/sw.js
+          curl -fsSL "$BASE/icons/icon-192.png" -o app/src/main/assets/icons/icon-192.png
+          curl -fsSL "$BASE/icons/icon-512.png" -o app/src/main/assets/icons/icon-512.png
+          cp app/src/main/assets/icons/icon-512.png app/src/main/res/drawable/ic_launcher.png
+
+          test "$(sha1sum app/src/main/assets/index.html | awk '{print $1}')" = '7f653ad16c051af00ae64bb81c50d56fe6cacc8b'
+          test "$(sha1sum app/src/main/assets/styles.css | awk '{print $1}')" = '39ac5c68342c0be8416f4efd9e8f9b471944e6be'
+          test "$(sha1sum app/src/main/assets/app.js | awk '{print $1}')" = '8a851952646e6d40348abf5f9a2eb07cc3621b8a'
+          test "$(sha1sum app/src/main/assets/manifest.webmanifest | awk '{print $1}')" = 'afd9e3141f4af98d0996afba0b1792593593bd4e'
+          test "$(sha1sum app/src/main/assets/sw.js | awk '{print $1}')" = 'df097ccfb2e998c5159388e0b70ded993921d04a'
+          test "$(sha1sum app/src/main/assets/icons/icon-192.png | awk '{print $1}')" = 'cb334b69ad990c3aa6d310868d92e4f313dffada'
+          test "$(sha1sum app/src/main/assets/icons/icon-512.png | awk '{print $1}')" = '989fbca20920b5f250180c0555d24fb20c882eee'
+
+      - name: Verify no Android permissions or login code
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -R '<uses-permission' app/src/main/AndroidManifest.xml
+          ! grep -R -E 'android.permission.|uses-permission' app/src/main/AndroidManifest.xml
+          ! grep -R -i -E 'login|signin|sign-in|oauth|firebaseauth' app/src/main/assets/*.js app/src/main/assets/*.html
+
+      - name: Build installable debug APK
+        shell: bash
+        run: gradle --no-daemon :app:assembleDebug --stacktrace
+
+      - name: Verify APK exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s app/build/outputs/apk/debug/app-debug.apk
+          sha256sum app/build/outputs/apk/debug/app-debug.apk | tee APK_SHA256.txt
+          cp app/build/outputs/apk/debug/app-debug.apk CONG_EL_CALAFATE_V1.1.0.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CONG_EL_CALAFATE_V1.1.0_APK
+          path: |
+            CONG_EL_CALAFATE_V1.1.0.apk
+            APK_SHA256.txt
+          if-no-files-found: error
+          retention-days: 30
