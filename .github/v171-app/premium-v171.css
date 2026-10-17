@@ -85,3 +85,30 @@ body.p170 #cecV162Viewport.p170-drawing{
   body.p170 #inicio .p170-hero-brand{font-size:9.5px!important}
   body.p170 #inicio .p170-hero-coord{font-size:8px!important;padding:4px 6px!important}
 }
+
+
+/* V1.7.2 — Corrige a regressão que escondia todo o mapa e seus controles. */
+body.p170 #territorios .territory-control-card,
+#territorios .territory-control-card.cec-v150{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  height:auto!important;max-height:none!important;overflow:visible!important;
+}
+.cec-v172-actions{display:grid;gap:10px;margin:12px 0 18px}
+.cec-v172-action{display:flex;align-items:center;gap:12px;text-align:left;width:100%;padding:13px 14px;border-radius:19px;border:1px solid #c9dfef;background:linear-gradient(125deg,#fafdff,#e8f7ff);color:#07152f;box-shadow:inset 3px 0 0 #00d7f2,0 5px 20px rgba(7,21,47,.045)}
+.cec-v172-action.secondary{background:#fff;border-color:#dce7f1;box-shadow:none}
+.cec-v172-action .v172-icon{width:40px;height:40px;border-radius:12px;background:#eef8ff;color:#087cf0;font-size:23px;display:grid;place-items:center;flex:0 0 40px}
+.cec-v172-action .v172-copy{flex:1;min-width:0}
+.cec-v172-action strong{font-size:12px;font-weight:850;display:block}
+.cec-v172-action small{display:block;color:#657e94;font-size:10px;line-height:1.4;margin-top:4px}
+.cec-v172-action .v172-arrow{font-size:25px;color:#087cf0}
+.cec-v172-map{border:1px solid #dce7f1;border-radius:19px;margin:12px 0 22px;background:#fff;overflow:hidden}
+.cec-v172-map summary{cursor:pointer;list-style:none;padding:14px;display:flex;gap:10px;align-items:center;color:#07152f}
+.cec-v172-map summary::-webkit-details-marker{display:none}
+.cec-v172-map summary strong{font-size:12px;display:block}
+.cec-v172-map summary small{display:block;color:#678098;font-size:9px;margin-top:3px}
+.cec-v172-map .v172-general-frame{max-height:64vh;overflow:auto;background:#fff;touch-action:pan-x pan-y}
+.cec-v172-map img{display:block;width:100%;max-width:none;height:auto}
+.cec-v172-map .v172-general-tools{display:flex;gap:10px;padding:9px 14px;align-items:center;justify-content:flex-end}
+.cec-v172-map .v172-general-tools button{font-size:11px;padding:7px 10px;border:1px solid #dce7f1;border-radius:9px;background:#f0f8ff;color:#087cf0}
+.cec-v172-map p{padding:0 14px 12px;font-size:10px;color:#718198;line-height:1.45;margin:0}
+.cec-v172-flash{outline:2px solid #00d7f2!important;outline-offset:3px}
