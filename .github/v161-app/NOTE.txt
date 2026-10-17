@@ -1,0 +1,1 @@
+V1.6.1 branch will package self-contained unsigned Android source snapshot for CI; release signing remains outside public GitHub.
