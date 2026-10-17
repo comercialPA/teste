@@ -1,0 +1,1 @@
+Self-contained V1.6.1 Android project snapshot is used by CI. Release signing remains outside the public repository.
