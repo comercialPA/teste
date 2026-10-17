@@ -103,7 +103,8 @@ jobs:
           node --check "$ASSETS/app.js"
           grep -q 'CongElCalafateVisualV171' "$ASSETS/app.js"
           grep -q 'Marcar territorio realizado' "$ASSETS/app.js"
-          grep -q 'aspect-ratio:16/9' "$ASSETS/premium-v170.css"
+          grep -q 'aspect-ratio:2.14/1' "$ASSETS/premium-v170.css"
+          grep -q 'object-position:center bottom' "$ASSETS/premium-v170.css"
           grep -q 'touch-action:pan-y' "$ASSETS/premium-v170.css"
           grep -q 'externalNav' "$JAVA"
           grep -q "versionCode 25" cong_el_calafate_android/app/build.gradle
