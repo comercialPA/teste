@@ -1,0 +1,132 @@
+};
+
+function receiveSheetCsv(resourceId,csv,fromCache,savedAt){
+  if(activeSheetResource?.id!==resourceId) return;
+  const rows=parseCSV(csv).filter(row=>row.some(cell=>String(cell).trim()!==''));
+  activeSheetRows=rows;
+  activeSheetFilteredRows=rows;
+  renderSheetTable();
+  const when=savedAt?new Date(savedAt).toLocaleString('es-AR'):'';
+  $('#sheetStatus').textContent=fromCache?`Mostrando copia guardada${when?' · '+when:''}. Actualizando en segundo plano...`:`Datos actualizados${when?' · '+when:''}.`;
+  $('#sheetError').hidden=true;
+}
+
+function parseCSV(text){
+  const rows=[]; let row=[],cell='',quoted=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){
+      if(ch==='"' && text[i+1]==='"'){cell+='"';i++;}
+      else if(ch==='"') quoted=false;
+      else cell+=ch;
+    }else{
+      if(ch==='"') quoted=true;
+      else if(ch===','){row.push(cell);cell='';}
+      else if(ch==='\n'){row.push(cell.replace(/\r$/,''));rows.push(row);row=[];cell='';}
+      else cell+=ch;
+    }
+  }
+  if(cell!==''||row.length){row.push(cell.replace(/\r$/,''));rows.push(row);}
+  return rows;
+}
+
+function filterSheetRows(){
+  const q=($('#sheetSearch').value||'').trim().toLowerCase();
+  if(!q){activeSheetFilteredRows=activeSheetRows;}
+  else if(activeSheetRows.length){
+    activeSheetFilteredRows=[activeSheetRows[0],...activeSheetRows.slice(1).filter(row=>row.join(' ').toLowerCase().includes(q))];
+  }
+  renderSheetTable();
+}
+
+function renderSheetTable(){
+  const rows=activeSheetFilteredRows||[];
+  const table=$('#sheetTable');
+  if(!rows.length){table.innerHTML='<tbody><tr><td class="sheet-empty-cell">Sin datos visibles.</td></tr></tbody>';$('#sheetRowCount').textContent='0 filas';return;}
+  const maxCols=Math.max(...rows.map(r=>r.length));
+  const normalized=rows.map(r=>Array.from({length:maxCols},(_,i)=>r[i]??''));
+  const head=normalized[0];
+  const body=normalized.slice(1,1001);
+  table.innerHTML=`<thead><tr>${head.map(c=>`<th>${escapeHTML(c||'—')}</th>`).join('')}</tr></thead><tbody>${body.map(row=>`<tr>${row.map(c=>`<td>${escapeHTML(c)}</td>`).join('')}</tr>`).join('')}</tbody>`;
+  $('#sheetRowCount').textContent=`${Math.max(0,normalized.length-1)} filas${normalized.length>1001?' · mostrando primeras 1000':''}`;
+}
+
+function initIntegratedFeatures(){
+  renderTerritorySelector();
+  renderStreetSuggestions();
+  loadTerritoryIntoForm();
+}
+
+document.addEventListener('click', e=>{
+  const nav = e.target.closest('.nav-item');
+  if(nav) return navigate(nav.dataset.target);
+
+  const q = e.target.closest('[data-quick-target]');
+  if(q){
+    navigate(q.dataset.quickTarget);
+    if(q.dataset.quickFilter){activeFilter=q.dataset.quickFilter;render();}
+    return;
+  }
+
+  const filter = e.target.closest('[data-filter]');
+  if(filter){activeFilter=filter.dataset.filter;render();return;}
+
+  const card = e.target.closest('[data-resource]');
+  if(card){const r=findResource(card.dataset.resource); if(r) openResource(r); return;}
+
+  const streetCheck = e.target.closest('[data-street-check]');
+  if(streetCheck){
+    const t=ensureTerritory(); const i=Number(streetCheck.dataset.streetCheck);
+    if(t.streets[i]){t.streets[i].done=streetCheck.checked;touchTerritory(t);renderTerritoryStreetList();}
+    return;
+  }
+  const streetRemove=e.target.closest('[data-street-remove]');
+  if(streetRemove){
+    const t=ensureTerritory(); const i=Number(streetRemove.dataset.streetRemove);
+    if(t.streets[i]){t.streets.splice(i,1);touchTerritory(t);renderTerritoryStreetList();}
+  }
+});
+
+$('#resourceSearch').addEventListener('input', renderResourceSearch);
+$('#dialogClose').addEventListener('click', ()=>$('#resourceDialog').close());
+$('#dialogFavorite').addEventListener('click', toggleFavorite);
+$('#resourceDialog').addEventListener('click', e=>{if(e.target===$('#resourceDialog')) $('#resourceDialog').close();});
+$('#dialogOpen').addEventListener('click', ()=>$('#resourceDialog').close());
+
+
+$('#territorySelect').addEventListener('change', loadTerritoryIntoForm);
+$('#territoryDriver').addEventListener('change', updateTerritoryMeta);
+$('#territoryDate').addEventListener('change', updateTerritoryMeta);
+$('#territoryNotes').addEventListener('change', updateTerritoryMeta);
+$('#territoryStreetSearch').addEventListener('input', renderTerritoryStreetList);
+$('#streetInput').addEventListener('keydown', e=>{if(e.key==='Enter'){e.preventDefault();addStreetFromInput();}});
+$('#addStreetBtn').addEventListener('click', addStreetFromInput);
+$('#loadOsmStreetsBtn').addEventListener('click', requestStreetCatalog);
+$('#markAllStreetsBtn').addEventListener('click', ()=>{const t=ensureTerritory();t.streets.forEach(s=>s.done=true);touchTerritory(t);renderTerritoryStreetList();});
+$('#unmarkAllStreetsBtn').addEventListener('click', ()=>{const t=ensureTerritory();t.streets.forEach(s=>s.done=false);touchTerritory(t);renderTerritoryStreetList();});
+$('#clearTerritoryBtn').addEventListener('click', ()=>{const n=territoryNumber();if(confirm(`¿Reiniciar el territorio ${n}? Se borrarán calles, observaciones y progreso guardado en este dispositivo.`)){delete territoryState[n];saveTerritoryState();loadTerritoryIntoForm();}});
+
+$('#sheetBack').addEventListener('click', closeSheet);
+$('#sheetRefresh').addEventListener('click', ()=>{if(activeSheetResource) loadSheetData(activeSheetResource,true);});
+$('#sheetSearch').addEventListener('input', filterSheetRows);
+$('#sheetOpenOriginal').addEventListener('click', ()=>{ /* permanece dentro del WebView nativo */ });
+window.addEventListener('popstate', ()=>{if(!$('#sheetScreen').hidden) closeSheet(true);});
+
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  $('#installBtn').hidden=false;
+});
+$('#installBtn').addEventListener('click', async()=>{
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt=null;
+  $('#installBtn').hidden=true;
+});
+window.addEventListener('appinstalled', ()=>{$('#installBtn').hidden=true;});
+
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+
+render();
+initIntegratedFeatures();
