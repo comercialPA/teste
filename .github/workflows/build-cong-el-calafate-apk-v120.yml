@@ -1,0 +1,106 @@
+name: Build Cong El Calafate APK v1.2.0
+
+on:
+  push:
+    branches:
+      - build/cong-el-calafate-v1.2.0
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Verify Android SDK 35
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$ANDROID_HOME/platforms/android-35/android.jar"
+          test -d "$ANDROID_HOME/build-tools"
+
+      - name: Embed audited integrated interface
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='cong_el_calafate_android/app/src/main/assets'
+          BASE='https://cong-el-calafate-app.vercel.app'
+          mkdir -p "$ROOT/icons" cong_el_calafate_android/app/src/main/res/drawable
+
+          fetch_asset() {
+            rel="$1"
+            out="$ROOT/$rel"
+            mkdir -p "$(dirname "$out")"
+            curl -fsSL --compressed "$BASE/$rel" -o /tmp/asset.raw
+            python3 -c 'import gzip,pathlib,sys; b=pathlib.Path(sys.argv[1]).read_bytes(); b=gzip.decompress(b) if b[:2]==bytes([31,139]) else b; pathlib.Path(sys.argv[2]).write_bytes(b)' /tmp/asset.raw "$out"
+          }
+
+          fetch_asset index.html
+          fetch_asset styles.css
+          fetch_asset app.js
+          fetch_asset manifest.webmanifest
+          fetch_asset sw.js
+          fetch_asset icons/icon-192.png
+          fetch_asset icons/icon-512.png
+
+          test "$(sha1sum "$ROOT/index.html" | awk '{print $1}')" = '04a016e4e6d746bd6129b446228b61f21941ba77'
+          test "$(sha1sum "$ROOT/styles.css" | awk '{print $1}')" = '3be22051f12f0b46532b4774c2350cf15b7055ee'
+          test "$(sha1sum "$ROOT/app.js" | awk '{print $1}')" = '5658c94a9a0aaf87d924636d83af404e9e516516'
+          test "$(sha1sum "$ROOT/manifest.webmanifest" | awk '{print $1}')" = '7ce2a8d39110e304a4535cf49abd56fc08abe374'
+          test "$(sha1sum "$ROOT/sw.js" | awk '{print $1}')" = '021ab6d04f7defc25bb7e73a89ac1720ccfd7006'
+          test "$(sha1sum "$ROOT/icons/icon-192.png" | awk '{print $1}')" = 'cb334b69ad990c3aa6d310868d92e4f313dffada'
+          test "$(sha1sum "$ROOT/icons/icon-512.png" | awk '{print $1}')" = '989fbca20920b5f250180c0555d24fb20c882eee'
+          cp "$ROOT/icons/icon-512.png" cong_el_calafate_android/app/src/main/res/drawable/ic_launcher.png
+
+      - name: Verify integrated app rules
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='cong_el_calafate_android'
+          test "$(grep -c '<uses-permission' "$ROOT/app/src/main/AndroidManifest.xml")" = '1'
+          grep -q '<uses-permission android:name="android.permission.INTERNET"' "$ROOT/app/src/main/AndroidManifest.xml"
+          ! grep -E 'android.permission.(CAMERA|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|READ_CONTACTS|WRITE_CONTACTS|RECORD_AUDIO|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|POST_NOTIFICATIONS)' "$ROOT/app/src/main/AndroidManifest.xml"
+          ! grep -R -E 'openExternal|Intent.ACTION_VIEW' "$ROOT/app/src/main/java"
+          ! grep -R -F 'https://sites.google.com/view/cong-el-calafate' "$ROOT/app/src/main/assets/index.html" "$ROOT/app/src/main/assets/app.js"
+          ! grep -R -i -E 'firebaseauth|oauth|sign-in|signin' "$ROOT/app/src/main/assets/index.html" "$ROOT/app/src/main/assets/app.js"
+          grep -q 'Aplicación v1.2.0' "$ROOT/app/src/main/assets/index.html"
+          grep -q 'Todo se mantiene dentro de este WebView' "$ROOT/app/src/main/java/app/congregacion/elcalafate/MainActivity.java"
+
+      - name: Build installable APK
+        shell: bash
+        run: gradle -p cong_el_calafate_android --no-daemon :app:assembleDebug --stacktrace
+
+      - name: Verify APK and hash
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK='cong_el_calafate_android/app/build/outputs/apk/debug/app-debug.apk'
+          test -s "$APK"
+          cp "$APK" CONG_EL_CALAFATE_V1.2.0.apk
+          sha256sum CONG_EL_CALAFATE_V1.2.0.apk | tee APK_SHA256.txt
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CONG_EL_CALAFATE_V1.2.0_APK
+          path: |
+            CONG_EL_CALAFATE_V1.2.0.apk
+            APK_SHA256.txt
+          if-no-files-found: error
+          retention-days: 30
