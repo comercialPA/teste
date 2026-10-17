@@ -10,10 +10,10 @@ function sideKeys(d){const out=[];if(!d)return out;if(d.type==='tramos')(d.items
 function globalMetric(){const data=window.CongTerritoryOfficialData?.data||{},state=read(STATE_KEY,{});let total=0,done=0;for(let n=1;n<=102;n++){const keys=sideKeys(data[String(n)]);total+=keys.length;const d=state[String(n)]?.done||{};done+=keys.filter(k=>!!d[k]).length}return{total,done,pct:total?Math.round(done*100/total):0}}
 function navigate(target){const b=$(`.nav-item[data-target="${target}"]`);if(b)b.click();else{$$('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===target));window.scrollTo({top:0,behavior:'smooth'})}}
 function addTerritoryShortcut(){const home=$('#inicio'),g=$('.p170-greeting',home);if(!home||!g)return;let b=$('#p171TerritoryShortcut');const m=globalMetric();if(!b){b=document.createElement('button');b.type='button';b.id='p171TerritoryShortcut';b.className='p171-territory-shortcut';const sys=$('.p170-system-card',g);if(sys)sys.insertAdjacentElement('afterend',b);else g.appendChild(b);b.addEventListener('click',()=>{navigate('territorios');setTimeout(()=>{const picker=$('.cec-territory-grid-wrap')||$('#t15Select')||$('#cecTerritoryGrid');picker?.scrollIntoView({behavior:'smooth',block:'start'})},260)})}
-b.style.setProperty('--p171-pct',m.pct+'%');b.innerHTML=`<span class="p171-territory-icon">${iconPin()}</span><span class="p171-territory-copy"><small>Acceso directo</small><strong>Marcar territorio realizado</strong><span>Elegir territorio, marcar calles/tramos y actualizar el termómetro.</span></span><span class="p171-territory-meter"><strong>${m.pct}%</strong><i></i></span>`}
+if(b.dataset.pct===String(m.pct))return;b.dataset.pct=String(m.pct);b.style.setProperty('--p171-pct',m.pct+'%');b.innerHTML=`<span class="p171-territory-icon">${iconPin()}</span><span class="p171-territory-copy"><small>Acceso directo</small><strong>Marcar territorio realizado</strong><span>Elegir territorio, marcar calles/tramos y actualizar el termómetro.</span></span><span class="p171-territory-meter"><strong>${m.pct}%</strong><i></i></span>`}
 function improveMapScroll(){const vp=$('#cecV162Viewport');if(!vp)return;if(!$('#p171MapScrollHint')){const h=document.createElement('div');h.id='p171MapScrollHint';h.className='p171-map-scroll-hint';h.textContent='Deslice verticalmente para continuar la página · use Mover para desplazar el plano';vp.insertAdjacentElement('beforebegin',h)}const svg=$('#cecV162Svg');const drawing=!!svg?.classList.contains('drawing');vp.classList.toggle('p170-drawing',drawing);if(drawing)vp.classList.remove('p170-pan-mode')}
 function refresh(){addTerritoryShortcut();improveMapScroll();const about=$('.about-card strong');if(about)about.textContent='Aplicación v1.7.2 · Visual System 2026';}
-function observe(){let queued=false;const mo=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;refresh()})});mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});refresh();setInterval(()=>{addTerritoryShortcut();improveMapScroll()},2500)}
+function observe(){refresh();document.addEventListener('click',()=>setTimeout(refresh,140),false);document.addEventListener('change',()=>setTimeout(refresh,140),false);setInterval(()=>{if(!document.hidden){addTerritoryShortcut();improveMapScroll()}},30000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();
 window.CongElCalafateVisualV171={version:VERSION,globalMetric,refresh};
 })();
@@ -79,11 +79,7 @@ document.addEventListener('click',e=>{
 },true);
 let queued=false;
 function refresh(){calendarOnly();ensureTerritories();localize();}
-function start(){
-  const observer=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;refresh()})});
-  observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
-  refresh();
-}
+function start(){refresh();document.addEventListener('click',()=>setTimeout(refresh,150),false);document.addEventListener('change',()=>setTimeout(refresh,150),false);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 window.CongElCalafateVisualV172={version:VERSION,refresh,openMap,progress,calendarUrl};
 })();
