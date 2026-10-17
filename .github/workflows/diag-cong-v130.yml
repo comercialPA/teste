@@ -1,0 +1,24 @@
+name: Diagnose Cong El Calafate v1.3.0 hashes
+
+on:
+  push:
+    branches:
+      - build/cong-el-calafate-v1.3.0
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hashes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASSETS='cong_el_calafate_android/app/src/main/assets'
+          cat .github/v130-app/app.part.00 .github/v130-app/app.part.01 .github/v130-app/app.part.02 .github/v130-app/app.part.03 > "$ASSETS/app.js"
+          sha256sum "$ASSETS/index.html" "$ASSETS/styles.css" "$ASSETS/app.js" cong_el_calafate_android/app/src/main/java/app/congregacion/elcalafate/MainActivity.java cong_el_calafate_android/app/build.gradle cong_el_calafate_android/app/src/main/AndroidManifest.xml
+          node --check "$ASSETS/app.js"
