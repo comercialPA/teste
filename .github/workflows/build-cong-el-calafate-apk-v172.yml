@@ -56,10 +56,12 @@ jobs:
           python .github/v165-app/patch_native_v165.py
           python .github/v170-app/patch_native_v170.py
           python .github/v171-app/patch_native_v171.py
+          python -c "from pathlib import Path; p=Path('cong_el_calafate_android/app/src/main/java/app/congregacion/elcalafate/MainActivity.java'); s=p.read_text(); s=s.replace('1.7.1','1.7.2').replace(r'1.7.2\t25\t',r'1.7.2\t26\t'); p.write_text(s)"
           JAVA='cong_el_calafate_android/app/src/main/java/app/congregacion/elcalafate/MainActivity.java'
           grep -q 'externalNav' "$JAVA"
           grep -q 'runPendingInternalNavigation' "$JAVA"
-          grep -q '1.7.1' "$JAVA"
+          grep -q '1.7.2' "$JAVA"
+          grep -q '1.7.2\\t26' "$JAVA"
 
       - name: Assemble V1.7.2 app assets
         shell: bash
@@ -147,7 +149,7 @@ jobs:
           tar -czf build-delivery/CONG_EL_CALAFATE_V1.7.2_PROJECT_SNAPSHOT.tar.gz \
             cong_el_calafate_android \
             .github/v130-app .github/v140-app .github/v141-app .github/v142-app .github/v150-app .github/v162-app .github/v163-app .github/v164-app .github/v165-app .github/v170-app .github/v171-app \
-            .github/workflows/build-cong-el-calafate-apk-v171.yml
+            .github/workflows/build-cong-el-calafate-apk-v172.yml
 
       - name: Upload V1.7.2 build artifact
         uses: actions/upload-artifact@v4
