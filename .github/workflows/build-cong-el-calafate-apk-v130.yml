@@ -53,7 +53,7 @@ jobs:
           ASSETS='cong_el_calafate_android/app/src/main/assets'
           test "$(sha256sum "$ASSETS/index.html" | awk '{print $1}')" = 'e5e0705a3cbfcbcd3baa645e4e4e0fe6ae11c3973de9a6a621ebda2915391431'
           test "$(sha256sum "$ASSETS/styles.css" | awk '{print $1}')" = '622c3904dcf397d411402f0c8f9b75e22c0d95e94a7ff8e9da24d1254b8676ed'
-          test "$(sha256sum "$ASSETS/app.js" | awk '{print $1}')" = 'fafaabd55b7b3f18ebb15fff7647d7a0252148d42424346625819f732b47c5e2'
+          test "$(sha256sum "$ASSETS/app.js" | awk '{print $1}')" = 'dd9575be6031f005b76eec1a08b0976895ca7a59773c55516912132ed0eefee1'
           test "$(sha256sum cong_el_calafate_android/app/src/main/java/app/congregacion/elcalafate/MainActivity.java | awk '{print $1}')" = '5ff8e61b65af1cfff95465db7d3448ebe67c39cacabfed9dc5a4db588cb03a58'
           test "$(sha256sum cong_el_calafate_android/app/build.gradle | awk '{print $1}')" = '94f47b7acf51e48d51843dc49dee92f698c364e9abf1f835ee7f7b6187d94904'
           node --check "$ASSETS/app.js"
@@ -91,7 +91,7 @@ jobs:
           test -s "$APK"
           unzip -t "$APK" >/dev/null
           unzip -p "$APK" assets/app.js > /tmp/apk-app.js
-          test "$(sha256sum /tmp/apk-app.js | awk '{print $1}')" = 'fafaabd55b7b3f18ebb15fff7647d7a0252148d42424346625819f732b47c5e2'
+          test "$(sha256sum /tmp/apk-app.js | awk '{print $1}')" = 'dd9575be6031f005b76eec1a08b0976895ca7a59773c55516912132ed0eefee1'
           grep -q 'loadElCalafateStreets' /tmp/apk-app.js
           test "$(grep -o "sheetId:'" /tmp/apk-app.js | wc -l | tr -d ' ')" = '9'
           cp "$APK" CONG_EL_CALAFATE_V1.3.0.apk
