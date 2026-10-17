@@ -82,7 +82,7 @@ jobs:
         shell: bash
         run: gradle -p cong_el_calafate_android --no-daemon :app:assembleRelease --stacktrace
 
-      - name: Package unsigned APK and signing tools
+      - name: Align APK and package signer
         shell: bash
         run: |
           set -euo pipefail
@@ -92,19 +92,19 @@ jobs:
           unzip -p "$APK" assets/app.js > /tmp/apk-app.js
           node --check /tmp/apk-app.js
           grep -q 'CongElCalafateCarritosCompactShifts' /tmp/apk-app.js
-          mkdir -p build-delivery/signing-tools/lib
-          cp "$APK" build-delivery/CONG_EL_CALAFATE_V1.4.2_UNSIGNED.apk
           BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
-          cp "$BUILD_TOOLS/zipalign" build-delivery/signing-tools/zipalign
+          mkdir -p build-delivery/signing-tools/lib
+          "$BUILD_TOOLS/zipalign" -f -p 4 "$APK" build-delivery/CONG_EL_CALAFATE_V1.4.2_ALIGNED_UNSIGNED.apk
+          "$BUILD_TOOLS/zipalign" -c -p 4 build-delivery/CONG_EL_CALAFATE_V1.4.2_ALIGNED_UNSIGNED.apk
           cp "$BUILD_TOOLS/apksigner" build-delivery/signing-tools/apksigner
           cp "$BUILD_TOOLS/lib/apksigner.jar" build-delivery/signing-tools/lib/apksigner.jar
-          chmod +x build-delivery/signing-tools/zipalign build-delivery/signing-tools/apksigner
-          sha256sum build-delivery/CONG_EL_CALAFATE_V1.4.2_UNSIGNED.apk > build-delivery/UNSIGNED_SHA256.txt
+          chmod +x build-delivery/signing-tools/apksigner
+          sha256sum build-delivery/CONG_EL_CALAFATE_V1.4.2_ALIGNED_UNSIGNED.apk > build-delivery/ALIGNED_UNSIGNED_SHA256.txt
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CONG_EL_CALAFATE_V1.4.2_UNSIGNED_AND_TOOLS
+          name: CONG_EL_CALAFATE_V1.4.2_ALIGNED_AND_SIGNER
           path: build-delivery/
           if-no-files-found: error
           retention-days: 30
