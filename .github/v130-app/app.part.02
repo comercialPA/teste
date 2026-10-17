@@ -1,0 +1,140 @@
+}
+
+function renderTerritoryStreetList(){
+  const t = ensureTerritory();
+  const query = ($('#territoryStreetSearch')?.value || '').trim().toLowerCase();
+  const list = t.streets.map((street,index)=>({...street,index})).filter(s=>!query || s.name.toLowerCase().includes(query));
+  const root = $('#territoryStreetList');
+  if(root){
+    root.innerHTML = list.map(s=>`<div class="street-row ${s.done?'done':''}">
+      <label class="street-check"><input type="checkbox" data-street-check="${s.index}" ${s.done?'checked':''}><span class="street-check-ui"></span><span class="street-name">${escapeHTML(s.name)}</span></label>
+      <button class="street-remove" type="button" data-street-remove="${s.index}" aria-label="Eliminar ${escapeHTML(s.name)}">×</button>
+    </div>`).join('');
+  }
+  $('#territoryEmpty').hidden = t.streets.length !== 0;
+  const {total,done,pct}=territoryProgress(t);
+  $('#territoryProgressLabel').textContent = `${done} de ${total} ${total===1?'calle/tramo':'calles/tramos'}`;
+  $('#territoryProgressText').textContent = `${pct}%`;
+  $('#territoryProgressBar').style.width = `${pct}%`;
+  const badge = $('#territoryStatusBadge');
+  badge.textContent = total===0 ? 'Sin iniciar' : pct===100 ? 'Completado' : done ? 'En curso' : 'Pendiente';
+  badge.dataset.state = total===0?'empty':pct===100?'done':done?'active':'pending';
+  $('#territoryUpdatedAt').textContent = t.updatedAt ? `Último cambio: ${new Date(t.updatedAt).toLocaleString('es-AR')}` : '';
+}
+
+function addStreetFromInput(){
+  const input = $('#streetInput');
+  const name = (input.value || '').trim().replace(/\s+/g,' ');
+  if(!name) return;
+  const t = ensureTerritory();
+  if(!t.streets.some(s=>s.name.toLowerCase()===name.toLowerCase())){
+    t.streets.push({name,done:false});
+    touchTerritory(t);
+  }
+  input.value='';
+  renderTerritoryStreetList();
+}
+
+function updateTerritoryMeta(){
+  const t = ensureTerritory();
+  t.driver = $('#territoryDriver').value.trim();
+  t.date = $('#territoryDate').value;
+  t.notes = $('#territoryNotes').value.trim();
+  touchTerritory(t);
+  renderTerritoryStreetList();
+}
+
+function renderStreetSuggestions(){
+  const list = $('#streetSuggestions');
+  if(!list) return;
+  list.innerHTML = streetCatalog.slice(0,700).map(name=>`<option value="${escapeHTML(name)}"></option>`).join('');
+  const btn=$('#loadOsmStreetsBtn');
+  if(btn && streetCatalog.length) btn.textContent=`✓ ${streetCatalog.length} calles reales cargadas`;
+}
+
+function requestStreetCatalog(){
+  const btn=$('#loadOsmStreetsBtn');
+  if(btn){btn.disabled=true;btn.textContent='Cargando calles...';}
+  if(window.AndroidBridge?.loadElCalafateStreets){
+    window.AndroidBridge.loadElCalafateStreets();
+  }else{
+    if(btn){btn.disabled=false;btn.textContent='Disponible en el APK Android';}
+  }
+}
+
+window.__cecReceiveStreetCatalog = function(payload){
+  try{
+    const arr = typeof payload === 'string' ? JSON.parse(payload) : payload;
+    streetCatalog = [...new Set((arr||[]).filter(Boolean).map(String))].sort((a,b)=>a.localeCompare(b,'es'));
+    localStorage.setItem(STREET_CATALOG_KEY, JSON.stringify(streetCatalog));
+    renderStreetSuggestions();
+  }catch(_){ }
+  const btn=$('#loadOsmStreetsBtn'); if(btn) btn.disabled=false;
+};
+
+window.__cecStreetCatalogError = function(message){
+  const btn=$('#loadOsmStreetsBtn');
+  if(btn){btn.disabled=false;btn.textContent='Reintentar cargar calles reales';}
+  if(message) console.warn(message);
+};
+
+function sheetResourceById(id){return resources.find(r=>r.id===id);}
+
+function openSheet(resource){
+  activeSheetResource = resource;
+  activeSheetRows = [];
+  activeSheetFilteredRows = [];
+  $('#sheetTitle').textContent = resource.title;
+  $('#sheetSearch').value='';
+  $('#sheetError').hidden=true;
+  $('#sheetError').textContent='';
+  $('#sheetStatus').textContent='Cargando datos actuales...';
+  $('#sheetRowCount').textContent='';
+  $('#sheetTable').innerHTML='';
+  $('#sheetOpenOriginal').href=resource.url || '#';
+  $('#sheetScreen').hidden=false;
+  document.body.classList.add('sheet-open');
+  if(location.hash !== '#sheet') history.pushState({cecSheet:true}, '', '#sheet');
+  loadSheetData(resource, false);
+}
+
+function closeSheet(fromHistory=false){
+  $('#sheetScreen').hidden=true;
+  document.body.classList.remove('sheet-open');
+  activeSheetResource=null;
+  if(!fromHistory && location.hash==='#sheet') history.back();
+}
+
+function loadSheetData(resource, force){
+  if(!resource?.sheetId) return;
+  const cacheKey=`cec_sheet_cache_${resource.id}`;
+  if(!force){
+    try{
+      const cache=JSON.parse(localStorage.getItem(cacheKey)||'null');
+      if(cache?.csv){
+        receiveSheetCsv(resource.id, cache.csv, true, cache.savedAt);
+      }
+    }catch(_){ }
+  }
+  $('#sheetStatus').textContent = force ? 'Actualizando...' : 'Buscando datos actuales...';
+  if(window.AndroidBridge?.loadSheet){
+    window.AndroidBridge.loadSheet(resource.id, resource.sheetId);
+  }else{
+    $('#sheetStatus').textContent='La lectura directa está disponible dentro del APK Android.';
+  }
+}
+
+window.__cecReceiveSheet = function(resourceId, base64){
+  try{
+    const bytes=Uint8Array.from(atob(base64),c=>c.charCodeAt(0));
+    const csv=new TextDecoder('utf-8').decode(bytes);
+    receiveSheetCsv(resourceId,csv,false,new Date().toISOString());
+    localStorage.setItem(`cec_sheet_cache_${resourceId}`,JSON.stringify({csv,savedAt:new Date().toISOString()}));
+  }catch(err){window.__cecSheetError(resourceId,'No se pudieron interpretar los datos de la planilla.');}
+};
+
+window.__cecSheetError = function(resourceId, message){
+  if(activeSheetResource?.id!==resourceId) return;
+  $('#sheetStatus').textContent='No se pudo actualizar. Si existe una copia guardada, se mantiene visible.';
+  $('#sheetError').hidden=false;
+  $('#sheetError').textContent=message || 'La planilla no respondió o requiere una autorización de Google.';
