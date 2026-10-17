@@ -1,0 +1,1 @@
+Selecting a territory should zoom to that territory; drawing/confirming a completed side must update territory and global progress exactly once.
