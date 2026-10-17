@@ -1,0 +1,134 @@
+name: Build Cong El Calafate APK v1.5.0 FINAL
+
+on:
+  push:
+    branches:
+      - build/cong-el-calafate-v1.5.0
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Python territory tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet pymupdf
+
+      - name: Download official territory sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 'https://sdmntprbrazilsouth.oaiusercontent.com/files/00000000-67ac-820e-bb36-0b33c373037f/raw?se=2026-10-17T16%3A15%3A02Z&sp=r&sv=2026-02-06&sr=b&scid=a7342b96-97e9-526f-8c35-651b5343292d&skoid=db6dad9e-03ee-465b-aef6-ce0f63a161dc&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-10-17T13%3A24%3A24Z&ske=2026-10-18T13%3A24%3A24Z&sks=b&skv=2026-02-06&sig=tyjGWUMDN8hqf2fAhfzyFPA11VFFgpux0sceEA/2NPk%3D' -o Territorios_MZ_1-109.xlsx
+          curl -fsSL --retry 3 'https://sdmntprbrazilsouth.oaiusercontent.com/files/00000000-a300-820e-beaf-406f77ca1bbd/raw?se=2026-10-17T16%3A15%3A14Z&sp=r&sv=2026-02-06&sr=b&scid=77321988-5aa3-5d9b-a525-4021c4968db1&skoid=db6dad9e-03ee-465b-aef6-ce0f63a161dc&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-10-17T13%3A24%3A24Z&ske=2026-10-18T13%3A24%3A24Z&sks=b&skv=2026-02-06&sig=2lJeNDsyfx0bWzwP6IxlpDEC4IRgaJxwdUl4r05gdBc%3D' -o MAPA_CONG_CALAFATE_2026.pdf
+          test "$(stat -c%s Territorios_MZ_1-109.xlsx)" -gt 20000
+          test "$(stat -c%s MAPA_CONG_CALAFATE_2026.pdf)" -gt 4000000
+
+      - name: Build official territory assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/v150-app/build_territory_assets.py
+          ASSETS='cong_el_calafate_android/app/src/main/assets'
+          test -s "$ASSETS/territory-data.js"
+          test -s "$ASSETS/territory-map-2026.png"
+          grep -q 'Mz 89c' "$ASSETS/territory-data.js"
+          grep -q 'Mz 149' "$ASSETS/territory-data.js"
+          grep -q 'Avda. Costanera Pte. Néstor Carlos Kirchner' "$ASSETS/territory-data.js"
+
+      - name: Assemble embedded V1.5.0 assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASSETS='cong_el_calafate_android/app/src/main/assets'
+          mkdir -p "$ASSETS/icons" cong_el_calafate_android/app/src/main/res/drawable
+          cat .github/v130-app/app.part.00 .github/v130-app/app.part.01 .github/v130-app/app.part.02 .github/v130-app/app.part.03 .github/v140-app/carritos.module.js .github/v141-app/carritos.compact-bars.js .github/v142-app/carritos.compact-shifts.js "$ASSETS/territory-data.js" .github/v150-app/territorios.official.js .github/v150-app/territorios.map-grid-fix.js > "$ASSETS/app.js"
+          curl -fsSL --retry 3 'https://cong-el-calafate-app.vercel.app/icons/icon-192.png' -o "$ASSETS/icons/icon-192.png"
+          curl -fsSL --retry 3 'https://cong-el-calafate-app.vercel.app/icons/icon-512.png' -o "$ASSETS/icons/icon-512.png"
+          cp "$ASSETS/icons/icon-512.png" cong_el_calafate_android/app/src/main/res/drawable/ic_launcher.png
+
+      - name: Verify V1.5.0 final integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASSETS='cong_el_calafate_android/app/src/main/assets'
+          node --check "$ASSETS/app.js"
+          grep -q 'CongTerritoryOfficialData' "$ASSETS/app.js"
+          grep -q 'CongElCalafateTerritoriosV150' "$ASSETS/app.js"
+          grep -q 'CongElCalafateTerritoriosMapGridV150' "$ASSETS/app.js"
+          grep -q 'Territorios 1–102' "$ASSETS/app.js"
+          grep -q 'únicamente el lado perteneciente' "$ASSETS/app.js"
+          grep -q 'Los colores se aplican al selector' "$ASSETS/app.js"
+          grep -q 'Avda. Costanera Pte. Néstor Carlos Kirchner' "$ASSETS/app.js"
+          grep -q 'FLIA RODRIGUEZ' "$ASSETS/app.js"
+          grep -q 'Mz 89c' "$ASSETS/app.js"
+          grep -q 'Mz 168a' "$ASSETS/app.js"
+          test "$(stat -c%s "$ASSETS/territory-map-2026.png")" -gt 200000
+          grep -q "versionCode 17" cong_el_calafate_android/app/build.gradle
+          grep -q "versionName '1.5.0'" cong_el_calafate_android/app/build.gradle
+          grep -q 'CongElCalafateCarritosCompactShifts' "$ASSETS/app.js"
+
+      - name: Verify permissions and package
+        shell: bash
+        run: |
+          set -euo pipefail
+          MAN='cong_el_calafate_android/app/src/main/AndroidManifest.xml'
+          JAVA='cong_el_calafate_android/app/src/main/java/app/congregacion/elcalafate/MainActivity.java'
+          test "$(grep -c '<uses-permission' "$MAN")" = '1'
+          grep -q 'android.permission.INTERNET' "$MAN"
+          ! grep -E 'CAMERA|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION|READ_CONTACTS|WRITE_CONTACTS|READ_EXTERNAL_STORAGE|WRITE_EXTERNAL_STORAGE|POST_NOTIFICATIONS|RECORD_AUDIO' "$MAN"
+          grep -q 'applicationId .app.congregacion.elcalafate.' cong_el_calafate_android/app/build.gradle
+          grep -q 'addJavascriptInterface(new AppBridge(), "AndroidBridge")' "$JAVA"
+
+      - name: Build unsigned release APK
+        shell: bash
+        run: gradle -p cong_el_calafate_android --no-daemon :app:assembleRelease --stacktrace
+
+      - name: Align APK and package source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK='cong_el_calafate_android/app/build/outputs/apk/release/app-release-unsigned.apk'
+          test -s "$APK"
+          unzip -t "$APK" >/dev/null
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
+          mkdir -p build-delivery/lib
+          "$BUILD_TOOLS/zipalign" -f -p 4 "$APK" build-delivery/CONG_EL_CALAFATE_V1.5.0_ALIGNED_UNSIGNED.apk
+          "$BUILD_TOOLS/zipalign" -c -p 4 build-delivery/CONG_EL_CALAFATE_V1.5.0_ALIGNED_UNSIGNED.apk
+          unzip -p build-delivery/CONG_EL_CALAFATE_V1.5.0_ALIGNED_UNSIGNED.apk assets/app.js > /tmp/apk-app.js
+          node --check /tmp/apk-app.js
+          grep -q 'CongElCalafateTerritoriosMapGridV150' /tmp/apk-app.js
+          grep -q 'Mz 89c' /tmp/apk-app.js
+          unzip -l build-delivery/CONG_EL_CALAFATE_V1.5.0_ALIGNED_UNSIGNED.apk | grep -q 'assets/territory-map-2026.png'
+          cp "$BUILD_TOOLS/apksigner" build-delivery/apksigner
+          cp "$BUILD_TOOLS/lib/apksigner.jar" build-delivery/lib/apksigner.jar
+          chmod +x build-delivery/apksigner
+          sha256sum build-delivery/CONG_EL_CALAFATE_V1.5.0_ALIGNED_UNSIGNED.apk > build-delivery/UNSIGNED_SHA256.txt
+          tar -czf build-delivery/CONG_EL_CALAFATE_V1.5.0_PROJECT_SNAPSHOT.tar.gz cong_el_calafate_android .github/v130-app .github/v140-app .github/v141-app .github/v142-app .github/v150-app .github/workflows/build-cong-el-calafate-apk-v150-final.yml
+
+      - name: Upload final build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CONG_EL_CALAFATE_V1.5.0_FINAL_UNSIGNED_AND_PROJECT
+          path: build-delivery/
+          if-no-files-found: error
+          retention-days: 30
