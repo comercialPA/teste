@@ -75,6 +75,7 @@ jobs:
             .github/v162-app/carritos.future-filter-v160.js \
             .github/v162-app/territorios.report-v162.js \
             .github/v162-app/territorios.individual-map-v162.js \
+            .github/v162-app/territorios.selection-hook-v162.js \
             > "$ASSETS/app.js"
           curl -fsSL --retry 3 'https://cong-el-calafate-app.vercel.app/icons/icon-192.png' -o "$ASSETS/icons/icon-192.png"
           curl -fsSL --retry 3 'https://cong-el-calafate-app.vercel.app/icons/icon-512.png' -o "$ASSETS/icons/icon-512.png"
@@ -90,6 +91,7 @@ jobs:
           grep -q 'CongElCalafateTerritoriosV162' "$ASSETS/app.js"
           grep -q 'CongElCalafateTerritoriosReportV162' "$ASSETS/app.js"
           grep -q 'cec_territory_individual_drawings_v162' "$ASSETS/app.js"
+          grep -q 'territorios.selection-hook-v162' .github/workflows/build-cong-el-calafate-apk-v162.yml
           grep -q '1Z6avXQtaCVmPUJuoo18rtXl1l3GgMP_G' "$ASSETS/app.js"
           grep -q 'Mz 1528' "$ASSETS/app.js"
           grep -q 'Mz 1431' "$ASSETS/app.js"
