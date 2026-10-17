@@ -83,7 +83,7 @@ jobs:
             .github/v164-app/ui-territorios-v164.js \
             .github/v164-app/diagnostico-fix-v164.js \
             .github/v165-app/territorios.smart-focus-v165.js \
-            .github/v170-app/premium-v170.js \
+            .github/v170-app/premium-v170b.js \
             > "$ASSETS/app.js"
           curl -fsSL --retry 3 'https://cong-el-calafate-app.vercel.app/icons/icon-192.png' -o "$ASSETS/icons/icon-192.png"
           curl -fsSL --retry 3 'https://cong-el-calafate-app.vercel.app/icons/icon-512.png' -o "$ASSETS/icons/icon-512.png"
@@ -97,6 +97,7 @@ jobs:
           node --check "$ASSETS/app.js"
           grep -q 'CongElCalafateVisualV170' "$ASSETS/app.js"
           grep -q 'Visual System 2026' "$ASSETS/app.js"
+          grep -q '850' "$ASSETS/app.js"
           grep -q -- '--p170-cyan:#00D7F2' "$ASSETS/premium-v170.css"
           grep -q 'p170-pan-mode' "$ASSETS/premium-v170.css"
           grep -q "versionCode 24" cong_el_calafate_android/app/build.gradle
