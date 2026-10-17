@@ -1,7 +1,7 @@
 /* Congregación El Calafate · V1.7.1 behavior refinements */
 (()=>{
 'use strict';
-const VERSION='1.7.1';
+const VERSION='1.7.2';
 const STATE_KEY='cec_territory_official_v150';
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
 const read=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||'')||f}catch(_){return f}};
@@ -12,7 +12,7 @@ function navigate(target){const b=$(`.nav-item[data-target="${target}"]`);if(b)b
 function addTerritoryShortcut(){const home=$('#inicio'),g=$('.p170-greeting',home);if(!home||!g)return;let b=$('#p171TerritoryShortcut');const m=globalMetric();if(!b){b=document.createElement('button');b.type='button';b.id='p171TerritoryShortcut';b.className='p171-territory-shortcut';const sys=$('.p170-system-card',g);if(sys)sys.insertAdjacentElement('afterend',b);else g.appendChild(b);b.addEventListener('click',()=>{navigate('territorios');setTimeout(()=>{const picker=$('.cec-territory-grid-wrap')||$('#t15Select')||$('#cecTerritoryGrid');picker?.scrollIntoView({behavior:'smooth',block:'start'})},260)})}
 b.style.setProperty('--p171-pct',m.pct+'%');b.innerHTML=`<span class="p171-territory-icon">${iconPin()}</span><span class="p171-territory-copy"><small>Acceso directo</small><strong>Marcar territorio realizado</strong><span>Elegir territorio, marcar calles/tramos y actualizar el termómetro.</span></span><span class="p171-territory-meter"><strong>${m.pct}%</strong><i></i></span>`}
 function improveMapScroll(){const vp=$('#cecV162Viewport');if(!vp)return;if(!$('#p171MapScrollHint')){const h=document.createElement('div');h.id='p171MapScrollHint';h.className='p171-map-scroll-hint';h.textContent='Deslice verticalmente para continuar la página · use Mover para desplazar el plano';vp.insertAdjacentElement('beforebegin',h)}const svg=$('#cecV162Svg');const drawing=!!svg?.classList.contains('drawing');vp.classList.toggle('p170-drawing',drawing);if(drawing)vp.classList.remove('p170-pan-mode')}
-function refresh(){addTerritoryShortcut();improveMapScroll();const about=$('.about-card strong');if(about)about.textContent='Aplicación v1.7.1 · Visual System 2026';}
+function refresh(){addTerritoryShortcut();improveMapScroll();const about=$('.about-card strong');if(about)about.textContent='Aplicación v1.7.2 · Visual System 2026';}
 function observe(){let queued=false;const mo=new MutationObserver(()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;refresh()})});mo.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});refresh();setInterval(()=>{addTerritoryShortcut();improveMapScroll()},2500)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();
 window.CongElCalafateVisualV171={version:VERSION,globalMetric,refresh};
