@@ -36,9 +36,9 @@ function autoResolve(){if(autoBusy||requestedKey&&Date.now()-requestedAt<2500)re
  if(!keys.length){let best=null;for(const c of candidates(n)){const dist=Math.hypot(c.x-sh.c.x,c.y-sh.c.y);if(!best||dist<best.dist)best={...c,dist}}if(best&&best.dist<(best.source==='fallback'?7.5:14))keys=[best.k].filter(k=>!done(n,k));}
  if(!keys.length)return;autoBusy=true;let clicked=0;keys.forEach(k=>{const b=$$('[data-v162-key]',r).find(x=>x.dataset.v162Key===k&&!x.disabled);if(b){b.click();clicked++}});if(clicked){setTimeout(()=>{$('#cecV162Apply')?.click();setTimeout(()=>{learnLatest(n);window.CongElCalafateTerritoriosV150?.select?.(n,false);toast(clicked>1?`${clicked} lados marcados en la lista`:'Lado marcado en la lista')},140)},60)}setTimeout(()=>autoBusy=false,500)}
 function capture(){window.addEventListener('click',e=>{const b=e.target.closest?.('[data-side-toggle],[data-tramo]');if(!b)return;const n=territory(),k=b.dataset.sideToggle||`${b.dataset.tramo}::territorio`;if(done(n,k))return;requestedKey=k;requestedAt=Date.now();setTimeout(()=>zoomFocus(k),150);setTimeout(()=>{requestedKey=null},5000)},true);
- window.addEventListener('pointerup',e=>{if(e.target?.id==='cecV162Svg'||e.target?.closest?.('#cecV162Svg')){setTimeout(autoResolve,120);setTimeout(()=>learnLatest(territory()),450)}},true);
+ window.addEventListener('pointerup',e=>{if(e.target?.id==='cecV162Svg'||e.target?.closest?.('#cecV162Svg')){setTimeout(()=>{if(!window.CongElCalafateV174?.active)autoResolve()},120);setTimeout(()=>learnLatest(territory()),450)}},true);
  document.addEventListener('click',e=>{if(e.target?.id==='cecV162Apply')setTimeout(()=>learnLatest(territory()),180)},true)}
-function observe(){const mo=new MutationObserver(()=>{if($('#cecV162Resolve.open'))setTimeout(autoResolve,30)});mo.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class']})}
+function observe(){/* Se evita el observador global: V1.7.4 vincula trazos por evento. */}
 installStyle();capture();if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();
 window.CongElCalafateTerritoriosV165={version:VERSION,focusKey:zoomFocus,autoResolve,anchors:STATIC};
 })();
