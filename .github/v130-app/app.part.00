@@ -1,0 +1,140 @@
+const resources = [
+  // REUNIONES
+  {id:'programa-1', title:'Programa de reuniones · 1', type:'Programa', icon:'▦', desc:'Programa de reuniones publicado por la congregación.', url:'https://drive.google.com/file/d/18I6DUZvIu_rfu_ERO0sYxtXNDSVZc1qh/view?usp=drive_link', section:'reuniones', category:'Reuniones'},
+  {id:'programa-2', title:'Programa de reuniones · 2', type:'Programa', icon:'▦', desc:'Programa de reuniones publicado por la congregación.', url:'https://drive.google.com/file/d/18Zr0iwu3Pr3PXTa_B5dy4XIWIptjYW7k/view?usp=drive_link', section:'reuniones', category:'Reuniones'},
+  {id:'programa-3', title:'Programa de reuniones · 3', type:'Programa', icon:'▦', desc:'Programa de reuniones publicado por la congregación.', url:'https://drive.google.com/file/d/1JC7zg0G6Xzt4DvqWXJm--3i_vbdSANvC/view?usp=drive_link', section:'reuniones', category:'Reuniones'},
+  {id:'programa-4', title:'Programa de reuniones · 4', type:'Programa', icon:'▦', desc:'Programa de reuniones publicado por la congregación.', url:'https://drive.google.com/file/d/1WXWqYUUeHjPo5gIP7A8OJgjy4EH2rcWj/view?usp=drive_link', section:'reuniones', category:'Reuniones'},
+  {id:'calendario', title:'Calendario personal', type:'Calendario', icon:'◷', desc:'Calendario compartido de la congregación.', url:'https://calendar.google.com/calendar/u/0?cid=Y29uZ2NhbGFmYXRlQGdtYWlsLmNvbQ', section:'reuniones', category:'Reuniones'},
+  {id:'jw', title:'JW.ORG', type:'Sitio oficial', icon:'◎', desc:'Sitio oficial jw.org en español, abierto dentro del visor del app.', url:'https://www.jw.org/es/', section:'reuniones', category:'Reuniones'},
+
+  // TERRITORIOS
+  {id:'territorios-personales-info', title:'Cómo usar territorios personales', type:'Información', icon:'⌖', desc:'Instrucciones incorporadas directamente en la aplicación.', details:[
+    'Cada publicador se comunica con Marcelo López para recibir un número de territorio asignado.',
+    'El estado del territorio debe registrarse como EN CURSO o COMPLETADO.',
+    'La congregación trabaja con territorios numerados del 1 al 102.'
+  ], section:'territorios', category:'Territorios'},
+  {id:'territorios-personales-sheet', title:'Territorios personales · planilla', type:'Google Sheets', icon:'▦', desc:'Planilla compartida para seguimiento de territorios.', sheetId:'1gLPJ8AXiADvFoztBJC0Wf-umVAS4GpN9RF0fGXlE7kk', url:'https://docs.google.com/spreadsheets/d/1gLPJ8AXiADvFoztBJC0Wf-umVAS4GpN9RF0fGXlE7kk/edit?usp=sharing', section:'territorios', category:'Territorios'},
+  {id:'registro-territorios', title:'Registro de territorios', type:'Procedimiento', icon:'✎', desc:'Datos que debe registrar el conductor después de una salida designada.', details:[
+    'Número de territorio: 1 a 102.',
+    'Nombre del conductor.',
+    'Fecha de la salida.',
+    'Indicar si el territorio fue terminado: Sí / No.',
+    'El registro sirve para mantener actualizado el uso de los territorios de la congregación.'
+  ], section:'territorios', category:'Territorios'},
+  {id:'mapa-calafate-online', title:'Mapa en línea · El Calafate', type:'Google Maps', icon:'⌖', desc:'Mapa online del territorio de El Calafate.', url:'https://goo.gl/maps/X8qpenTJuL6a9W289?g_st=ac', section:'territorios', category:'Mapas'},
+  {id:'mapa-chalten-online', title:'Mapa en línea · El Chaltén', type:'Google Maps', icon:'⌖', desc:'Mapa online del territorio de El Chaltén.', url:'https://goo.gl/maps/kQB7SjdyiU1DxAwf7', section:'territorios', category:'Mapas'},
+  {id:'mapa-tres-lagos-online', title:'Mapa en línea · Tres Lagos', type:'Google Maps', icon:'⌖', desc:'Mapa online del territorio de Tres Lagos.', url:'https://goo.gl/maps/tUTyzepiLNX8ZNPd8', section:'territorios', category:'Mapas'},
+  {id:'carrito-anfiteatro', title:'Carrito · Anfiteatro', type:'Predicación pública', icon:'□', desc:'Planilla de organización del carrito del Anfiteatro.', sheetId:'1SfJQfHRblwVM891QvDnu6fbZewb_l1gx0iYoHIU5YNg', url:'https://docs.google.com/spreadsheets/d/1SfJQfHRblwVM891QvDnu6fbZewb_l1gx0iYoHIU5YNg/edit?usp=sharing', section:'territorios', category:'Carritos'},
+  {id:'carrito-anonima', title:'Carrito · La Anónima', type:'Predicación pública', icon:'□', desc:'Planilla de organización del carrito de La Anónima.', sheetId:'1K4BowT0kvU1zlbMw0M9cFA8ToMp9CaTHSqag64x7UWc', url:'https://docs.google.com/spreadsheets/d/1K4BowT0kvU1zlbMw0M9cFA8ToMp9CaTHSqag64x7UWc/edit?usp=sharing', section:'territorios', category:'Carritos'},
+  {id:'carrito-terminal', title:'Carrito · Terminal de Ómnibus', type:'Predicación pública', icon:'□', desc:'Para hermanos y hermanas aprobados por el comité de servicio.', sheetId:'1tnW0uSGdfcsO2ldEyyUpLAMO2mI9ttABnzmgSQc2OUE', url:'https://docs.google.com/spreadsheets/d/1tnW0uSGdfcsO2ldEyyUpLAMO2mI9ttABnzmgSQc2OUE/edit?usp=sharing', section:'territorios', category:'Carritos'},
+
+  // FORMULARIOS / ORGANIZACIÓN
+  {id:'form-datos', title:'Datos de las familias', type:'Google Forms', icon:'✎', desc:'Formulario solicitado a las familias de la congregación.', url:'https://forms.gle/CKtLekHu5LMaBDEFA', category:'Formularios'},
+  {id:'plan-evacuacion', title:'Plan de evacuación', type:'Seguridad', icon:'↗', desc:'Plan de evacuación e información del Salón del Reino incorporados como galería.', gallery:[
+    'https://sites.google.com/sitesv-images-rt/AMxu72vYLxDYFfkf6pOTgV9RJbtOtnrrYgI40OpCyKOYC6J_gdKTGKCNyr_HQj7_Sh1QV1QXPfTcHw7B-6-7ANsBRXnbvE3N61oGPpbQyUdRBODlTXN3QeYkfzL15yrNZcMZLpzunNNd3KPU6Lp7gihojsS4WnJiO6S-QVHvDRacEOqfpSbYzCUjjWfxpga8phVyDTIYzvXccy__mb7JO_CV8yP3ZUb2nijumvdfSdc-5Pg=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72syVK-agu-msLtx04pjnakPs0WeoWiko_WUO727DfwMhUOeDjqraIJsPbr_62hquc2pSjMueMLIJrEe7q6qprtZKLvb1C0JIp2IoCf6cv_qu8gwDw8Rxoc7DS1dtZZ5aqbOxDaMQhnKYzdXz-g2VffYZrkrxLvoqf7GwLHmGgI_wKqNw3csAX2nHn3-PDjCpyO8QwrNwFq0Ho9JDHeFw4LgJf2nYblnN8KoiFT71mI=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72vaNmyLBy-NjSJcSHSATgd8hqQ-GYeFwafU1DkPX_3yt_aWrCKDOMlUring2gRjnG5uNcmB6WRIJRSci0ksoDaszqPbs5NLG7CXKGHEIXTVIEcWJil1mNCC08dY-KnaVGGgayCrjeIsbDvSW7_QXxXMmkQ8dAWLuySOisv46XGMQQE0e4ziLtFyXyKhKmwofEaNBfHtEIPsxMeUULd_dEb9zxvS06goznU0AChK=w1280'
+  ], category:'Organización'},
+  {id:'organigrama', title:'Cartas y organigrama', type:'Organización', icon:'▤', desc:'Organigrama, grupos, visitas, anuncios y material gráfico de la congregación.', gallery:[
+    'https://sites.google.com/sitesv-images-rt/AMxu72sTdqZH57FxIBr_34jYLCIijXQYWrMWq_cVwnnTTBnlQVQRqvjGpULv1ZVELPGzR86mWdb6nfLJnAPwXiOVgfdeyz7-PGMDCrM_oJYUCYyADF3c8XdSTifaqNq0PebQ0K4RzKHTGHqDwYT-DIXDDI-wKVBh7sv9qgf716zr-gy3CY-3B8I8PZFNKSpNq5o=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72stSo4_CZpfxpunMZ3Inui9aM6Hzfl3Ov5tst9qkNciCK6ReAh425AJmyPj_gg0sJs-m9njZ8gPH2XkWM9Vezc56ha_yFFBTRKN1zPKTZHW1ezWIDswlyTXQtc9vYcwTuAdTONOmFbW2ZnOZ94Q2LopxQBuiQLWMVwCucqC7W5Em3T8wibVwnXraFqhAns=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72vsOSK4zenF_h_Y5C-w_lDtMIioqT5L0loqFpauR5GRUdZMW644jeXJrREFuxsuj_EHx1Xr-uOnj4sy2bfNKOwJqi2HtHHIwnJpothGyeFyElSphRAn9c-LE-1Gmpqyoggidw2FTZ8Mh9Ru_T3U4aDRrJYmxdJqBjLCSacJ53TFpujC5nAjmDYeWI4_GficyisSj-TDIOEEADlJRuTbXReCUj8x1u1175Uw7IUi=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72sDuZ9f3ymWyMZGcZjo_7Pl5nF6Ki1c1vMNWWUl8g1Q-CWSt9hJi0OguU6y3QVfAdXxLZJIdK6id5BvHquIwb0xI0Slqqp1l8JVcz8NJMZmgFz7HbT24g9yhXr_91uidqvQMtUt2RdOOnC4R8qk58sNHY-OqsXPvcfx8iXoh43r59a6NNYDAcJsHi-_dxFzenNG6kCsae3itpAjkNKSrK4O6CM0IRoPuPpOV4b-G8c=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72u449-DC9lZ3R3pYBLociQ3yFyFS8qAzkSAB-UeWvvP6SAU_qD8sWY3DkXsWcTOB__dCmLcw0RCBGOnlKcfNquvjPqpirJJxA4q9XSxZk-MkEeWLOZ7CDPlZWo7d9t3XbhIHADO2xJxtdz4CYZ6D6IYfQpZOVfT3K6TV6JiWKMqwRb9PA5WUJlO1uuaSBLeIbuk1EGX2zsUiFnt1DFnhHaQASjovzM8YTJtYE3QgSY=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72so1mL2GCpU4mjVRWEXRhprxc4MeQtc1nEWNc5x9LVcWaYsjVNcfoLRlix7U0o7bw5jXlqCs2zGnYLo_m7sJ_xLQv3ncpvUTMs1GoDOo5Ueil6saGLDxJvUB1IHo3sYOYX7GvNRRtnAL6_H3xseHl1XrNCJWBc2PBND08-G_43r4i2Hv3VHEJwTyjG_v9OxRCm29vtvgLlbQcMsx4fvHYlzGDVlTYKQ0H9sI996i6A=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72s4DBt8sGwLf93MqONhTbKlBUTvFthzvfR4Tv7UfoeGd269g4sVUbU91fQ77e-1t5eJTVwCTXUC1wwxDA7d9VIs8jPZc-8jkReyzsaoWUqB_6YlFtZfViX8vsRO7-hT78L_MAwbO16T9HG9RJXczPYPHOoMrSejFqvaYwDi6uoRrVmk5Q9hBwLavhVtHr1hrZkWl4PkuPxx_ML11HyWDh5uOZo9kplqL90SOEzG31c=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72vzYooJRnjpDRePKHnr74Lb3qwdo9BybwOgMG_tHAfx50E1ee4HlHOIgtzp2LUxck_m0rbk9-AcEqZDaN7_oU7w8tvNARE4-rH114qXNcF5SB8fJwlOzlyV1zIiwvxPCXUbh-SboJzbYE5QVJf7a3UGUcmgyiPuVdyjFBhkzxtXh7rcGHDDigwxPOHD6O4hV8j7jsrY6nB1JyJ3G8j9RgUGmmEiaPXPUzL0DZVrap8=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72vrb5FFb5sUuKApHDSrdVG94UoNpcMn9dezW___MPoNdgOansVp6EbwpoRsuMoVAZBbHCS1aMZ7ShRS1xzWwrom-vkSZWJ5coQY2IN55muWwuyQ2BIFHPsGlYsYoJiuPRsYsXACoUvhUSJpRyLBm6LreANmiJAMnBcT6DJLmmeivqZHW9gO7-eCCZ6YRnBGEdV_6rMDBLQZT1E4C9VKXQu3gXdYALMHHbnNHk5f8Ls=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72sVu5RJOXLq3Hek3SMD1DYJMPilgEntAZmySHrVEWcMmPh39xbls92-GdaiD0V5HNT-Ys3NGsTQHDw2Z8zkJJ9kiOo4VfYud3RpKxAjLEl5jNdStZ5CsOgqkfr97BO61dvvlSNiYvwWIWswHuNLrkh_LRk28JA1Os0g6u4cPo_FcPg-3vgyaG-d5i8L=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72sYxwmUi9pITrpAlSHzVHRYpDajiJ1565LP5Getx161SylWnAQfWvS9KT8ksCERlibPxe8oXn_corIBxTO65mhcyypTG1Wydq0ht_HoLA5pURArZSUTemGMOblVlC-GkC5FRsx2-dn7pqPEvqXXn79w1RSsOzTcZf6Ip9GndgO0sjDZypjF9poGEDrK=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72t_32bpUz9M-8rYycEwrEUwYpCt6LD6VHEEaeel1IB7-JhAHDH4F9AUIFvR6tT2wW1L9SfMSeqUcszQH-ogwnf7502nKgJjr_3FyBmBhS4kNXHMycPZPd4S6EhjqLKCJuip9A-8Nz7c39TocprhSipYM8bI91anWRatEILXs4ycp0RMXuT5F_dooEcssII=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72v_-BOrKInxX7tXIHM1y8HjzJHX77RRhQNY3Wh5lVebcspeHF9wNQhZorI5-U_5io3LhZu-EGeB-FfhOCGl3JGGracivOkcT5ggImhOXkCqb0BNebPx6P3iF0XusduJjTmdbIT-ZBOAEXzm0ytahKhtRwoUAHGo2m7CFXH0P3bhwi6JmOSVc-dS-iAaUg25hJW3QOsXXi9XjXrK1rSqqnMVJTENH4THTTgt0mojydc=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72vHNA-ktRmKbusBlEGwlhFD-H3akPoM15xrw_4y42O7XW322Ww3enhPHo_mTsOb-HjMIIqKjJZWFv3aAj9xUZutqYoezn1b5M7_2Jjqb4yON4KjDvcRZ3A0pQK4Mx29RVof9BPQwTGRm2wraf24-rcFVD3FaqHNGXe1X0G8F3sd9v21RX3SxpnO_tK3JQFuo3TPQ19R8mTHzh8l6BlgLvgblq9N-2Ih1TGz2fsE=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72ukLrDsfEKYF7i90cbt0XSLZ4n8cjn0gbDiLS5ZrLZiItpL4TLW3QGBXaEeuvgbpOUaUqLCNkIleZFMqtE9FBr6Ymz0vCe1wr95JYmHWQX7fI6dirCLWVK8yIZqlskEqwzQVc0thyiLU3PeVZ_A4Tv5ayPTJnapRpcdFsk9rhv6yuqeE88wX-yTGSrIdbrMMa45jwwFdAX1zVgkaT0t2ozKzZzK02wPVMUf-bYckRQ=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72uiZ0KrhdpnHOVeo9cuf7TuEACqZhP7mi5NSCSHjIlA7OTC1cm4GMP7kLj4jA6oKJ_tVzAkPgvLFQZX-jZDtSv3lvHxqRAPpicKruJdw5FpN6HDs1dalsq3aYdLaYWceEhZb2pP7hmvhzYdzrA-8nYcIckN6YiJecv9ildD3M_8_Yompr26jzybkOdMy-E6AL5nAEOrmpxz0ghjWeDjyHgLZb4avW2GIgMEGBg3=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72v_idCD4L1dderNppOWNT8BxzQfxYuhYSB_6ks8MzOWdA9czDIBmWLOlHn3abkFhjtxzYIie2xy1MMSEULC_hnw1Zvdvkfm25S6-JQL3DijiJPHK1ecmo31W12Y5KD7TA3tNLUdfbm89U37z7Xh1Lm-QTqFYuM6Sw8AVGcdZe5Bykh0YB0pzmro4ml2qM4=w1280',
+    'https://sites.google.com/sitesv-images-rt/AMxu72uzB1uUND8MurBJyLL2MSxp94bySknhWlQYBzunhIM2iC9JzzRQqv72OGKmVas-7rqa41ZZxcVqpjGT1q2aSN81akhOoBG0wAsp1lodsywgRX0J1Z0XXuZkNlazxxffujiKUP9LFaXezwe7spZmulvP50FJZhedqhX9SfZcNMiLeRiALErmfuzarxPS=w16383'
+  ], category:'Organización'},
+
+  // MANTENIMIENTO
+  {id:'mantenimiento-info', title:'Mantenimiento del Salón', type:'Calendario', icon:'◇', desc:'Resumen del calendario de mantenimiento incorporado en el app.', details:[
+    'Meses publicados: octubre, noviembre y diciembre de 2026.',
+    'Proyectos: Depósito, Jardines, Sistema de Seguridad y Dispensadores.',
+    'Cada mes incluye una sección de proyecto a realizar e información adicional.'
+  ], category:'Mantenimiento'},
+  {id:'mwb', title:'mwb16.01-S · mantenimiento', type:'Documento', icon:'▤', desc:'Documento de referencia para mantenimiento.', url:'https://drive.google.com/file/d/1KsTDrCyHKozFgE5OmIkSzC4nTZuNkW_M/view?usp=sharing', category:'Mantenimiento'},
+  {id:'mwb-jw', title:'Lugares de reunión · JW.ORG', type:'Referencia', icon:'◎', desc:'Referencia oficial relacionada con lugares de reunión.', url:'https://www.jw.org/es/biblioteca/guia-actividades-reunion-testigos-jehova/guia-enero-2016/programa-reunion-4-10-enero/lugares-de-reunion/', category:'Mantenimiento'},
+  {id:'limpieza-profunda', title:'Limpieza profunda semanal', type:'Instrucción', icon:'◇', desc:'Instrucción para la limpieza profunda semanal.', url:'https://drive.google.com/file/d/1yUoBhuzIqvzpnrwVKoENpE58BlbkVi-J/view?usp=drivesdk', category:'Mantenimiento'},
+  {id:'limpieza-reunion', title:'Limpieza luego de cada reunión', type:'Instrucción', icon:'◇', desc:'Instrucción para la limpieza luego de cada reunión.', url:'https://drive.google.com/file/d/1B1K82gZLuuH1pEjasKL4akvD561yWVHi/view?usp=drivesdk', category:'Mantenimiento'},
+
+  // CONTABILIDAD
+  {id:'contabilidad-info', title:'Contabilidad · informe visible', type:'Información', icon:'▦', desc:'Resumen del informe mensual publicado.', details:[
+    'INFORME MENSUAL DE LAS CUENTAS DE LA CONGREGACIÓN (S-30).',
+    'Local: El Calafate, Santa Cruz (12310).',
+    'Mes visible en el portal auditado: agosto de 2026.',
+    'Donaciones para la congregación (cajas): $491.500,00.',
+    'Donaciones para la congregación (transferencias electrónicas): $1.655.600,00.',
+    'Fondos al comienzo del mes: $0,00.'
+  ], category:'Contabilidad'},
+
+  // TELEFÓNICA Y CARTAS
+  {id:'telefonica', title:'Predicación telefónica', type:'Google Sheets', icon:'☎', desc:'Planilla principal de predicación telefónica.', sheetId:'1SjYd-8pDMTshIQATZaYapMhhavhrNJ5tj7PKt7bu0NA', url:'https://docs.google.com/spreadsheets/d/1SjYd-8pDMTshIQATZaYapMhhavhrNJ5tj7PKt7bu0NA/edit?usp=sharing', category:'Telefónica y cartas'},
+  {id:'comercios', title:'Comercios', type:'Google Sheets', icon:'▦', desc:'Territorios para negocios en El Calafate.', sheetId:'1AamlWyb8Kuh1Ou4ib0cxD-E740x-v8_VjMCcwEOmf0c', url:'https://docs.google.com/spreadsheets/d/1AamlWyb8Kuh1Ou4ib0cxD-E740x-v8_VjMCcwEOmf0c/edit?usp=sharing', category:'Telefónica y cartas'},
+  {id:'cartas-tres-lagos', title:'Cartas · Tres Lagos', type:'Google Sheets', icon:'✉', desc:'Correos electrónicos y registro para predicación por cartas.', sheetId:'1F9U5PgnoCBr50g_3rRDPbQExzMdNKhepFIjz67XaoNc', url:'https://docs.google.com/spreadsheets/d/1F9U5PgnoCBr50g_3rRDPbQExzMdNKhepFIjz67XaoNc/edit?usp=sharing', category:'Telefónica y cartas'},
+  {id:'cartas-chalten', title:'Cartas · El Chaltén', type:'Google Sheets', icon:'✉', desc:'Correos electrónicos y registro para predicación por cartas.', sheetId:'1MjKoX4IHKKarkk0wl7IHCITY9mDIzqvQTZhO_DE6rlk', url:'https://docs.google.com/spreadsheets/d/1MjKoX4IHKKarkk0wl7IHCITY9mDIzqvQTZhO_DE6rlk/edit?usp=sharing', category:'Telefónica y cartas'},
+  {id:'cartas-calafate', title:'Cartas · El Calafate', type:'Google Sheets', icon:'✉', desc:'Correos electrónicos y registro para predicación por cartas.', sheetId:'1BD346D9zBPeKGC4cyV0dkzv3e6BBwYaVYN_Hs3Xe9KQ', url:'https://docs.google.com/spreadsheets/d/1BD346D9zBPeKGC4cyV0dkzv3e6BBwYaVYN_Hs3Xe9KQ/edit?usp=sharing', category:'Telefónica y cartas'},
+
+  // SOLICITUDES E INVITACIONES
+  {id:'invitacion', title:'Invitación para reuniones', type:'Documento', icon:'▤', desc:'Invitación para reuniones.', url:'https://drive.google.com/file/d/1Cy2ZDuSlUnJo1MovftG-t2kUHjg0-219/view?usp=drivesdk', category:'Solicitudes'},
+  {id:'mapa-calafate', title:'Mapa del territorio · El Calafate', type:'Mapa', icon:'⌖', desc:'Mapa del territorio de El Calafate.', url:'https://drive.google.com/file/d/1Z42IZqr9QxwFxgW9h-KliD3JI1swI2K7/view', category:'Solicitudes'},
+  {id:'precursor', title:'Solicitud · Precursor auxiliar', type:'Formulario', icon:'✎', desc:'Solicitud para precursor auxiliar.', url:'https://drive.google.com/file/d/1hDcwuPVg_p4-F0c3Q67LPCHd1boR5BGV/view?usp=drivesdk', category:'Solicitudes'},
+  {id:'mapa-chalten', title:'Mapa del territorio · El Chaltén', type:'Mapa', icon:'⌖', desc:'Mapa del territorio de El Chaltén.', url:'https://drive.google.com/file/d/1XY3k2D7H8m4NNMncHquTTtFsTH1C3kEw/view', category:'Solicitudes'},
+  {id:'informe', title:'Informe de predicación', type:'Formulario', icon:'✎', desc:'Formulario de informe de predicación.', url:'https://drive.google.com/file/d/1hsR4R7Urj2vTZRpe7RKS0sF0HW6KptPz/view?usp=drivesdk', category:'Solicitudes'},
+  {id:'identidad-menor', title:'Tarjeta de identidad · menor de edad', type:'Documento', icon:'▤', desc:'Tarjeta de identidad para menores de edad.', url:'https://drive.google.com/file/d/1-3t4XOZvsoFH9ln2JLFiD91n74cziwHu/view?usp=drivesdk', category:'Solicitudes'}
+];
+
+const moreResources = [
+  {id:'mantenimiento-info', title:'Mantenimiento del Salón', type:'Dentro del app', icon:'◇', desc:'Calendario y proyectos incorporados.'},
+  {id:'organigrama', title:'Cartas y organigrama', type:'Dentro del app', icon:'▤', desc:'Galería completa incorporada.'},
+  {id:'contabilidad-info', title:'Contabilidad', type:'Dentro del app', icon:'▦', desc:'Resumen del informe mensual publicado.'},
+  {id:'telefonica', title:'Telefónica y cartas', type:'Dentro del app', icon:'☎', desc:'Planillas de trabajo organizadas.'},
+  {id:'plan-evacuacion', title:'Plan de evacuación', type:'Dentro del app', icon:'↗', desc:'Plano e información de seguridad.'},
+  {id:'jw', title:'JW.ORG', type:'Sitio oficial', icon:'◎', desc:'Se abre dentro del visor del app.'}
+];
+
+const quick = [
+  {title:'Reuniones', subtitle:'4 programas y calendario', icon:'▦', target:'reuniones'},
+  {title:'Territorios', subtitle:'Mapas, carritos y registro', icon:'⌖', target:'territorios'},
+  {title:'Solicitudes', subtitle:'Documentos y formularios', icon:'✎', target:'recursos', filter:'Solicitudes'},
+  {title:'Mantenimiento', subtitle:'Calendario e instrucciones', icon:'◇', target:'recursos', filter:'Mantenimiento'}
+];
+
+let deferredPrompt;
+let activeFilter = 'Todos';
+let currentResource = null;
+const favorites = new Set(JSON.parse(localStorage.getItem('cec_favorites') || '[]'));
+
+const TERRITORY_STORAGE_KEY = 'cec_territory_control_v1';
+const STREET_CATALOG_KEY = 'cec_el_calafate_street_catalog_v1';
+let territoryState = loadTerritoryState();
+let streetCatalog = JSON.parse(localStorage.getItem(STREET_CATALOG_KEY) || '[]');
+let activeSheetResource = null;
+let activeSheetRows = [];
+let activeSheetFilteredRows = [];
+
+const $ = (s, root=document) => root.querySelector(s);
+const $$ = (s, root=document) => [...root.querySelectorAll(s)];
+
+function escapeHTML(value=''){
+  return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+
+function resourceCard(r){
+  const fav = favorites.has(r.id) ? '★' : '›';
+  return `<button class="resource-card" data-resource="${escapeHTML(r.id)}">
+    <span class="resource-icon">${escapeHTML(r.icon || '▤')}</span>
+    <span><strong>${escapeHTML(r.title)}</strong><small>${escapeHTML(r.type)} · ${escapeHTML(r.desc)}</small></span>
+    <span class="resource-arrow">${fav}</span>
+  </button>`;
+}
+
