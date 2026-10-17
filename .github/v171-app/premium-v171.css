@@ -2,30 +2,30 @@
 body.p170 #inicio .hero{
   min-height:0!important;
   height:auto!important;
-  aspect-ratio:16/9!important;
+  aspect-ratio:2.14/1!important;
   max-height:none!important;
   border-radius:0 0 28px 28px!important;
 }
 body.p170 #inicio .p170-hero-photo{
   object-fit:cover!important;
-  object-position:center center!important;
+  object-position:center bottom!important;
 }
 body.p170 #inicio .p170-hero-wash{
   background:linear-gradient(180deg,
-    rgba(247,250,252,.04) 0%,
-    rgba(247,250,252,0) 72%,
-    rgba(247,250,252,.05) 86%,
-    rgba(247,250,252,.28) 94%,
+    rgba(247,250,252,0) 0%,
+    rgba(247,250,252,0) 80%,
+    rgba(247,250,252,.03) 89%,
+    rgba(247,250,252,.16) 95%,
     var(--p170-ice) 100%)!important;
 }
 body.p170 #inicio .p170-hero-grid{
-  opacity:.18!important;
-  mask-image:linear-gradient(to bottom,black,rgba(0,0,0,.42) 72%,transparent 98%)!important;
+  opacity:.15!important;
+  mask-image:linear-gradient(to bottom,black,rgba(0,0,0,.36) 78%,transparent 99%)!important;
 }
-body.p170 #inicio .p170-hero-tech:before{right:18px!important;bottom:28px!important;width:42px!important;height:42px!important}
-body.p170 #inicio .p170-hero-tech:after{left:16px!important;bottom:22px!important}
-body.p170 #inicio .p170-hero-top{top:calc(10px + env(safe-area-inset-top))!important}
-body.p170 #inicio .p170-greeting{margin:-6px 2px 0!important;padding-top:0!important}
+body.p170 #inicio .p170-hero-tech:before{right:18px!important;bottom:20px!important;width:40px!important;height:40px!important}
+body.p170 #inicio .p170-hero-tech:after{left:16px!important;bottom:15px!important}
+body.p170 #inicio .p170-hero-top{top:calc(8px + env(safe-area-inset-top))!important}
+body.p170 #inicio .p170-greeting{margin:-4px 2px 0!important;padding-top:0!important}
 
 .p171-territory-shortcut{
   width:100%;
@@ -81,7 +81,7 @@ body.p170 #cecV162Viewport.p170-drawing{
 .p171-map-scroll-hint{font-size:9px;color:#70839a;font-weight:700;margin:2px 0 8px;text-align:center}
 
 @media(max-width:430px){
-  body.p170 #inicio .hero{aspect-ratio:16/9!important}
+  body.p170 #inicio .hero{aspect-ratio:2.14/1!important}
   body.p170 #inicio .p170-hero-brand{font-size:9.5px!important}
   body.p170 #inicio .p170-hero-coord{font-size:8px!important;padding:4px 6px!important}
 }
