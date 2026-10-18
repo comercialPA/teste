@@ -1,9 +1,9 @@
-name: Build Cong El Calafate APK v1.7.5
+name: Build Cong El Calafate APK v1.7.5-work
 
 on:
   push:
     branches:
-      - build/cong-el-calafate-v1.7.5
+      - build/cong-el-calafate-v1.7.5-work
   workflow_dispatch:
 
 permissions:
@@ -18,6 +18,14 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v4
 
+      - name: Restore V1.7.5-work source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v175-source
+          unzip -q build-inputs/CONG_EL_CALAFATE_V1.7.5_WORK.zip -d /tmp/v175-source
+          cp -a /tmp/v175-source/CONG_EL_CALAFATE_V1.7.5_WORK/. .
+
       - name: Java 17
         uses: actions/setup-java@v4
         with:
@@ -29,36 +37,10 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Restore official territory assets from validated V1.5 build
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/v150
-          curl -fL --retry 3 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" 'https://api.github.com/repos/comercialPA/teste/actions/artifacts/12105744369/zip' -o /tmp/v150/artifact.zip
-          unzip -q /tmp/v150/artifact.zip -d /tmp/v150/artifact
-          SNAP="$(find /tmp/v150/artifact -name 'CONG_EL_CALAFATE_V1.5.0_PROJECT_SNAPSHOT.tar.gz' -print -quit)"
-          test -n "$SNAP"
-          mkdir -p /tmp/v150/project
-          tar -xzf "$SNAP" -C /tmp/v150/project
-          SRC='/tmp/v150/project/cong_el_calafate_android/app/src/main/assets'
-          DST='cong_el_calafate_android/app/src/main/assets'
-          cp "$SRC/territory-data.js" "$DST/territory-data.js"
-          cp "$SRC/territory-map-2026.png" "$DST/territory-map-2026.png"
-
       - name: Patch native shell
         shell: bash
         run: |
           set -euo pipefail
-          python .github/v163-app/patch_diagnostic_native.py
-          python .github/v164-app/patch_native_v164.py
-          python .github/v165-app/patch_native_v165.py
-          python .github/v170-app/patch_native_v170.py
-          python .github/v171-app/patch_native_v171.py
-          python -c "from pathlib import Path; p=Path('cong_el_calafate_android/app/src/main/java/app/congregacion/elcalafate/MainActivity.java'); s=p.read_text(); s=s.replace('1.7.1','1.7.2').replace(r'1.7.2\t25\t',r'1.7.2\t26\t'); p.write_text(s)"
-          python .github/v173-app/patch_native_v173.py
-          python .github/v174-app/patch_native_v174.py
           python .github/v175-app/patch_native_v175.py
           JAVA='cong_el_calafate_android/app/src/main/java/app/congregacion/elcalafate/MainActivity.java'
           grep -q 'externalNav' "$JAVA"
@@ -66,16 +48,17 @@ jobs:
           grep -q 'createRescueRail' "$JAVA"
           ! grep -q 'createRescueBar' "$JAVA"
           grep -q 'runPendingInternalNavigation' "$JAVA"
-          grep -q 'Versión: 1.7.4 · 28' "$JAVA"
-          grep -q '1.7.4\\t28' "$JAVA"
+          grep -q 'Versión: 1.7.5-work · 29' "$JAVA"
+          grep -q '1.7.5-work\\t29' "$JAVA"
 
-      - name: Assemble V1.7.5 app assets
+      - name: Assemble V1.7.5-work app assets
         shell: bash
         run: |
           set -euo pipefail
           ASSETS='cong_el_calafate_android/app/src/main/assets'
           mkdir -p "$ASSETS/icons" cong_el_calafate_android/app/src/main/res/drawable
-          cat .github/v170-app/premium-v170.css .github/v171-app/premium-v171.css .github/v174-app/premium-v174.css > "$ASSETS/premium-v170.css"
+          cat .github/v170-app/premium-v170.css .github/v171-app/premium-v171.css .github/v174-app/premium-v174.css \
+            .github/v175-app/premium-v175.css > "$ASSETS/premium-v170.css"
           cat \
             .github/v130-app/app.part.00 \
             .github/v130-app/app.part.01 \
@@ -100,11 +83,9 @@ jobs:
             .github/v173-app/rescate-v173.js \
             .github/v174-app/map-list-sync-v174.js \
             > "$ASSETS/app.js"
-          curl -fsSL --retry 3 'https://cong-el-calafate-app.vercel.app/icons/icon-192.png' -o "$ASSETS/icons/icon-192.png"
-          curl -fsSL --retry 3 'https://cong-el-calafate-app.vercel.app/icons/icon-512.png' -o "$ASSETS/icons/icon-512.png"
           cp "$ASSETS/icons/icon-512.png" cong_el_calafate_android/app/src/main/res/drawable/ic_launcher.png
 
-      - name: Verify V1.7.5 integrity
+      - name: Verify V1.7.5-work integrity
         shell: bash
         run: |
           set -euo pipefail
@@ -115,12 +96,13 @@ jobs:
           grep -q 'CongElCalafateVisualV172' "$ASSETS/app.js"
           grep -q 'CongElCalafateRescateV173' "$ASSETS/app.js"
           grep -q 'CongElCalafateV174' "$ASSETS/app.js"
-          grep -q 'function straightenStroke' "$ASSETS/app.js"
-          grep -q 'rawPoints' "$ASSETS/app.js"
-          grep -q 'CACHE_TTL_MS=120000' "$ASSETS/app.js"
           grep -q 'body.p170 #cecDiagFab' "$ASSETS/premium-v170.css"
           grep -q 'ABRIR MAPA PARA MARCAR' "$ASSETS/app.js"
           grep -q 'Marcar territorio realizado' "$ASSETS/app.js"
+          grep -q 'straightenStroke' "$ASSETS/app.js"
+          grep -q 'CACHE_FRESH_MS=180000' "$ASSETS/app.js"
+          grep -q 'cong-el-calafate-v1.7.5-work' "$ASSETS/sw.js"
+          grep -q 'navigator.serviceWorker.register' "$ASSETS/app.js"
           grep -q 'aspect-ratio:2.14/1' "$ASSETS/premium-v170.css"
           grep -q 'object-position:center bottom' "$ASSETS/premium-v170.css"
           grep -q 'touch-action:pan-y' "$ASSETS/premium-v170.css"
@@ -128,7 +110,9 @@ jobs:
           grep -q 'body.p170 #territorios .territory-control-card' "$ASSETS/premium-v170.css"
           grep -q 'externalNav' "$JAVA"
           grep -q "versionCode 29" cong_el_calafate_android/app/build.gradle
-          grep -q "versionName '1.7.5'" cong_el_calafate_android/app/build.gradle
+          grep -q "versionName '1.7.5-work'" cong_el_calafate_android/app/build.gradle
+          test -s "$ASSETS/congregacion-home.jpg"
+          grep -q 'congregacion-home.jpg' "$ASSETS/app.js"
 
       - name: Verify permissions and package
         shell: bash
@@ -152,24 +136,24 @@ jobs:
           test -s "$APK"
           BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)"
           mkdir -p build-delivery/lib
-          "$BUILD_TOOLS/zipalign" -f -p 4 "$APK" build-delivery/CONG_EL_CALAFATE_V1.7.5_ALIGNED_UNSIGNED.apk
-          "$BUILD_TOOLS/zipalign" -c -p 4 build-delivery/CONG_EL_CALAFATE_V1.7.5_ALIGNED_UNSIGNED.apk
-          unzip -p build-delivery/CONG_EL_CALAFATE_V1.7.5_ALIGNED_UNSIGNED.apk assets/app.js > /tmp/apk-app.js
+          "$BUILD_TOOLS/zipalign" -f -p 4 "$APK" build-delivery/CONG_EL_CALAFATE_V1.7.5-work_ALIGNED_UNSIGNED.apk
+          "$BUILD_TOOLS/zipalign" -c -p 4 build-delivery/CONG_EL_CALAFATE_V1.7.5-work_ALIGNED_UNSIGNED.apk
+          unzip -p build-delivery/CONG_EL_CALAFATE_V1.7.5-work_ALIGNED_UNSIGNED.apk assets/app.js > /tmp/apk-app.js
           node --check /tmp/apk-app.js
           grep -q 'CongElCalafateVisualV171' /tmp/apk-app.js
           cp "$BUILD_TOOLS/apksigner" build-delivery/apksigner
           cp "$BUILD_TOOLS/lib/apksigner.jar" build-delivery/lib/apksigner.jar
           chmod +x build-delivery/apksigner
-          sha256sum build-delivery/CONG_EL_CALAFATE_V1.7.5_ALIGNED_UNSIGNED.apk > build-delivery/UNSIGNED_SHA256.txt
-          tar -czf build-delivery/CONG_EL_CALAFATE_V1.7.5_PROJECT_SNAPSHOT.tar.gz \
+          sha256sum build-delivery/CONG_EL_CALAFATE_V1.7.5-work_ALIGNED_UNSIGNED.apk > build-delivery/UNSIGNED_SHA256.txt
+          tar -czf build-delivery/CONG_EL_CALAFATE_V1.7.5-work_PROJECT_SNAPSHOT.tar.gz \
             cong_el_calafate_android \
-            .github/v130-app .github/v140-app .github/v141-app .github/v142-app .github/v150-app .github/v162-app .github/v163-app .github/v164-app .github/v165-app .github/v170-app  .github/v171-app  .github/v173-app .github/v174-app .github/v175-app \
+            .github/v130-app .github/v140-app .github/v141-app .github/v142-app .github/v150-app .github/v162-app .github/v163-app .github/v164-app .github/v165-app .github/v170-app  .github/v171-app .github/v173-app .github/v174-app .github/v175-app \
             .github/workflows/build-cong-el-calafate-apk-v175.yml
 
-      - name: Upload V1.7.5 build artifact
+      - name: Upload V1.7.5-work build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CONG_EL_CALAFATE_V1.7.5_UNSIGNED_AND_PROJECT
+          name: CONG_EL_CALAFATE_V1.7.5-work_UNSIGNED_AND_PROJECT
           path: build-delivery/
           if-no-files-found: error
           retention-days: 30
