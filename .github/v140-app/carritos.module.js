@@ -13,6 +13,8 @@
   const OVERRIDES_KEY='cec_carritos_v140_overrides';
   const RECENT_KEY='cec_carritos_v140_recent';
   const CACHE_PREFIX='cec_carritos_v140_csv_';
+  const CACHE_TIME_PREFIX='cec_carritos_v175_updated_';
+  const CACHE_TTL_MS=120000; // Dos minutos: solo omitir la red si hay copia reciente y válida.
 
   let currentLocation='carrito-anonima';
   let currentDay=todayKey();
@@ -112,13 +114,31 @@
 
   function loadLocation(resourceId,force){
     const cfg=LOCATIONS[resourceId];if(!cfg)return;currentData=null;$('#cecCarritosLocationTitle').textContent=cfg.label;$('#cecCarritosPickup').textContent=cfg.subtitle;setStatus(force?'Actualizando escala...':'Cargando escala...','');$('#cecCarritosShifts').innerHTML='<div class="cec-empty">Leyendo horarios y nombres...</div>';
-    if(!force){const cached=localStorage.getItem(CACHE_PREFIX+resourceId);if(cached)try{receiveCsv(resourceId,cached,true);}catch(_){}}
+    let cachedValid=false;
+    if(!force){const cached=localStorage.getItem(CACHE_PREFIX+resourceId);if(cached)try{cachedValid=receiveCsv(resourceId,cached,true)===true}catch(_){}}
+    const updated=Number(localStorage.getItem(CACHE_TIME_PREFIX+resourceId)||0);
+    if(!force&&cachedValid&&updated>0&&Date.now()-updated<CACHE_TTL_MS){setStatus('Copia reciente · usá Actualizar para consultar la planilla ahora','ok');return;}
     if(window.AndroidBridge&&typeof window.AndroidBridge.loadSheet==='function')window.AndroidBridge.loadSheet(resourceId,cfg.sheetId);else if(!currentData)setStatus('La actualización automática está disponible en el APK Android.','error');
   }
 
   function receiveCsv(resourceId,csv,fromCache){
     if(!LOCATIONS[resourceId])return false;
-    try{const data=parseCarritoCsv(csv,resourceId);if(!fromCache)localStorage.setItem(CACHE_PREFIX+resourceId,csv);if(resourceId===currentLocation&&$('#cecCarritosScreen')?.classList.contains('open')){currentData=data;const availableDays=data.groups.map(g=>g.day);if(!availableDays.includes(currentDay))currentDay=availableDays[0]||'lunes';renderDayChips();$('#cecCarritosPickup').textContent=data.pickup?`Retiro del carrito: ${data.pickup}`:LOCATIONS[resourceId].subtitle;setStatus(fromCache?'Mostrando la última copia guardada; actualizando...':`Actualizado · ${data.names.length} publicadores disponibles`,'ok');renderShifts();}return true;}catch(err){if(resourceId===currentLocation)setStatus('No se pudo interpretar esta escala. '+norm(err.message),'error');return true;}
+    try{
+      const prev=fromCache?null:localStorage.getItem(CACHE_PREFIX+resourceId);
+      const unchanged=!fromCache&&prev===csv&&currentData?.resourceId===resourceId;
+      const data=unchanged?currentData:parseCarritoCsv(csv,resourceId);
+      if(!fromCache){
+        try{if(prev!==csv)localStorage.setItem(CACHE_PREFIX+resourceId,csv);localStorage.setItem(CACHE_TIME_PREFIX+resourceId,String(Date.now()))}catch(storageError){console.warn('Caché de carritos sin espacio:',storageError)}
+      }
+      if(resourceId===currentLocation&&$('#cecCarritosScreen')?.classList.contains('open')){
+        if(unchanged){setStatus('Actualizado · sin cambios en la planilla','ok');return true;}
+        currentData=data;
+        const availableDays=data.groups.map(g=>g.day);if(!availableDays.includes(currentDay))currentDay=availableDays[0]||'lunes';
+        renderDayChips();$('#cecCarritosPickup').textContent=data.pickup?`Retiro del carrito: ${data.pickup}`:LOCATIONS[resourceId].subtitle;
+        setStatus(fromCache?'Mostrando la última copia guardada; actualizando...':`Actualizado · ${data.names.length} publicadores disponibles`,'ok');renderShifts();
+      }
+      return true;
+    }catch(err){if(resourceId===currentLocation)setStatus('No se pudo interpretar esta escala. '+norm(err.message),'error');return false;}
   }
 
   function overrideId(resourceId,day,time,slot){return[resourceId,day,key(time),slot].join('|');}
