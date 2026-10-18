@@ -57,8 +57,8 @@ new_cache="imageCache[String(n)]={src,w:+w||0,h:+h||0};Object.keys(imageCache).f
 assert old_cache in s
 s=s.replace(old_cache,new_cache,1)
 # Los trazos antiguos también se ven rectificados sin modificar los datos guardados.
-old_render="st.points.map(p=>\`\${p.x},\${p.y}\`).join(' ')"
-new_render="(st.corrected||st.points.length<=2?st.points:cecV175Straighten(st.points)).map(p=>\`\${p.x},\${p.y}\`).join(' ')"
+old_render="st.points.map(p=>`${p.x},${p.y}`).join(' ')"
+new_render="(st.corrected||st.points.length<=2?st.points:cecV175Straighten(st.points)).map(p=>`${p.x},${p.y}`).join(' ')"
 assert old_render in s
 s=s.replace(old_render,new_render,1)
 mod.write_text(s,encoding='utf-8')
