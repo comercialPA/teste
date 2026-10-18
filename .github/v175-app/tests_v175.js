@@ -1,4 +1,4 @@
-const fs=require('node:fs'),assert=require('node:assert/strict');
+import fs from 'node:fs';import assert from 'node:assert/strict';
 const file=process.argv[2]||'cong_el_calafate_android/app/src/main/assets/app.js',src=fs.readFileSync(file,'utf8');
 const start=src.indexOf('function cecV175Straighten(points){'),end=src.indexOf('function commitStroke(points){',start);
 assert(start>=0&&end>start,'Geometría V1.7.5 no incorporada');
