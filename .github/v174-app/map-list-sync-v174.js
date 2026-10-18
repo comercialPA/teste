@@ -113,6 +113,9 @@ function handleStroke(){
 }
 function syncConfirmed(){
  const n=String($('#t15Select')?.value||'1'),{arr}=drawInfo(n),state=read(STATE);
+ // Recuperar trazos antiguos no asociados, solo con coincidencia geométrica segura.
+ if(!api.recovered)api.recovered={};
+ if(!api.recovered[n]){api.recovered[n]=true;let linked=0;for(const st of arr){if(st.points?.length&&!(st.keys||[]).length){const keys=infer(n,st);if(keys.length&&reconcile(n,st,keys))linked++}}if(linked)console.info('V174: recuperados '+linked+' trazos previos del Territorio '+n);}
  let changed=false,done=state[n]?.done||{};
  arr.forEach(st=>(st.keys||[]).forEach(k=>{if(valid(n,k)&&!done[k]){done[k]=true;changed=true}}));
  if(changed){state[n]=state[n]||{};state[n].done=done;save(STATE,state);refresh(n)}
