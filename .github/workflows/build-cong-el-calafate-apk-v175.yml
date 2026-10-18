@@ -68,8 +68,8 @@ jobs:
           grep -q 'SHEET_CACHE_MS' "$JAVA"
           ! grep -q 'createRescueBar' "$JAVA"
           grep -q 'runPendingInternalNavigation' "$JAVA"
-          grep -q 'Versión: 1.7.4 · 28' "$JAVA"
-          grep -q '1.7.4\\t28' "$JAVA"
+          grep -q 'Versión: 1.7.5 · 29' "$JAVA"
+          grep -q '1.7.5\\t29' "$JAVA"
 
       - name: Optimizar módulos y trazos en fuente
         shell: bash
