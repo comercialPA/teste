@@ -105,7 +105,7 @@ function handleStroke(){
    if(keys.length){reconcile(n,stroke,keys);return}
    api.uncertain++;
    // Mantener el cuadro oficial para seleccionar una manzana y su lado sin adivinar.
-   if(!$('#cecV162Resolve.open'))window.CongElCalafateTerritoriosV165?.autoResolve?.();
+   // Resolver oficial abierto por el trazado: no adivinar calles ni lados sin geometría.
    toast('Elegí el lado correcto en la lista de confirmación');
   }catch(e){console.warn('V174 mapa/lista:',e);toast('No se pudo identificar. Seleccioná el tramo en la lista.')}
   finally{pending=false}
