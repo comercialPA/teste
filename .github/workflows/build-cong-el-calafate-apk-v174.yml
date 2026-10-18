@@ -65,7 +65,7 @@ jobs:
           grep -q 'createRescueRail' "$JAVA"
           ! grep -q 'createRescueBar' "$JAVA"
           grep -q 'runPendingInternalNavigation' "$JAVA"
-          grep -q '1.7.3' "$JAVA"
+          grep -q 'Versión: 1.7.4 · 28' "$JAVA"
           grep -q '1.7.4\\t28' "$JAVA"
 
       - name: Assemble V1.7.4 app assets
