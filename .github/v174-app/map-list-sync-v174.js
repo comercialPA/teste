@@ -22,10 +22,11 @@ function valid(n,k){const d=data[String(n)],item=String(k).split('::')[0],side=S
  return !!(d&&(d.items||[]).includes(item)&&(d.type==='tramos'?side==='territorio':['N','E','S','O'].includes(side)))}
 function drawInfo(n){const all=read(DRAW),arr=Array.isArray(all[n])?all[n]:[];return {all,arr,stroke:arr[arr.length-1]}}
 function infer(n,st){
- if(n!=='1'||!Array.isArray(st.points)||st.points.length<4)return [];
+ const source=Array.isArray(st.rawPoints)&&st.rawPoints.length>=4?st.rawPoints:st.points;
+ if(n!=='1'||!Array.isArray(source)||source.length<4)return [];
  let boxes=[];
  for(const [item,[x1,y1,x2,y2]] of Object.entries(BASE_1)){
-   const hits={N:[],E:[],S:[],O:[]},pts=st.points;
+   const hits={N:[],E:[],S:[],O:[]},pts=source;
    pts.forEach((p,i)=>{
      const x=+p.x,y=+p.y;
      if(x<x1-5.5||x>x2+5.5||y<y1-5.5||y>y2+5.5)return;
@@ -35,7 +36,7 @@ function infer(n,st){
    });
    const selected=[];
    for(const [side,pts] of Object.entries(hits)){
-     if(pts.length<Math.max(3,Math.floor(st.points.length*.055)))continue;
+     if(pts.length<Math.max(3,Math.floor(source.length*.055)))continue;
      const spread=side==='N'||side==='S'
        ?Math.max(...pts.map(p=>p.x))-Math.min(...pts.map(p=>p.x))
        :Math.max(...pts.map(p=>p.y))-Math.min(...pts.map(p=>p.y));
